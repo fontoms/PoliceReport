@@ -17,6 +17,7 @@ namespace PoliceReport.Views
 
             LoadGrades();
             LoadVehPositions();
+            idTextBox.Focus();
 
             if (_selectedItem != null)
             {

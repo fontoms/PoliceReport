@@ -19,13 +19,13 @@
         </Grid.ColumnDefinitions>
 
         <Label Content="Indicatif :" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
-        <ComboBox x:Name="indicatifComboBox" Grid.Row="0" Grid.Column="1" Margin="5"/>
+        <ComboBox x:Name="indicatifComboBox" Grid.Row="0" Grid.Column="1" Margin="5" TabIndex="1"/>
 
         <Label Content="Véhicule :" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"/>
-        <ComboBox x:Name="vehiculeComboBox" Grid.Row="1" Grid.Column="1" Margin="5"/>
+        <ComboBox x:Name="vehiculeComboBox" Grid.Row="1" Grid.Column="1" Margin="5" TabIndex="2"/>
 
         <Label Content="Effectifs :" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
-        <ListBox x:Name="effectifsListBox" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Effectifs}" Margin="5,5,5,35">
+        <ListBox x:Name="effectifsListBox" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Effectifs}" Margin="5,5,5,35" TabIndex="3">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
@@ -42,16 +42,16 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Button x:Name="AddEffectifBtn" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="AjouterEffectif_Click" Width="30" Height="30" Margin="0,0,75,0">
+        <Button x:Name="AddEffectifBtn" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="AjouterEffectif_Click" Width="30" Height="30" Margin="0,0,75,0" TabIndex="4">
             <Image Source="/Images/AddIcon.png"/>
         </Button>
-        <Button x:Name="DelEffectifBtn" Grid.Column="1" HorizontalAlignment="Right" Grid.Row="2" VerticalAlignment="Bottom" Width="30" Height="30" Margin="0,0,5,0" Click="SupprimerEffectif_Click">
+        <Button x:Name="DelEffectifBtn" Grid.Column="1" HorizontalAlignment="Right" Grid.Row="2" VerticalAlignment="Bottom" Width="30" Height="30" Margin="0,0,5,0" Click="SupprimerEffectif_Click" TabIndex="6">
             <Image Source="/Images/DeleteIcon.png"/>
         </Button>
-        <Button x:Name="EditEffectifBtn" Grid.Column="1" HorizontalAlignment="Right" Grid.Row="2" VerticalAlignment="Bottom" Width="30" Height="30" Margin="0,0,40,0" Click="ModifierEffectif_Click">
+        <Button x:Name="EditEffectifBtn" Grid.Column="1" HorizontalAlignment="Right" Grid.Row="2" VerticalAlignment="Bottom" Width="30" Height="30" Margin="0,0,40,0" Click="ModifierEffectif_Click" TabIndex="5">
             <Image Source="/Images/EditIcon.png"/>
         </Button>
 
-        <Button x:Name="Valider" Grid.Row="3" VerticalAlignment="Top" Click="Valider_Click" Height="20" Content="Ajouter" Grid.ColumnSpan="2" Margin="10,10,10,10"/>
+        <Button x:Name="Valider" Grid.Row="3" VerticalAlignment="Top" Click="Valider_Click" Height="20" Content="Ajouter" Grid.ColumnSpan="2" Margin="10,10,10,10" TabIndex="7"/>
     </Grid>
 </Window>

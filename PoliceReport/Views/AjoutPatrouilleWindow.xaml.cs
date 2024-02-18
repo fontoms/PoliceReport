@@ -198,6 +198,10 @@ namespace PoliceReport.Views
             {
                 Effectifs.Remove((Personne)effectifsListBox.SelectedItem);
             }
+            else
+            {
+                MessageBox.Show("Veuillez sélectionner une personne à supprimer.", "Attention", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void ModifierEffectif_Click(object sender, RoutedEventArgs e)
@@ -207,6 +211,10 @@ namespace PoliceReport.Views
                 AjoutPersonneWindow ajoutPersonneWindow = new AjoutPersonneWindow((Personne)effectifsListBox.SelectedItem);
                 ajoutPersonneWindow.Owner = this;
                 ajoutPersonneWindow.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("Veuillez sélectionner une personne à modifier.", "Attention", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
     }

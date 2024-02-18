@@ -11,9 +11,9 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Label Content="ID :" Grid.Row="1" HorizontalAlignment="Left"/>
-        <TextBox x:Name="idTextBox" Grid.Row="1" Margin="55,0,10,0" VerticalAlignment="Center" MaxLines="1" MaxLength="18"/>
+        <TextBox x:Name="idTextBox" Grid.Row="1" Margin="55,0,10,0" VerticalAlignment="Center" MaxLines="1" MaxLength="18" TabIndex="1"/>
         <Label Content="Grade :" VerticalAlignment="Center" Grid.Row="2" HorizontalAlignment="Left"/>
-        <ComboBox x:Name="gradeComboBox" Grid.Row="2" Margin="55,0,10,0" VerticalAlignment="Center">
+        <ComboBox x:Name="gradeComboBox" Grid.Row="2" Margin="55,0,10,0" VerticalAlignment="Center" TabIndex="2">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Nom}"/>
@@ -21,7 +21,7 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
         <Label Content="Position dans le véhicule :" VerticalAlignment="Center" Grid.Row="3" HorizontalAlignment="Left"/>
-        <ComboBox x:Name="positionComboBox" Grid.Row="3" Margin="145,0,10,0" VerticalAlignment="Center"/>
-        <Button x:Name="AddEditPersonn" Content="Ajouter" Grid.Row="4" Grid.Column="1" Margin="10" VerticalAlignment="Center" Click="Ajouter_Click"/>
+        <ComboBox x:Name="positionComboBox" Grid.Row="3" Margin="145,0,10,0" VerticalAlignment="Center" TabIndex="3"/>
+        <Button x:Name="AddEditPersonn" Content="Ajouter" Grid.Row="4" Grid.Column="1" Margin="10" VerticalAlignment="Center" Click="Ajouter_Click" TabIndex="4"/>
     </Grid>
 </Window>

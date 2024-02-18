@@ -40,6 +40,7 @@ namespace PoliceReport.Views
 
             LoadGradeType();
             LoadActions();
+            idTextBox.Focus();
         }
 
         private void LoadGradeType()
