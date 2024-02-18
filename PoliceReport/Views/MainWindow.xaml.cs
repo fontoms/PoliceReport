@@ -18,6 +18,7 @@ namespace PoliceReport.Views
         private static int _lastPatrouilleId = 0;
         private int _lastActionId = 0;
         private const string _searchInfractionDefaultText = "Rechercher une infraction ou action...";
+
         public static ObservableCollection<Patrouille> Patrouilles { get; set; }
         public static ObservableCollection<LogicLayer.Action.Action> Actions { get; set; }
         public static BaseDao Database;
@@ -60,13 +61,20 @@ namespace PoliceReport.Views
             }
         }
 
-
         private void LoadActions()
         {
             actionsListBox.Items.Clear();
+
+            ChargementWindow chargementActons = new ChargementWindow("Chargement des actions...");
+            chargementActons.Show();
+
             List<LogicLayer.Action.Action> actionsList = new List<LogicLayer.Action.Action>();
             InfractionsDao infractionsDao = new InfractionsDao();
-            foreach (Infraction infraction in infractionsDao.GetAll())
+            List<Infraction> infractions = infractionsDao.GetAll();
+
+            chargementActons.MaxValue = infractions.Count;
+
+            foreach (Infraction infraction in infractions)
             {
                 actionsList.Add(new LogicLayer.Action.Action(infraction.Nom, DateTime.Now));
 
@@ -77,7 +85,11 @@ namespace PoliceReport.Views
                     action.ActInfraction = infraction.Type;
                     actionsList.Add(action);
                 }
+
+                chargementActons.ProgressValue++;
             }
+
+            chargementActons.Close();
             actionsListBox.ItemsSource = actionsList;
         }
 
