@@ -15,14 +15,19 @@ namespace PoliceReport.Views
     /// </summary>
     public partial class AjoutPatrouilleWindow : Window
     {
-        public static ObservableCollection<Personne> Effectifs { get; set; }
+        private bool _isDisplayList = true;
         private Patrouille _selectedItem;
+
+        public static ObservableCollection<Personne> Effectifs { get; set; }
 
         public AjoutPatrouilleWindow(Patrouille selectedItem)
         {
             InitializeComponent();
             LoadIndicatifs();
-            LoadVehicules();
+            if (_isDisplayList)
+            {
+                LoadVehicules();
+            }
 
             _selectedItem = selectedItem;
 
@@ -116,8 +121,39 @@ namespace PoliceReport.Views
         {
             vehiculeComboBox.Items.Clear();
 
+            // Vérifiez si l'élément sélectionné est une unité
+            if (_isDisplayList)
+            {
+                DisplayVehiculeByList();
+            }
+            else
+            {
+                DisplayVehiculeByIndicatif();
+            }
+
+            if (_isDisplayList && vehiculeComboBox.Items.Count > 1)
+            {
+                vehiculeComboBox.SelectedIndex = 1;
+            }
+            else if (!_isDisplayList && vehiculeComboBox.Items.Count > 0)
+            {
+                vehiculeComboBox.SelectedIndex = 0;
+            }
+            else
+            {
+                vehiculeComboBox.IsEnabled = false;
+            }
+        }
+
+        private void DisplayVehiculeByList()
+        {
             SpecialisationsDao specialisationsDao = new SpecialisationsDao();
             List<Specialisation> specialisations = specialisationsDao.GetAll();
+
+            ChargementWindow chargementVehicules = new ChargementWindow("Chargement des véhicules...");
+            chargementVehicules.Show();
+            chargementVehicules.MaxValue = specialisations.Count;
+
             foreach (Specialisation specialisation in specialisations)
             {
                 ComboBoxItem comboBoxItem = new ComboBoxItem();
@@ -134,16 +170,91 @@ namespace PoliceReport.Views
                     vehiculeItem.Content = vehicule.Nom;
                     vehiculeComboBox.Items.Add(vehiculeItem);
                 }
+
+                chargementVehicules.ProgressValue++;
             }
 
-            if (vehiculeComboBox.Items.Count > 1)
+            chargementVehicules.Close();
+        }
+
+        private void DisplayVehiculeByIndicatif()
+        {
+            ChargementWindow chargementVehicules = new ChargementWindow("Chargement des véhicules...");
+            chargementVehicules.Show();
+
+            if (((ComboBoxItem)indicatifComboBox.SelectedItem).Tag != null)
             {
-                vehiculeComboBox.SelectedIndex = 1;
+                // Obtenez le type d'unité
+                string typeUnite = ((ComboBoxItem)indicatifComboBox.SelectedItem).Tag.ToString();
+
+                UnitesDao unitesDao = new UnitesDao();
+                Unite unite = unitesDao.GetType(typeUnite);
+
+                // Si l'unité est spécialisée dans OPJ, chargez tous les véhicules contenant "bana" dans le nom
+                if (unite.UniSpe == "OPJ")
+                {
+                    VehiculesDao vehiculesDao = new VehiculesDao();
+                    List<Vehicule> vehicules = vehiculesDao.GetAllByNameContains("bana");
+
+                    chargementVehicules.MaxValue = vehicules.Count;
+
+                    foreach (Vehicule vehicule in vehicules)
+                    {
+                        ComboBoxItem vehiculeItem = new ComboBoxItem();
+                        vehiculeItem.Content = vehicule.Nom;
+                        vehiculeComboBox.Items.Add(vehiculeItem);
+
+                        chargementVehicules.ProgressValue++;
+                    }
+                }
+                else
+                {
+                    // Si ce n'est pas une unité spécialisée dans OPJ, chargez les véhicules correspondants à cette unité
+                    VehiculesDao vehiculesDao = new VehiculesDao();
+                    List<Vehicule> vehicules = vehiculesDao.GetAllBySpecialisation(unite.UniSpe);
+
+                    chargementVehicules.MaxValue = vehicules.Count;
+
+                    foreach (Vehicule vehicule in vehicules)
+                    {
+                        ComboBoxItem vehiculeItem = new ComboBoxItem();
+                        vehiculeItem.Content = vehicule.Nom;
+                        vehiculeComboBox.Items.Add(vehiculeItem);
+
+                        chargementVehicules.ProgressValue++;
+                    }
+                }
             }
             else
             {
-                vehiculeComboBox.IsEnabled = false;
+                // Si l'élément sélectionné n'est pas une unité, chargez tous les véhicules
+                SpecialisationsDao specialisationsDao = new SpecialisationsDao();
+                List<Specialisation> specialisations = specialisationsDao.GetAll();
+
+                chargementVehicules.MaxValue = specialisations.Count;
+
+                foreach (Specialisation specialisation in specialisations)
+                {
+                    ComboBoxItem comboBoxItem = new ComboBoxItem();
+                    comboBoxItem.Content = specialisation.Nom;
+                    comboBoxItem.FontWeight = FontWeights.Bold;
+                    comboBoxItem.IsEnabled = false;
+                    vehiculeComboBox.Items.Add(comboBoxItem);
+
+                    VehiculesDao vehiculesDao = new VehiculesDao();
+                    List<Vehicule> vehicules = vehiculesDao.GetAllBySpecialisation(specialisation.Type);
+                    foreach (Vehicule vehicule in vehicules)
+                    {
+                        ComboBoxItem vehiculeItem = new ComboBoxItem();
+                        vehiculeItem.Content = vehicule.Nom;
+                        vehiculeComboBox.Items.Add(vehiculeItem);
+                    }
+
+                    chargementVehicules.ProgressValue++;
+                }
             }
+
+            chargementVehicules.Close();
         }
 
         private void AjouterEffectif_Click(object sender, RoutedEventArgs e)
@@ -215,6 +326,14 @@ namespace PoliceReport.Views
             else
             {
                 MessageBox.Show("Veuillez sélectionner une personne à modifier.", "Attention", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void indicatifComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!_isDisplayList)
+            {
+                LoadVehicules();
             }
         }
     }
