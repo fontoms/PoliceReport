@@ -4,6 +4,7 @@
     {
         void Add(Unite unite);
         void Remove(Unite unite);
+        Unite GetType(string type);
         List<Unite> GetAll();
         List<Unite> GetAllBySpecialisation(string specialisation);
         List<Unite> GetAllByNom(string nom);

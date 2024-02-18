@@ -19,7 +19,7 @@
         </Grid.ColumnDefinitions>
 
         <Label Content="Indicatif :" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
-        <ComboBox x:Name="indicatifComboBox" Grid.Row="0" Grid.Column="1" Margin="5" TabIndex="1"/>
+        <ComboBox x:Name="indicatifComboBox" Grid.Row="0" Grid.Column="1" Margin="5" TabIndex="1" SelectionChanged="indicatifComboBox_SelectionChanged"/>
 
         <Label Content="Véhicule :" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"/>
         <ComboBox x:Name="vehiculeComboBox" Grid.Row="1" Grid.Column="1" Margin="5" TabIndex="2"/>

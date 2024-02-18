@@ -52,5 +52,18 @@ namespace StorageLayer.Dao
             reader.Close();
             return vehicules;
         }
+
+        public List<Vehicule> GetAllByNameContains(string name)
+        {
+            var req = "SELECT * FROM Vehicules WHERE Nom LIKE '%" + name + "%' ORDER BY Nom";
+            var reader = ExecuteReader(req);
+            var vehicules = new List<Vehicule>();
+            while (reader.Read())
+            {
+                vehicules.Add(new Vehicule(reader.GetString(1), reader.GetString(2)));
+            }
+            reader.Close();
+            return vehicules;
+        }
     }
 }

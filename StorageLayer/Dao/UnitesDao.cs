@@ -16,6 +16,16 @@ namespace StorageLayer.Dao
             throw new NotImplementedException();
         }
 
+        public Unite GetType(string type)
+        {
+            var req = "SELECT * FROM Unites WHERE Type = '" + type + "'";
+            var reader = ExecuteReader(req);
+            reader.Read();
+            var unite = new Unite(reader.GetString(1), reader.GetString(2), reader.GetString(3));
+            reader.Close();
+            return unite;
+        }
+
         public List<Unite> GetAll()
         {
             var req = "SELECT * FROM Unites";
