@@ -140,7 +140,7 @@
             "SourcePath" = "8:..\\PoliceReport\\Logo.ico"
             "TargetName" = "8:Logo.ico"
             "Tag" = "8:"
-            "Folder" = "8:_A9998F0DB24346A79597094C52FFA7E7"
+            "Folder" = "8:_27F0A1550C1D4F3992541CC9ABE6939E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -171,17 +171,6 @@
             "Property" = "8:TARGETDIR"
                 "Folders"
                 {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_A9998F0DB24346A79597094C52FFA7E7"
-                    {
-                    "Name" = "8:PoliceReport"
-                    "AlwaysCreate" = "11:FALSE"
-                    "Condition" = "8:"
-                    "Transitive" = "11:FALSE"
-                    "Property" = "8:_61C8553D1E9746C39421AD7BE95989C3"
-                        "Folders"
-                        {
-                        }
-                    }
                 }
             }
             "{1525181F-901A-416C-8A58-119130FE478E}:_995F34E0644E427CA01C561F7FF6DCB4"
@@ -223,7 +212,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:PoliceReport"
         "ProductCode" = "8:{663839FF-75BC-450D-9594-7749E1087355}"
-        "PackageCode" = "8:{39625C99-065E-4B07-934C-014AAADC01A1}"
+        "PackageCode" = "8:{D4D22D92-33BC-44D9-988C-CC465F734E7E}"
         "UpgradeCode" = "8:{73AB0105-FC0A-42C0-9898-E874FCCF7559}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -353,7 +342,7 @@
             "Transitive" = "11:FALSE"
             "Target" = "8:_03EBC8F7999B4133B5118AA0A4F3381C"
             "Folder" = "8:_995F34E0644E427CA01C561F7FF6DCB4"
-            "WorkingFolder" = "8:_A9998F0DB24346A79597094C52FFA7E7"
+            "WorkingFolder" = "8:"
             "Icon" = "8:_A34539CBE87F4683AE556A724E1922BB"
             "Feature" = "8:"
             }
@@ -367,7 +356,7 @@
             "Transitive" = "11:FALSE"
             "Target" = "8:_03EBC8F7999B4133B5118AA0A4F3381C"
             "Folder" = "8:_B012BF5788954E8C8E89E145BEE9E140"
-            "WorkingFolder" = "8:_A9998F0DB24346A79597094C52FFA7E7"
+            "WorkingFolder" = "8:"
             "Icon" = "8:_A34539CBE87F4683AE556A724E1922BB"
             "Feature" = "8:"
             }
@@ -775,7 +764,7 @@
             "SourcePath" = "8:..\\PoliceReport\\obj\\Release\\net8.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_A9998F0DB24346A79597094C52FFA7E7"
+            "Folder" = "8:_27F0A1550C1D4F3992541CC9ABE6939E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"

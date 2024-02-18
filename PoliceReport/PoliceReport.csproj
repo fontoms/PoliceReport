@@ -40,6 +40,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LogicLayer\LogicLayer.csproj" />
     <ProjectReference Include="..\StorageLayer\StorageLayer.csproj" />
   </ItemGroup>

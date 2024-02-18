@@ -24,6 +24,7 @@ namespace PoliceReport.Views
 
         public MainWindow()
         {
+            AutoUpdaterDotNET.AutoUpdater.Start("https://raw.githubusercontent.com/Fontom71/PoliceReport/dev/PoliceReport/Update.xml");
             InitializeComponent();
 
             // Initialiser la liste des personnes
