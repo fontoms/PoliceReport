@@ -51,6 +51,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
         "Release"
@@ -212,7 +220,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:PoliceReport"
         "ProductCode" = "8:{663839FF-75BC-450D-9594-7749E1087355}"
-        "PackageCode" = "8:{D4D22D92-33BC-44D9-988C-CC465F734E7E}"
+        "PackageCode" = "8:{FDE9F145-1DC0-49C1-98A1-C738E725DE13}"
         "UpgradeCode" = "8:{73AB0105-FC0A-42C0-9898-E874FCCF7559}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -332,21 +340,7 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_A1831AB613C84BE2B6C8811CEF0223C5"
-            {
-            "Name" = "8:PoliceReport"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_03EBC8F7999B4133B5118AA0A4F3381C"
-            "Folder" = "8:_995F34E0644E427CA01C561F7FF6DCB4"
-            "WorkingFolder" = "8:"
-            "Icon" = "8:_A34539CBE87F4683AE556A724E1922BB"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_E9C9BBEF0A6C4FF497AD7D2F88CC37A7"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_28A3E17F699E4D449EC00FBECCD9855F"
             {
             "Name" = "8:PoliceReport"
             "Arguments" = "8:"
@@ -356,7 +350,7 @@
             "Transitive" = "11:FALSE"
             "Target" = "8:_03EBC8F7999B4133B5118AA0A4F3381C"
             "Folder" = "8:_B012BF5788954E8C8E89E145BEE9E140"
-            "WorkingFolder" = "8:"
+            "WorkingFolder" = "8:_27F0A1550C1D4F3992541CC9ABE6939E"
             "Icon" = "8:_A34539CBE87F4683AE556A724E1922BB"
             "Feature" = "8:"
             }
