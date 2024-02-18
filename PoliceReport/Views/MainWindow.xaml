@@ -1,0 +1,124 @@
+﻿<Window x:Name="window" x:Class="PoliceReport.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PoliceReport.Converters"
+        mc:Ignorable="d"
+        Title="PoliceReport" Height="600" Width="1200" WindowStartupLocation="CenterScreen" Icon="/Images/Logo.png" ResizeMode="CanMinimize">
+    <Window.Background>
+        <ImageBrush ImageSource="/Images/background.png"/>
+    </Window.Background>
+    <Grid>
+        <Grid.Background>
+            <SolidColorBrush Color="White" Opacity="0.85"/>
+        </Grid.Background>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid x:Name="HeaderBar" Height="30" VerticalAlignment="Center" Grid.ColumnSpan="2">
+            <Label x:Name="titleLabel" HorizontalAlignment="Left" Content="{Binding Title, ElementName=window}" VerticalAlignment="Center" Width="120" FontSize="16" FontWeight="Bold" Margin="20,0,0,0"/>
+        </Grid>
+        <Grid Margin="25,0,25,25" Grid.Row="3">
+            <Label Content="PATROUILLES" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Grid.Row="1" Height="25"/>
+            <ListBox x:Name="patrouilleListBox" FontSize="14" ItemsSource="{Binding Patrouilles}" Margin="0,25,0,40">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Indicatif.Nom}" FontWeight="Bold" Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding Vehicule.Nom}" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Effectifs.Count}" FontWeight="Bold"/>
+                                <TextBlock Text="effectif(s)" Margin="5,0,0,0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Début de patrouille :" Foreground="#FF00C800"/>
+                                <TextBlock Text="{Binding HeureDebutPatrouille, Converter={x:Static local:DateTimeToStringConverter.Instance}}" Margin="5,0,0,0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Fin de patrouille :" Foreground="#FFC80000"/>
+                                <TextBlock Text="{Binding HeureFinPatrouille, Converter={x:Static local:DateTimeToStringConverter.Instance}}" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Button x:Name="AddPatrouilleBtn" Height="30" Margin="0,0,70,0" VerticalAlignment="Bottom" FontSize="14" HorizontalAlignment="Right" Width="30" Click="AddPatrouille_Click" IsEnabled="False">
+                <Image Source="/Images/AddIcon.png"/>
+            </Button>
+            <Button x:Name="DeletePatrouilleBtn" VerticalAlignment="Bottom" FontSize="14" Height="30" HorizontalAlignment="Right" Width="30" Margin="5,0,0,0" Click="DeletePatrouille_Click" IsEnabled="False">
+                <Image Source="/Images/DeleteIcon.png"/>
+            </Button>
+            <Button x:Name="EditPatrouilleBtn" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="30" Width="30" Margin="0,0,35,0" Click="EditPatrouille_Click" IsEnabled="False">
+                <Image Source="/Images/EditIcon.png"/>
+            </Button>
+        </Grid>
+        <Grid Grid.Row="1" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid x:Name="Grades" Margin="150,100,150,0" VerticalAlignment="Top" Grid.ColumnSpan="2">
+                <Label x:Name="gradeLabel" Content="Grade :" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Left"/>
+                <ComboBox x:Name="gradeComboBox" VerticalAlignment="Center" Margin="54,0,0,0">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Nom}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </Grid>
+            <Grid Margin="150,50,150,0" VerticalAlignment="Top" Grid.ColumnSpan="2">
+                <Label Content="ID :" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                <TextBox x:Name="idTextBox" TextWrapping="Wrap" Margin="29,0,0,0" FontSize="14" VerticalAlignment="Center" MaxLines="1" MaxLength="18"/>
+            </Grid>
+            <Button x:Name="genererRapportButton" Content="Générer le rapport de patrouille" VerticalAlignment="Bottom" Margin="50,0,50,10" FontSize="16" FontWeight="Bold" Foreground="#FFDE1E1E" Click="genererRapportButton_Click" Height="25" Grid.ColumnSpan="2" IsEnabled="False"/>
+            <Button x:Name="startServiceBtn" Content="Début de service" Margin="50,0,20,75" FontSize="16" FontWeight="Bold" Foreground="#FF00C800" VerticalAlignment="Bottom" Height="30" Click="startServiceBtn_Click"/>
+            <Button x:Name="endServiceBtn" Grid.Column="1" Content="Fin de service" VerticalAlignment="Bottom" Margin="20,0,50,75" Height="30" FontWeight="Bold" FontSize="16" Foreground="#FFC80000" IsEnabled="False" Click="endServiceBtn_Click"/>
+            <Label x:Name="startServiceLbl" Content="Hors service" VerticalAlignment="Bottom" Foreground="#FF00C800" Margin="50,0,20,50" HorizontalContentAlignment="Center"/>
+            <Label x:Name="endServiceLbl" Grid.Column="1" Content="Hors service" Margin="20,0,50,50" VerticalAlignment="Bottom" Foreground="#FFC80000" HorizontalContentAlignment="Center"/>
+            <Button x:Name="restartServiceBtn" VerticalAlignment="Bottom" Height="30" Width="30" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,0,0,75" Click="restartServiceBtn_Click" IsEnabled="False">
+                <Image Source="/Images/switchIcon.png"/>
+            </Button>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="2" Margin="25,0,25,25">
+            <Label Grid.Column="1" Content="RESUME" HorizontalAlignment="Left" Grid.Row="2" VerticalAlignment="Top" FontWeight="Bold" Height="25"/>
+            <ListBox x:Name="selectedActionsListBox" Margin="0,25,0,0" FontSize="14" ItemsSource="{Binding Actions}" Grid.Column="1" Grid.Row="2" MouseDoubleClick="selectedActionsListBox_MouseDoubleClick">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Heure, StringFormat='dd/MM/yyyy HH:mm:ss'}" Margin="0,0,10,0"/>
+                            <TextBlock Text="{Binding Nom}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="1" Margin="25,0,25,0">
+            <Label Content="INFRACTIONS/ACTIONS" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Grid.Row="1" Grid.Column="1" Height="25"/>
+            <TextBox x:Name="searchInfractionTextBox" Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,25,0,0" Height="20" TextChanged="searchInfractionTextBox_TextChanged" AutomationProperties.HelpText="Rechercher" GotFocus="searchInfractionTextBox_GotFocus" LostFocus="searchInfractionTextBox_LostFocus" Text="Rechercher une infraction ou action..."/>
+            <ListBox x:Name="actionsListBox" Margin="0,45,0,25" FontSize="14"  ItemsSource="{Binding Actions}" MouseDoubleClick="actionsListBox_MouseDoubleClick" Grid.Column="1" Grid.Row="1">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Nom}" FontWeight="{Binding ActInfraction, Converter={x:Static local:NullToBoldConverter.Instance}}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+        <Label Content="v1.0.0 by Fontom's (677154388065910822)" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="2" FontSize="9"/>
+    </Grid>
+</Window>
