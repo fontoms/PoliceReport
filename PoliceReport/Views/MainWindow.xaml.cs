@@ -25,7 +25,6 @@ namespace PoliceReport.Views
 
         public MainWindow()
         {
-            AutoUpdaterDotNET.AutoUpdater.Start("https://raw.githubusercontent.com/Fontom71/PoliceReport/dev/PoliceReport/Update.xml");
             InitializeComponent();
 
             // Initialiser la liste des personnes
@@ -246,7 +245,7 @@ namespace PoliceReport.Views
             rapport.AppendLine("__Indicatif :__ ");
             foreach (Patrouille patrouille in Patrouilles)
             {
-                rapport.AppendLine("- " + patrouille.Indicatif.Nom + " (" + patrouille.Vehicule.Nom + ")");
+                rapport.AppendLine("- **" + patrouille.Indicatif.Nom + "** (" + patrouille.Vehicule.Nom + ")");
                 rapport.AppendLine(" - Début : " + patrouille.HeureDebutPatrouille.ToString("HH:mm"));
                 rapport.AppendLine(" - Fin : " + patrouille.HeureFinPatrouille.Value.ToString("HH:mm"));
                 rapport.AppendLine("  - Effectifs :");
