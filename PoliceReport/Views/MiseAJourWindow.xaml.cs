@@ -60,6 +60,7 @@ namespace PoliceReport.Views
 
         private async void btnMiseAJour_Click(object sender, RoutedEventArgs e)
         {
+            updateAvailable = false;
             if (updateAvailable)
             {
                 await UpdateApplication();
