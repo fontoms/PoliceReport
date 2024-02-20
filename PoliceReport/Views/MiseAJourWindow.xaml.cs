@@ -11,6 +11,8 @@ namespace PoliceReport.Views
     /// </summary>
     public partial class MiseAJourWindow : Window
     {
+        private bool updateAvailable = false;
+
         public MiseAJourWindow()
         {
             InitializeComponent();
@@ -34,20 +36,20 @@ namespace PoliceReport.Views
 
                 if (latestVersion > currentVersion)
                 {
-                    progressBar.Visibility = Visibility.Hidden;
-
                     // Si une mise à jour est disponible, afficher le bouton de mise à jour
-                    btnMiseAJour.Visibility = Visibility.Visible;
-                    nouvelleMajLbl.Visibility = Visibility.Visible;
+                    btnMiseAJour.Content = "Mettre à jour";
+                    nouvelleMajLbl.Content = "Une nouvelle mise à jour est disponible !";
+                    progressBar.Visibility = Visibility.Hidden;
                     versionLbl.Content = $"Version actuelle : {currentVersion} - Dernière version : {latestVersion}";
-                    versionLbl.Visibility = Visibility.Visible;
+                    updateAvailable = true;
                 }
                 else
                 {
-                    // Si aucune mise à jour n'est disponible, ouvrir directement la MainWindow
-                    MainWindow mainWindow = new MainWindow();
-                    mainWindow.Show();
-                    Close();
+                    // Si aucune mise à jour n'est disponible, changer le texte du bouton et afficher MainWindow
+                    btnMiseAJour.Content = "Lancer";
+                    nouvelleMajLbl.Content = $"Profitez bien de {Assembly.GetExecutingAssembly().GetName().Name} !";
+                    progressBar.Visibility = Visibility.Hidden;
+                    versionLbl.Content = $"Version actuelle : {currentVersion}";
                 }
             }
             catch (Exception ex)
@@ -57,6 +59,20 @@ namespace PoliceReport.Views
         }
 
         private async void btnMiseAJour_Click(object sender, RoutedEventArgs e)
+        {
+            if (updateAvailable)
+            {
+                await UpdateApplication();
+            }
+            else
+            {
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.Show();
+                Close();
+            }
+        }
+
+        private async Task UpdateApplication()
         {
             string owner = "Fontom71";
             string repo = "PoliceReport";
