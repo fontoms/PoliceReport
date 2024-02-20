@@ -119,6 +119,6 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
-        <Label Content="v1.0.0 by Fontom's (677154388065910822)" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="2" FontSize="9"/>
+        <Label x:Name="versionAuthorLbl" Content="versionApp" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="2" FontSize="9"/>
     </Grid>
 </Window>

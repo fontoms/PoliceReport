@@ -6,6 +6,7 @@ using LogicLayer.PositionVeh;
 using StorageLayer;
 using StorageLayer.Dao;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,6 +27,14 @@ namespace PoliceReport.Views
         public MainWindow()
         {
             InitializeComponent();
+
+            versionAuthorLbl.Content = "Version " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version + " - Fontom's (677154388065910822)";
+            versionAuthorLbl.MouseLeftButtonDown += (sender, e) =>
+            {
+                // Ouvrir le lien URL lorsque le label est cliqué
+                string url = "https://github.com/Fontom71/PoliceReport";
+                System.Diagnostics.Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+            };
 
             // Initialiser la liste des personnes
             Patrouilles = new ObservableCollection<Patrouille>();
