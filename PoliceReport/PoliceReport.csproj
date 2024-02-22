@@ -8,6 +8,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Logo.ico</ApplicationIcon>
+    <PackageIcon>Logo.png</PackageIcon>
+    <PackageLicenseExpression>PoliceReport</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <AssemblyVersion>1.0.3</AssemblyVersion>
+    <FileVersion>1.0.3</FileVersion>
+    <SignAssembly>False</SignAssembly>
+    <DelaySign>False</DelaySign>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,9 +22,7 @@
     <None Remove="Images\Background.png" />
     <None Remove="Images\DeleteIcon.png" />
     <None Remove="Images\EditIcon.png" />
-    <None Remove="Images\Logo.png" />
     <None Remove="Images\SwitchIcon.png" />
-    <None Remove="Update.xml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,18 +44,18 @@
     <Content Include="Images\SwitchIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Update.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LogicLayer\LogicLayer.csproj" />
     <ProjectReference Include="..\StorageLayer\StorageLayer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Images\Logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
