@@ -218,15 +218,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:PoliceReport"
-        "ProductCode" = "8:{663839FF-75BC-450D-9594-7749E1087355}"
-        "PackageCode" = "8:{33DE0D34-3605-4D43-9F11-F3009E38BA59}"
+        "ProductCode" = "8:{B3961801-CB4D-4AAA-8E12-F83896913601}"
+        "PackageCode" = "8:{9EA11354-64B2-40E0-8E40-B9DC393D1F43}"
         "UpgradeCode" = "8:{73AB0105-FC0A-42C0-9898-E874FCCF7559}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:1.0.3"
         "Manufacturer" = "8:Fontom's Foundation"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -754,7 +754,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_03EBC8F7999B4133B5118AA0A4F3381C"
             {
-            "SourcePath" = "8:..\\PoliceReport\\obj\\Release\\net8.0-windows\\apphost.exe"
+            "SourcePath" = "8:..\\PoliceReport\\obj\\Debug\\net8.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_27F0A1550C1D4F3992541CC9ABE6939E"
