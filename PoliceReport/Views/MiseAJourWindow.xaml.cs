@@ -12,29 +12,46 @@ namespace PoliceReport.Views
     public partial class MiseAJourWindow : Window
     {
         private bool updateAvailable = false;
+        private static string owner = "Fontom71";
+        private static string repo = "PoliceReport";
+        private static string repoUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
 
         public MiseAJourWindow()
         {
             InitializeComponent();
-            CheckForUpdates();
+            CheckForInternetConnection();
+        }
+
+        private void CheckForInternetConnection()
+        {
+            if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
+            {
+                MessageBoxResult result = MessageBox.Show("Erreur de connexion Internet.\nLa vérification des mises à jour a été annulée.\nVeuillez vérifier votre connexion et réessayer.\n\nLe programme sera lancé dans la version actuelle.", $"{Assembly.GetExecutingAssembly().GetName().Name} | Erreur de connexion", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (result == MessageBoxResult.OK)
+                {
+                    MainWindow mainWindow = new MainWindow();
+                    mainWindow.Show();
+                    Close();
+                }
+                else
+                {
+                    Close();
+                }
+            }
+            else
+            {
+                CheckForUpdates();
+            }
         }
 
         private void CheckForUpdates()
         {
-            string owner = "Fontom71";
-            string repo = "PoliceReport";
-            string repoUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
-
             try
             {
-                WebClient client = new WebClient();
-                client.Headers.Add("User-Agent", "request");
-                string releaseInfoJson = client.DownloadString(repoUrl);
-                string latestVersionStr = releaseInfoJson.Split(new string[] { "\"tag_name\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "");
-                Version latestVersion = new Version(latestVersionStr);
-                Version currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+                Version latestVersion, currentVersion;
+                updateAvailable = CheckUpdateAvailable(out latestVersion, out currentVersion);
 
-                if (latestVersion > currentVersion)
+                if (updateAvailable)
                 {
                     // Si une mise à jour est disponible, afficher le bouton de mise à jour
                     btnMiseAJour.Content = "Mettre à jour";
@@ -58,9 +75,19 @@ namespace PoliceReport.Views
             }
         }
 
+        private bool CheckUpdateAvailable(out Version latestVersion, out Version currentVersion)
+        {
+            WebClient client = new WebClient();
+            client.Headers.Add("User-Agent", "request");
+            string releaseInfoJson = client.DownloadString(repoUrl);
+            string latestVersionStr = releaseInfoJson.Split(new string[] { "\"tag_name\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "");
+            latestVersion = new Version(latestVersionStr);
+            currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            return latestVersion > currentVersion;
+        }
+
         private async void btnMiseAJour_Click(object sender, RoutedEventArgs e)
         {
-            updateAvailable = false;
             if (updateAvailable)
             {
                 await UpdateApplication();
@@ -75,10 +102,6 @@ namespace PoliceReport.Views
 
         private async Task UpdateApplication()
         {
-            string owner = "Fontom71";
-            string repo = "PoliceReport";
-            string repoUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
-
             try
             {
                 // Désactiver le bouton pendant la mise à jour
@@ -90,10 +113,10 @@ namespace PoliceReport.Views
                 string releaseInfoJson = await client.DownloadStringTaskAsync(repoUrl);
                 string latestSetupUrl = releaseInfoJson.Split(new string[] { "\"browser_download_url\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "").TrimEnd('}');
                 string setupFileName = Path.Combine(Path.GetTempPath(), "PoliceReportSetup.exe");
+                Uri uri = new Uri(latestSetupUrl);
 
                 // Téléchargement de la mise à jour
                 WebClient downloadClient = new WebClient();
-                Uri uri = new Uri(latestSetupUrl);
                 downloadClient.DownloadProgressChanged += (s, args) =>
                 {
                     Dispatcher.Invoke(() => progressBar.Value = args.ProgressPercentage);
@@ -120,8 +143,10 @@ namespace PoliceReport.Views
                     // Attendre la fin de tous les processus msiexec associés à l'installation
                     await WaitForMsiexecProcesses();
 
-                    // Redémarrage de l'application après la mise à jour
-                    Process.Start(Assembly.GetExecutingAssembly().Location);
+                    // Redémarrage de l'application après la mise à jour (le fichier exe)
+                    string restartPath = AppDomain.CurrentDomain.BaseDirectory + "PoliceReport.exe";
+                    Process.Start(restartPath);
+
                     Application.Current.Shutdown();
                 }
                 else
@@ -142,12 +167,45 @@ namespace PoliceReport.Views
 
         private async Task WaitForMsiexecProcesses()
         {
-            const string msiexecName = "msiexec";
+            const string processName = "msiexec";
 
-            // Attendre jusqu'à ce qu'il n'y ait plus de processus msiexec en cours d'exécution
-            while (Process.GetProcessesByName(msiexecName).Any())
+            while (true)
             {
-                await Task.Delay(1000); // Attendre 1 seconde avant de vérifier à nouveau
+                try
+                {
+                    // Rechercher tous les processus avec ce nom
+                    Process[] processes = Process.GetProcessesByName(processName);
+
+                    bool allProcessesExited = true;
+
+                    foreach (Process process in processes)
+                    {
+                        try
+                        {
+                            // Vérifier si le processus est encore en cours d'exécution
+                            if (!process.HasExited)
+                            {
+                                allProcessesExited = false; // Il y a au moins un processus qui n'a pas encore terminé
+                            }
+                        }
+                        catch (System.ComponentModel.Win32Exception ex)
+                        {
+                        }
+                    }
+
+                    if (allProcessesExited)
+                    {
+                        break; // Sortir de la boucle si tous les processus ont terminé
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Gérer toute autre exception
+                    MessageBox.Show($"Erreur lors de la vérification des processus {processName} : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+                // Attendre 1 seconde avant de vérifier à nouveau
+                await Task.Delay(1000);
             }
         }
     }
