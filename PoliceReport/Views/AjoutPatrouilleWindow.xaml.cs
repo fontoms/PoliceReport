@@ -1,5 +1,5 @@
-﻿using LogicLayer.Patrouille;
-using LogicLayer.Personne;
+﻿using LogicLayer.Effectif;
+using LogicLayer.Patrouille;
 using LogicLayer.Specialisation;
 using LogicLayer.Unite;
 using LogicLayer.Vehicule;
@@ -18,7 +18,7 @@ namespace PoliceReport.Views
         private bool _isDisplayList = true;
         private Patrouille _selectedItem;
 
-        public static ObservableCollection<Personne> Effectifs { get; set; }
+        public static ObservableCollection<Effectif> Effectifs { get; set; }
 
         public AjoutPatrouilleWindow(Patrouille selectedItem)
         {
@@ -31,7 +31,7 @@ namespace PoliceReport.Views
 
             _selectedItem = selectedItem;
 
-            Effectifs = new ObservableCollection<Personne>();
+            Effectifs = new ObservableCollection<Effectif>();
             DataContext = this;
 
             if (_selectedItem != null)
@@ -63,7 +63,7 @@ namespace PoliceReport.Views
 
                 if (_selectedItem.Effectifs != null)
                 {
-                    foreach (Personne personne in _selectedItem.Effectifs)
+                    foreach (Effectif personne in _selectedItem.Effectifs)
                     {
                         Effectifs.Add(personne);
                     }
@@ -259,7 +259,7 @@ namespace PoliceReport.Views
 
         private void AjouterEffectif_Click(object sender, RoutedEventArgs e)
         {
-            AjoutPersonneWindow ajoutPersonneWindow = new AjoutPersonneWindow(null);
+            AjoutEffectifWindow ajoutPersonneWindow = new AjoutEffectifWindow(null);
             ajoutPersonneWindow.Owner = this;
             ajoutPersonneWindow.ShowDialog();
         }
@@ -292,12 +292,12 @@ namespace PoliceReport.Views
             this.Close();
         }
 
-        public static void AddEffectif(Personne personne)
+        public static void AddEffectif(Effectif personne)
         {
             Effectifs.Add(personne);
         }
 
-        public static void EditEffectif(Personne personne)
+        public static void EditEffectif(Effectif personne)
         {
             int index = Effectifs.IndexOf(Effectifs.First(p => p.Id == personne.Id));
             Effectifs[index] = personne;
@@ -307,7 +307,7 @@ namespace PoliceReport.Views
         {
             if (effectifsListBox.SelectedItem != null)
             {
-                Effectifs.Remove((Personne)effectifsListBox.SelectedItem);
+                Effectifs.Remove((Effectif)effectifsListBox.SelectedItem);
             }
             else
             {
@@ -319,7 +319,7 @@ namespace PoliceReport.Views
         {
             if (effectifsListBox.SelectedItem != null)
             {
-                AjoutPersonneWindow ajoutPersonneWindow = new AjoutPersonneWindow((Personne)effectifsListBox.SelectedItem);
+                AjoutEffectifWindow ajoutPersonneWindow = new AjoutEffectifWindow((Effectif)effectifsListBox.SelectedItem);
                 ajoutPersonneWindow.Owner = this;
                 ajoutPersonneWindow.ShowDialog();
             }
