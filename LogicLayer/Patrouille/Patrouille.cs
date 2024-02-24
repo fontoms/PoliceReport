@@ -9,7 +9,7 @@ namespace LogicLayer.Patrouille
         private int _id;
         private Unite.Unite _indicatif;
         private Vehicule.Vehicule _vehicule;
-        private List<Personne.Personne> _effectifs;
+        private List<Effectif.Effectif> _effectifs;
         private DateTime _heureDebutPatrouille;
         private DateTime? _heureFinPatrouille;
         #endregion
@@ -54,7 +54,7 @@ namespace LogicLayer.Patrouille
             }
         }
 
-        public List<Personne.Personne> Effectifs
+        public List<Effectif.Effectif> Effectifs
         {
             get { return _effectifs; }
             set

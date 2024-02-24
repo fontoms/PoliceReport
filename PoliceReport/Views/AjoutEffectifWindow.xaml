@@ -1,0 +1,40 @@
+﻿<Window x:Class="PoliceReport.Views.AjoutEffectifWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Ajout de Personne" Width="400" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False" SizeToContent="Height" Icon="/Images/Logo.png">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Label Content="ID :" Grid.Row="1" HorizontalAlignment="Left" Grid.RowSpan="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+        <TextBox x:Name="idTextBox" Grid.Row="1" Margin="55,0,10,0" VerticalAlignment="Center" MaxLines="1" MaxLength="18" TabIndex="1" Visibility="Hidden"/>
+        <Label Content="Grade :" VerticalAlignment="Center" Grid.Row="2" HorizontalAlignment="Left" Visibility="Hidden"/>
+        <ComboBox x:Name="gradeComboBox" Grid.Row="2" Margin="55,0,10,0" VerticalAlignment="Center" TabIndex="2" Visibility="Hidden">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Nom}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+        <Label Content="Position dans le véhicule :" VerticalAlignment="Center" Grid.Row="3" HorizontalAlignment="Left"/>
+        <ComboBox x:Name="positionComboBox" Grid.Row="3" Margin="145,0,10,0" VerticalAlignment="Center" TabIndex="3"/>
+        <Button x:Name="AddEditPersonn" Content="Ajouter" Grid.Row="4" Grid.Column="1" Margin="10" VerticalAlignment="Center" Click="Ajouter_Click" TabIndex="4"/>
+        <ComboBox x:Name="effectifComboBox" Grid.RowSpan="2" Margin="55,0,10,0" VerticalAlignment="Center" Grid.Row="1">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Nom}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Prenom}" Margin="5,0,0,0"/>
+                        <TextBlock Text="(" Margin="5,0,0,0"/>
+                        <TextBlock Text="{Binding Grade.Nom}"/>
+                        <TextBlock Text=")"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+    </Grid>
+</Window>

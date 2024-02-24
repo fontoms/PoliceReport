@@ -1,7 +1,7 @@
-﻿using LogicLayer.Grade;
+﻿using LogicLayer.Effectif;
+using LogicLayer.Grade;
 using LogicLayer.Infraction;
 using LogicLayer.Patrouille;
-using LogicLayer.Personne;
 using LogicLayer.PositionVeh;
 using StorageLayer;
 using StorageLayer.Dao;
@@ -33,7 +33,7 @@ namespace PoliceReport.Views
             {
                 // Ouvrir le lien URL lorsque le label est cliqué
                 string url = "https://github.com/Fontom71/PoliceReport";
-                System.Diagnostics.Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
             };
 
             // Initialiser la liste des personnes
@@ -48,9 +48,33 @@ namespace PoliceReport.Views
             // Initialiser la base de données
             Database = new BaseDao();
 
+            LoadEffectifs();
             LoadGradeType();
             LoadActions();
             idTextBox.Focus();
+        }
+
+        private void LoadEffectifs()
+        {
+            effectifComboBox.Items.Clear();
+            EffectifsDao effectifDao = new EffectifsDao();
+            List<Effectif> effectifs = effectifDao.GetAllEffectifs();
+            GradesDao gradesDao = new GradesDao();
+            List<Grade> grades = gradesDao.GetAll();
+            foreach (Effectif effectif in effectifs)
+            {
+                effectif.Grade = grades.FirstOrDefault(g => g.Type == effectif.EffGrade);
+            }
+            effectifComboBox.ItemsSource = effectifs;
+
+            if (effectifComboBox.Items.Count > 0)
+            {
+                effectifComboBox.SelectedIndex = 0;
+            }
+            else
+            {
+                effectifComboBox.IsEnabled = false;
+            }
         }
 
         private void LoadGradeType()
@@ -142,14 +166,11 @@ namespace PoliceReport.Views
 
         private void AddPatrouille_Click(object sender, RoutedEventArgs e)
         {
+            Effectif effectif = (Effectif)effectifComboBox.SelectedItem;
+            effectif.PositionVehicule = PositionVeh.ChefDeBord;
             AjoutPatrouilleWindow ajoutPatrouilleWindow = new AjoutPatrouilleWindow(new Patrouille
             {
-                Effectifs = new List<Personne> { new Personne
-                {
-                    Id = idTextBox.Text,
-                    Grade = (Grade)gradeComboBox.SelectedValue,
-                    PositionVehicule = PositionVeh.ChefDeBord
-                }}
+                Effectifs = new List<Effectif> { effectif },
             });
             ajoutPatrouilleWindow.Owner = this;
             ajoutPatrouilleWindow.ShowDialog();
@@ -251,19 +272,19 @@ namespace PoliceReport.Views
             rapport.AppendLine();
             rapport.AppendLine(startServiceLbl.Content.ToString());
             rapport.AppendLine();
-            rapport.AppendLine("__Indicatif :__ ");
             foreach (Patrouille patrouille in Patrouilles)
             {
-                rapport.AppendLine("- **" + patrouille.Indicatif.Nom + "** (" + patrouille.Vehicule.Nom + ")");
+                rapport.AppendLine("__Indicatif :__ **" + patrouille.Indicatif.Nom + "**");
+                rapport.AppendLine(" - Véhicule : " + patrouille.Vehicule.Nom);
                 rapport.AppendLine(" - Début : " + patrouille.HeureDebutPatrouille.ToString("HH:mm"));
                 rapport.AppendLine(" - Fin : " + patrouille.HeureFinPatrouille.Value.ToString("HH:mm"));
                 rapport.AppendLine("  - Effectifs :");
-                foreach (Personne effectif in patrouille.Effectifs)
+                foreach (Effectif effectif in patrouille.Effectifs)
                 {
-                    rapport.AppendLine("   - <@" + effectif.Id + "> (" + effectif.PositionVehicule + ")");
+                    rapport.AppendLine("   - " + effectif.PositionVehicule + " : <@" + effectif.Id + ">");
                 }
+                rapport.AppendLine();
             }
-            rapport.AppendLine();
             rapport.AppendLine("__Description :__");
             foreach (LogicLayer.Action.Action description in selectedActionsListBox.Items)
             {
@@ -281,13 +302,14 @@ namespace PoliceReport.Views
 
         private void startServiceBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(idTextBox.Text))
+            /*if (string.IsNullOrWhiteSpace(idTextBox.Text))
             {
                 MessageBox.Show("Veuillez saisir votre identifiant Discord.", "Attention", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
-            }
+            }*/
 
             idTextBox.IsEnabled = false;
+            effectifComboBox.IsEnabled = false;
             gradeComboBox.IsEnabled = false;
             startServiceLbl.Content = "Prise de service : " + DateTime.Now.ToString("dd/MM/yyyy HH:mm");
             startServiceBtn.IsEnabled = !startServiceBtn.IsEnabled;
@@ -320,6 +342,7 @@ namespace PoliceReport.Views
             restartServiceBtn.IsEnabled = false;
             idTextBox.IsEnabled = true;
             idTextBox.Text = "";
+            effectifComboBox.IsEnabled = true;
             gradeComboBox.IsEnabled = true;
             Patrouilles.Clear();
             AddPatrouilleBtn.IsEnabled = false;
