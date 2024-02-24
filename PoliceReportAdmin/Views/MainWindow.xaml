@@ -1,0 +1,42 @@
+﻿<Window x:Class="PoliceReportAdmin.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PoliceReportAdmin"
+        mc:Ignorable="d"
+        Title="PoliceReportAdmin" Height="450" Width="800" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Icon="/Images/Logo.png">
+    <Window.Background>
+        <ImageBrush ImageSource="/Images/Background.png"/>
+    </Window.Background>
+    <Grid>
+        <Grid.Background>
+            <SolidColorBrush Color="White" Opacity="0.85"/>
+        </Grid.Background>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Sélecteur de table -->
+        <ComboBox x:Name="TableSelector" Grid.Row="0" Margin="10" Width="200" VerticalAlignment="Top"
+                  SelectionChanged="TableSelector_SelectionChanged">
+            <ComboBoxItem Content="Personne"/>
+            <ComboBoxItem Content="Voiture"/>
+        </ComboBox>
+
+        <!-- DataGrid pour afficher les données -->
+        <DataGrid x:Name="DataGridItems" Margin="10,50,10,80" AutoGenerateColumns="False" IsReadOnly="True"
+          SelectionMode="Extended" SelectionUnit="FullRow" MouseDoubleClick="DataGridItems_MouseDoubleClick"
+          HorizontalAlignment="Stretch" Grid.Row="1" CanUserResizeColumns="False" CanUserResizeRows="False">
+        </DataGrid>
+
+        <!-- Boutons d'actions -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
+            <Button Content="Ajouter" Width="100" Margin="5" Click="Ajouter_Click"/>
+            <Button Content="Supprimer" Width="100" Margin="5" Click="Supprimer_Click"/>
+            <Button Content="Modifier" Width="100" Margin="5" Click="Modifier_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
