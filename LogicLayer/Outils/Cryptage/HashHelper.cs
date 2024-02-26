@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace LogicLayer.Cryptage
+namespace LogicLayer.Outils.Cryptage
 {
     public static class HashHelper
     {
