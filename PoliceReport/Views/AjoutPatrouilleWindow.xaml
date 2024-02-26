@@ -5,7 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Ajouter une patrouille" Height="350" Width="450" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" Icon="/Images/Logo.png">
+    <Window.Background>
+        <ImageBrush ImageSource="/Images/Background.png" Stretch="UniformToFill"/>
+    </Window.Background>
     <Grid>
+        <Grid.Background>
+            <SolidColorBrush Color="White" Opacity="0.85"/>
+        </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>

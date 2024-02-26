@@ -191,7 +191,7 @@ namespace PoliceReport.Views
                 Unite unite = unitesDao.GetType(typeUnite);
 
                 // Si l'unité est spécialisée dans OPJ, chargez tous les véhicules contenant "bana" dans le nom
-                if (unite.UniSpe == "OPJ")
+                if (unite.UnitSpe == "OPJ")
                 {
                     VehiculesDao vehiculesDao = new VehiculesDao();
                     List<Vehicule> vehicules = vehiculesDao.GetAllByNameContains("bana");
@@ -211,7 +211,7 @@ namespace PoliceReport.Views
                 {
                     // Si ce n'est pas une unité spécialisée dans OPJ, chargez les véhicules correspondants à cette unité
                     VehiculesDao vehiculesDao = new VehiculesDao();
-                    List<Vehicule> vehicules = vehiculesDao.GetAllBySpecialisation(unite.UniSpe);
+                    List<Vehicule> vehicules = vehiculesDao.GetAllBySpecialisation(unite.UnitSpe);
 
                     chargementVehicules.MaxValue = vehicules.Count;
 
@@ -289,7 +289,7 @@ namespace PoliceReport.Views
             }
 
             // Fermer la fenêtre d'ajout de patrouille
-            this.Close();
+            Close();
         }
 
         public static void AddEffectif(Effectif personne)
@@ -299,7 +299,7 @@ namespace PoliceReport.Views
 
         public static void EditEffectif(Effectif personne)
         {
-            int index = Effectifs.IndexOf(Effectifs.First(p => p.Id == personne.Id));
+            int index = Effectifs.IndexOf(Effectifs.First(p => p.IdDiscord == personne.IdDiscord));
             Effectifs[index] = personne;
         }
 

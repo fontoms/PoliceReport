@@ -14,11 +14,7 @@ namespace PoliceReport.Converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is DateTime dateTime)
-            {
-                return dateTime.ToString("dd/MM/yyyy HH:mm");
-            }
-            return "Toujours en service";
+            return value is DateTime dateTime ? dateTime.ToString("dd/MM/yyyy HH:mm") : (object)"Toujours en service";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

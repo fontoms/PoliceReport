@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="PRBaseDeDonnee.db" />
+    <None Remove="Installation.sql" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="PRBaseDeDonnee.db">
+    <Content Include="Installation.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -22,6 +22,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LogicLayer\LogicLayer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="PRBaseDeDonnee.db">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

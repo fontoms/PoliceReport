@@ -46,8 +46,19 @@
         }
         #endregion
 
+        public Specialisation()
+        {
+        }
+
         public Specialisation(string type, string nom)
         {
+            Type = type;
+            Nom = nom;
+        }
+
+        public Specialisation(int id, string type, string nom)
+        {
+            Id = id;
             Type = type;
             Nom = nom;
         }

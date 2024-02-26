@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using StorageLayer;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -26,17 +27,8 @@ namespace PoliceReport.Views
         {
             if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
             {
-                MessageBoxResult result = MessageBox.Show("Erreur de connexion Internet.\nLa vérification des mises à jour a été annulée.\nVeuillez vérifier votre connexion et réessayer.\n\nLe programme sera lancé dans la version actuelle.", $"{Assembly.GetExecutingAssembly().GetName().Name} | Erreur de connexion", MessageBoxButton.OK, MessageBoxImage.Information);
-                if (result == MessageBoxResult.OK)
-                {
-                    MainWindow mainWindow = new MainWindow();
-                    mainWindow.Show();
-                    Close();
-                }
-                else
-                {
-                    Close();
-                }
+                Exception ex = new Exception("Aucune connexion Internet n'est disponible.");
+                DisplayMessageBoxError(ex);
             }
             else
             {
@@ -71,7 +63,47 @@ namespace PoliceReport.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erreur lors de la vérification des mises à jour : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                DisplayMessageBoxError(ex);
+            }
+        }
+
+        private async Task UpdateDatabase()
+        {
+            try
+            {
+                ChargementWindow chargementWindow = new ChargementWindow("Mise à jour de la base de données");
+                chargementWindow.Show();
+                this.Hide();
+
+                BaseDao baseDao = new BaseDao();
+                baseDao.ProgressChanged += (s, progress) =>
+                {
+                    Dispatcher.Invoke(() => chargementWindow.ProgressValue = progress);
+                };
+
+                await Task.Run(() => baseDao.CreateTables());
+
+                chargementWindow.Close();
+            }
+            catch (Exception ex)
+            {
+                DisplayMessageBoxError(ex);
+            }
+        }
+
+        private async void DisplayMessageBoxError(Exception ex)
+        {
+            MessageBoxResult result = MessageBox.Show($"Erreur lors de la vérification des mises à jour : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            if (result == MessageBoxResult.OK)
+            {
+                await UpdateDatabase();
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.Show();
+                Close();
+            }
+            else
+            {
+                Close();
             }
         }
 
@@ -94,6 +126,7 @@ namespace PoliceReport.Views
             }
             else
             {
+                await UpdateDatabase();
                 MainWindow mainWindow = new MainWindow();
                 mainWindow.Show();
                 Close();
@@ -151,12 +184,12 @@ namespace PoliceReport.Views
                 }
                 else
                 {
-                    MessageBox.Show("Impossible de lancer le processus d'installation.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    DisplayMessageBoxError(new Exception("Erreur lors du lancement du processus d'installation."));
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erreur lors de la mise à jour : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                DisplayMessageBoxError(ex);
             }
             finally
             {
@@ -188,7 +221,7 @@ namespace PoliceReport.Views
                                 allProcessesExited = false; // Il y a au moins un processus qui n'a pas encore terminé
                             }
                         }
-                        catch (System.ComponentModel.Win32Exception ex)
+                        catch (System.ComponentModel.Win32Exception)
                         {
                         }
                     }
@@ -201,7 +234,7 @@ namespace PoliceReport.Views
                 catch (Exception ex)
                 {
                     // Gérer toute autre exception
-                    MessageBox.Show($"Erreur lors de la vérification des processus {processName} : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    DisplayMessageBoxError(ex);
                 }
 
                 // Attendre 1 seconde avant de vérifier à nouveau

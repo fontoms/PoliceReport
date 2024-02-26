@@ -23,6 +23,7 @@ namespace PoliceReport.Views
         public static ObservableCollection<Patrouille> Patrouilles { get; set; }
         public static ObservableCollection<LogicLayer.Action.Action> Actions { get; set; }
         public static BaseDao Database;
+        private ChargementWindow _chargementWindow;
 
         public MainWindow()
         {
@@ -45,9 +46,7 @@ namespace PoliceReport.Views
             // Assigner la liste des personnes au DataContext de la fenêtre
             DataContext = this;
 
-            // Initialiser la base de données
-            Database = new BaseDao();
-
+            // Charger les autres éléments une fois que la base de données est prête
             LoadEffectifs();
             LoadGradeType();
             LoadActions();
@@ -97,14 +96,14 @@ namespace PoliceReport.Views
         {
             actionsListBox.Items.Clear();
 
-            ChargementWindow chargementActons = new ChargementWindow("Chargement des actions...");
-            chargementActons.Show();
+            _chargementWindow = new ChargementWindow("Chargement des actions...");
+            _chargementWindow.Show();
 
             List<LogicLayer.Action.Action> actionsList = new List<LogicLayer.Action.Action>();
             InfractionsDao infractionsDao = new InfractionsDao();
             List<Infraction> infractions = infractionsDao.GetAll();
 
-            chargementActons.MaxValue = infractions.Count;
+            _chargementWindow.MaxValue = infractions.Count;
 
             foreach (Infraction infraction in infractions)
             {
@@ -118,10 +117,10 @@ namespace PoliceReport.Views
                     actionsList.Add(action);
                 }
 
-                chargementActons.ProgressValue++;
+                _chargementWindow.ProgressValue++;
             }
 
-            chargementActons.Close();
+            _chargementWindow.Close();
             actionsListBox.ItemsSource = actionsList;
         }
 
@@ -281,7 +280,7 @@ namespace PoliceReport.Views
                 rapport.AppendLine("  - Effectifs :");
                 foreach (Effectif effectif in patrouille.Effectifs)
                 {
-                    rapport.AppendLine("   - " + effectif.PositionVehicule + " : <@" + effectif.Id + ">");
+                    rapport.AppendLine("   - " + effectif.PositionVehicule + " : <@" + effectif.IdDiscord + ">");
                 }
                 rapport.AppendLine();
             }
@@ -302,12 +301,6 @@ namespace PoliceReport.Views
 
         private void startServiceBtn_Click(object sender, RoutedEventArgs e)
         {
-            /*if (string.IsNullOrWhiteSpace(idTextBox.Text))
-            {
-                MessageBox.Show("Veuillez saisir votre identifiant Discord.", "Attention", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }*/
-
             idTextBox.IsEnabled = false;
             effectifComboBox.IsEnabled = false;
             gradeComboBox.IsEnabled = false;
@@ -348,6 +341,20 @@ namespace PoliceReport.Views
             AddPatrouilleBtn.IsEnabled = false;
             EditPatrouilleBtn.IsEnabled = false;
             DeletePatrouilleBtn.IsEnabled = false;
+        }
+
+        private void titleLabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ConnexionWindow connexionWindow = new ConnexionWindow();
+            connexionWindow.Owner = this;
+            connexionWindow.ShowDialog();
+
+            connexionWindow.MotDePasseCorrect = true;
+            if (connexionWindow.MotDePasseCorrect)
+            {
+                AdministrationWindow administrationWindow = new AdministrationWindow();
+                administrationWindow.Show();
+            }
         }
     }
 }

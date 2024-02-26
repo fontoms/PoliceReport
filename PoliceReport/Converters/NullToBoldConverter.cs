@@ -12,10 +12,7 @@ namespace PoliceReport.Converters
         {
             get
             {
-                if (_instance == null)
-                {
-                    _instance = new NullToBoldConverter();
-                }
+                _instance ??= new NullToBoldConverter();
                 return _instance;
             }
         }

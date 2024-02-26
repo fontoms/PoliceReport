@@ -11,10 +11,7 @@ namespace PoliceReport.Converters
         {
             get
             {
-                if (_instance == null)
-                {
-                    _instance = new NullToDisabledConverter();
-                }
+                _instance ??= new NullToDisabledConverter();
                 return _instance;
             }
         }

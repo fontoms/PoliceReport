@@ -8,12 +8,14 @@ namespace StorageLayer.Dao
 
         public void Add(Unite unite)
         {
-            throw new NotImplementedException();
+            var req = "INSERT INTO Unites (Nom, Type, UnitSpe) VALUES ('" + unite.Nom + "', '" + unite.Type + "', '" + unite.UnitSpe + "')";
+            ExecuteNonQuery(req);
         }
 
         public void Remove(Unite unite)
         {
-            throw new NotImplementedException();
+            var req = "DELETE FROM Unites WHERE Id = " + unite.Id;
+            ExecuteNonQuery(req);
         }
 
         public Unite GetType(string type)
@@ -33,7 +35,7 @@ namespace StorageLayer.Dao
             var unites = new List<Unite>();
             while (reader.Read())
             {
-                unites.Add(new Unite(reader.GetString(1), reader.GetString(2), reader.GetString(3)));
+                unites.Add(new Unite(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3)));
             }
             reader.Close();
             return unites;
@@ -63,6 +65,12 @@ namespace StorageLayer.Dao
             }
             reader.Close();
             return unites;
+        }
+
+        public void Update(Unite unite)
+        {
+            var req = "UPDATE Unites SET Nom = '" + unite.Nom + "', Type = '" + unite.Type + "', UnitSpe = '" + unite.UnitSpe + "' WHERE Id = " + unite.Id;
+            ExecuteNonQuery(req);
         }
     }
 }

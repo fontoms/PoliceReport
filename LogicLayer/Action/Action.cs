@@ -68,10 +68,19 @@ namespace LogicLayer.Action
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        public Action() { }
+
         public Action(string nom, DateTime heure)
         {
             Nom = nom;
             Heure = heure;
+        }
+
+        public Action(int id, string nom, string actInfraction)
+        {
+            Id = id;
+            Nom = nom;
+            ActInfraction = actInfraction;
         }
 
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)

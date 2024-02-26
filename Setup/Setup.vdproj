@@ -218,8 +218,8 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:PoliceReport"
-        "ProductCode" = "8:{E8A7DD98-DC4F-4B70-B33E-E194381B4394}"
-        "PackageCode" = "8:{14FE9E24-4C07-4216-BFED-5955556D2734}"
+        "ProductCode" = "8:{C248ACC5-88AC-4E2C-B6C2-09EC00E2C0B7}"
+        "PackageCode" = "8:{3B1E0C63-3D0B-47BD-B716-03C4304A3652}"
         "UpgradeCode" = "8:{73AB0105-FC0A-42C0-9898-E874FCCF7559}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -236,7 +236,7 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:Logiciel pour rapport de patrouille"
         "ARPURLINFOABOUT" = "8:https://github.com/Fontom71"
-        "ARPPRODUCTICON" = "8:"
+        "ARPPRODUCTICON" = "8:_A34539CBE87F4683AE556A724E1922BB"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -754,7 +754,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_03EBC8F7999B4133B5118AA0A4F3381C"
             {
-            "SourcePath" = "8:..\\PoliceReport\\obj\\Debug\\net8.0-windows\\apphost.exe"
+            "SourcePath" = "8:..\\PoliceReport\\obj\\Release\\net8.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_27F0A1550C1D4F3992541CC9ABE6939E"
