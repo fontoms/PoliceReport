@@ -350,7 +350,7 @@ namespace PoliceReport.Views
             DeletePatrouilleBtn.IsEnabled = false;
         }
 
-        private void administrationBtn_Click(object sender, RoutedEventArgs e)
+        private void titleLabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             ConnexionWindow connexionWindow = new ConnexionWindow();
             connexionWindow.Owner = this;

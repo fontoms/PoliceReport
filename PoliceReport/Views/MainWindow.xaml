@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoliceReport.Converters"
         mc:Ignorable="d"
-        Title="PoliceReport" Height="800" Width="1200" WindowStartupLocation="CenterScreen" Icon="/Images/Logo.png" ResizeMode="CanMinimize">
+        Title="PoliceReport" Height="800" Width="1200" WindowStartupLocation="CenterScreen" Icon="/Images/Logo.png" MinWidth="1200" MinHeight="800">
     <Window.Background>
         <ImageBrush ImageSource="/Images/background.png" Stretch="UniformToFill"/>
     </Window.Background>
@@ -25,8 +25,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid x:Name="HeaderBar" Height="30" VerticalAlignment="Center" Grid.ColumnSpan="2">
-            <Label x:Name="titleLabel" HorizontalAlignment="Left" Content="{Binding Title, ElementName=window}" VerticalAlignment="Center" Width="120" FontSize="16" FontWeight="Bold" Margin="20,0,0,0"/>
-            <Button x:Name="administrationBtn" Content="Administration" HorizontalAlignment="Right" Padding="10,0,10,0" Margin="0,2,10,2" Click="administrationBtn_Click"/>
+            <Label x:Name="titleLabel" HorizontalAlignment="Left" Content="{Binding Title, ElementName=window}" VerticalAlignment="Center" Width="120" FontSize="16" FontWeight="Bold" Margin="20,0,0,0" MouseDoubleClick="titleLabel_MouseDoubleClick"/>
         </Grid>
         <Grid Grid.Row="1" Grid.RowSpan="2">
             <Grid.RowDefinitions>
