@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         Title="Mise à jour PoliceReport" Height="250" Width="400" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Window.Background>
-        <ImageBrush ImageSource="/Images/Background.png"/>
+        <ImageBrush ImageSource="/Images/Background.png" Stretch="UniformToFill"/>
     </Window.Background>
     <Grid>
         <Grid.Background>

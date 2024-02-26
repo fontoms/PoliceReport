@@ -281,7 +281,7 @@ namespace PoliceReport.Views
                 rapport.AppendLine("  - Effectifs :");
                 foreach (Effectif effectif in patrouille.Effectifs)
                 {
-                    rapport.AppendLine("   - " + effectif.PositionVehicule + " : <@" + effectif.Id + ">");
+                    rapport.AppendLine("   - " + effectif.PositionVehicule + " : <@" + effectif.IdDiscord + ">");
                 }
                 rapport.AppendLine();
             }
@@ -348,6 +348,20 @@ namespace PoliceReport.Views
             AddPatrouilleBtn.IsEnabled = false;
             EditPatrouilleBtn.IsEnabled = false;
             DeletePatrouilleBtn.IsEnabled = false;
+        }
+
+        private void administrationBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ConnexionWindow connexionWindow = new ConnexionWindow();
+            connexionWindow.Owner = this;
+            connexionWindow.ShowDialog();
+
+            connexionWindow.MotDePasseCorrect = true;
+            if (connexionWindow.MotDePasseCorrect)
+            {
+                AdministrationWindow administrationWindow = new AdministrationWindow();
+                administrationWindow.Show();
+            }
         }
     }
 }
