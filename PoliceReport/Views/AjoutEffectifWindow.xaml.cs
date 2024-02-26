@@ -70,7 +70,7 @@ namespace PoliceReport.Views
             }
 
             // Fermer la fenêtre d'ajout de personne
-            this.Close();
+            Close();
         }
 
         private void LoadEffectifs()

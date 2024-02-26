@@ -23,7 +23,7 @@ namespace PoliceReport.Views
             if (MotDePasseAttendu == HashHelper.CalculateSHA256(passBox.Password))
             {
                 MotDePasseCorrect = true;
-                this.Close();
+                Close();
             }
             else
             {

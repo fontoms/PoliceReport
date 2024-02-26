@@ -11,21 +11,14 @@ namespace PoliceReport.Converters
         {
             get
             {
-                if (_instance == null)
-                {
-                    _instance = new DoubleToIntConverter();
-                }
+                _instance ??= new DoubleToIntConverter();
                 return _instance;
             }
         }
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is double)
-            {
-                return System.Convert.ToInt64((double)value);
-            }
-            return value;
+            return value is double ? System.Convert.ToInt64((double)value) : value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

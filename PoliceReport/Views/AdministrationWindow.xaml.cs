@@ -76,7 +76,7 @@ namespace PoliceReport
                             textColumn.Binding = new Binding(column);
 
                             // Appliquer le style pour le retour à la ligne
-                            textColumn.ElementStyle = this.Resources["WrapCellStyle"] as Style;
+                            textColumn.ElementStyle = Resources["WrapCellStyle"] as Style;
 
                             if (column != "Id")
                             {
@@ -124,14 +124,7 @@ namespace PoliceReport
                 int totalItems = DataGridItems.Items.Count;
                 int selectedItems = DataGridItems.SelectedItems.Count;
 
-                if (selectedItems > 0)
-                {
-                    CountLabel.Content = $"Total : {totalItems}, Sélectionnés : {selectedItems}";
-                }
-                else
-                {
-                    CountLabel.Content = $"Total : {totalItems}";
-                }
+                CountLabel.Content = selectedItems > 0 ? $"Total : {totalItems}, Sélectionnés : {selectedItems}" : (object)$"Total : {totalItems}";
             }
         }
 
@@ -175,12 +168,12 @@ namespace PoliceReport
                     // Créer une fenêtre dynamique pour ajouter/modifier un élément
                     dynamic addWindow = new Window();
                     addWindow.Title = estAjout ? "Ajouter " + selectedTable : "Modifier " + selectedTable;
-                    addWindow.Width = this.Width / 2;
+                    addWindow.Width = Width / 2;
                     addWindow.SizeToContent = SizeToContent.Height;
                     addWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     addWindow.ResizeMode = ResizeMode.NoResize;
-                    addWindow.Background = this.Background;
-                    addWindow.Icon = this.Icon;
+                    addWindow.Background = Background;
+                    addWindow.Icon = Icon;
 
                     // Créer un Grid pour contenir les contrôles
                     Grid grid = new Grid();

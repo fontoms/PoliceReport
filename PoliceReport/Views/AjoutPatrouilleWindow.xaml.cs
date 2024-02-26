@@ -289,7 +289,7 @@ namespace PoliceReport.Views
             }
 
             // Fermer la fenêtre d'ajout de patrouille
-            this.Close();
+            Close();
         }
 
         public static void AddEffectif(Effectif personne)
