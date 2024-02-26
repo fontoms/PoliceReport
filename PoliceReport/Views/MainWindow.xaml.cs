@@ -359,5 +359,25 @@ namespace PoliceReport.Views
             }
 #endif
         }
+
+        private async void updateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _chargementWindow = new ChargementWindow("Mise à jour de PoliceReport...");
+            _chargementWindow.Show();
+
+            Database = new BaseDao();
+            string version = await Database.Update();
+
+            if (version != null)
+            {
+                _chargementWindow.Close();
+                MessageBox.Show("La base de données a été mise à jour avec succès.\n\nNouvelle version : " + version, "Mise à jour", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                _chargementWindow.Close();
+                MessageBox.Show("La base de données est déjà à jour.", "Mise à jour", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
     }
 }

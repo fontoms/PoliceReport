@@ -1,4 +1,7 @@
-﻿using System.Data.SQLite;
+﻿using Newtonsoft.Json.Linq;
+using System.Data.SQLite;
+using System.Diagnostics;
+using System.Net;
 
 namespace StorageLayer
 {
@@ -12,44 +15,86 @@ namespace StorageLayer
         /// </summary>
         public BaseDao()
         {
-            // chemin absolu vers la base de données
-            var path = Environment.CurrentDirectory + "\\PRBaseDeDonnee.db";
+            // chemin absolu vers la base de données 
+            string localDbFolderPath = Environment.CurrentDirectory;
+            string[] localDbFiles = Directory.GetFiles(localDbFolderPath, "PR_BDD_v*.db");
+            var path = localDbFiles.OrderByDescending(f => f).FirstOrDefault();
             // chaîne de connexion
             var connectionString = "Data Source=" + path + ";Version=3;";
             // création de la connexion
             connection = new SQLiteConnection(connectionString);
         }
 
-        /// <summary>
-        /// Crée les tables de la base de données
-        /// </summary>
-        public void CreateTables()
-        {
-            // Lis le fichier PRBaseDeDonnee.db.sql et exécute les commandes SQL
-            var path = Environment.CurrentDirectory + "\\Installation.sql";
-            var sql = File.ReadAllText(path);
-            var commands = sql.Split(new string[] { ";\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-            double progressStep = 100.0 / commands.Length;
-            double currentProgress = 0;
-
-            foreach (var command in commands)
-            {
-                // Ignore BEGIN TRANSACTION et COMMIT
-                if (command.Trim().Length > 0 && !command.Trim().StartsWith("BEGIN") && !command.Trim().StartsWith("COMMIT"))
-                {
-                    ExecuteNonQuery(command);
-                }
-
-                currentProgress += progressStep;
-                // Envoyer l'événement de progression
-                OnProgressChanged(currentProgress);
-            }
-        }
-
         protected virtual void OnProgressChanged(double progress)
         {
             ProgressChanged?.Invoke(this, progress);
+        }
+
+        public async Task<string> Update()
+        {
+            try
+            {
+                // Récupère la version du fichier local
+                string localVersion = GetLocalDatabaseVersion();
+
+                // Récupère la liste des fichiers dans le dossier GitHub
+                string githubFilesUrl = "https://api.github.com/repos/Fontom71/PoliceReport/contents/StorageLayer";
+                WebClient client = new WebClient();
+                client.Headers.Add("User-Agent", "request");
+                string githubFilesJson = await client.DownloadStringTaskAsync(githubFilesUrl);
+                JArray githubFilesArray = JArray.Parse(githubFilesJson);
+
+                foreach (JObject file in githubFilesArray)
+                {
+                    string fileName = file["name"].ToString();
+                    if (fileName.Contains("PR_BDD_v") && fileName.EndsWith(".db"))
+                    {
+                        string[] fileNameParts = fileName.Split('_', '.');
+                        string fileVersionStr = fileNameParts[2]; // Assuming the version is at index 2
+                        Version fileVersion = new Version(fileVersionStr);
+
+                        // Comparaison des versions
+                        Version local = new Version(localVersion);
+                        if (fileVersion > local)
+                        {
+                            // Télécharger le fichier depuis GitHub
+                            string fileUrl = file["download_url"].ToString();
+                            client.DownloadProgressChanged += (sender, e) => OnProgressChanged(e.ProgressPercentage);
+                            await client.DownloadFileTaskAsync(fileUrl, Environment.CurrentDirectory + "\\" + fileName);
+
+                            return fileVersion.ToString(); // Version mise à jour
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur lors de la mise à jour : " + ex.Message);
+            }
+
+            return null; // Aucune mise à jour effectuée
+        }
+
+        private string GetLocalDatabaseVersion()
+        {
+            string localDbFolderPath = Environment.CurrentDirectory;
+            string[] localDbFiles = Directory.GetFiles(localDbFolderPath, "PR_BDD_v*.db");
+
+            if (localDbFiles.Length > 0)
+            {
+                string latestFile = localDbFiles.OrderByDescending(f => f).FirstOrDefault();
+                if (latestFile != null)
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(latestFile);
+                    string[] fileNameParts = fileName.Split('_', '.');
+                    if (fileNameParts.Length > 1)
+                    {
+                        return fileNameParts[2]; // Assuming version is at index 2
+                    }
+                }
+            }
+
+            return "0.0"; // Version par défaut si non trouvée
         }
 
         /// <summary>

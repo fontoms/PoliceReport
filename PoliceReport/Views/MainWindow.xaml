@@ -27,6 +27,12 @@
         <Grid x:Name="HeaderBar" Height="30" VerticalAlignment="Center" Grid.ColumnSpan="2">
             <Label x:Name="titleLabel" HorizontalAlignment="Left" Content="{Binding Title, ElementName=window}" VerticalAlignment="Center" Width="120" FontSize="16" FontWeight="Bold" Margin="20,0,0,0" MouseDoubleClick="titleLabel_MouseDoubleClick"/>
         </Grid>
+        <Button x:Name="updateBtn" Grid.Column="1" Grid.RowSpan="2" Height="25" VerticalAlignment="Top" Margin="0,15,25,0" Padding="0,0,0,0" HorizontalAlignment="Right" Width="90" Click="updateBtn_Click">
+            <StackPanel Orientation="Horizontal">
+                <Image Height="15" Source="/Images/SyncIcon.png"/>
+                <Label Content="Mise à jour" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="9"/>
+            </StackPanel>
+        </Button>
         <Grid Grid.Row="1" Grid.RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>

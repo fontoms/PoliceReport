@@ -67,36 +67,11 @@ namespace PoliceReport.Views
             }
         }
 
-        private async Task UpdateDatabase()
-        {
-            try
-            {
-                ChargementWindow chargementWindow = new ChargementWindow("Mise à jour de la base de données");
-                chargementWindow.Show();
-                Hide();
-
-                BaseDao baseDao = new BaseDao();
-                baseDao.ProgressChanged += (s, progress) =>
-                {
-                    Dispatcher.Invoke(() => chargementWindow.ProgressValue = progress);
-                };
-
-                await Task.Run(() => baseDao.CreateTables());
-
-                chargementWindow.Close();
-            }
-            catch (Exception ex)
-            {
-                DisplayMessageBoxError(ex);
-            }
-        }
-
         private async void DisplayMessageBoxError(Exception ex)
         {
             MessageBoxResult result = MessageBox.Show($"Erreur lors de la vérification des mises à jour : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             if (result == MessageBoxResult.OK)
             {
-                await UpdateDatabase();
                 MainWindow mainWindow = new MainWindow();
                 mainWindow.Show();
                 Close();
@@ -126,7 +101,6 @@ namespace PoliceReport.Views
             }
             else
             {
-                await UpdateDatabase();
                 MainWindow mainWindow = new MainWindow();
                 mainWindow.Show();
                 Close();

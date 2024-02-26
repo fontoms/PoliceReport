@@ -8,10 +8,11 @@
 
   <ItemGroup>
     <None Remove="Installation.sql" />
+    <None Remove="PR_BDD_v1.db" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Installation.sql">
+    <Content Include="PR_BDD_v1.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
