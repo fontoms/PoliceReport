@@ -5,7 +5,8 @@ namespace LogicLayer.Effectif
     public class Effectif : INotifyPropertyChanged
     {
         #region Attributes
-        private string _id;
+        private int _id;
+        private string _idDiscord;
         private string _nom;
         private string _prenom;
         private string _effGrade;
@@ -14,7 +15,7 @@ namespace LogicLayer.Effectif
         #endregion
 
         #region Properties
-        public string Id
+        public int Id
         {
             get => _id;
             set
@@ -22,6 +23,19 @@ namespace LogicLayer.Effectif
                 if (_id != value)
                 {
                     _id = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string IdDiscord
+        {
+            get => _idDiscord;
+            set
+            {
+                if (_idDiscord != value)
+                {
+                    _idDiscord = value;
                     OnPropertyChanged();
                 }
             }
@@ -101,17 +115,19 @@ namespace LogicLayer.Effectif
         {
         }
 
-        public Effectif(string id, string nom, string prenom, string effGrade)
+        public Effectif(int id, string idDiscord, string nom, string prenom, string effGrade)
         {
             Id = id;
+            IdDiscord = idDiscord;
             Nom = nom;
             Prenom = prenom;
             EffGrade = effGrade;
         }
 
-        public Effectif(string id, string nom, string prenom, string effGrade, Grade.Grade? grade, string? positionVehicule)
+        public Effectif(int id, string idDiscord, string nom, string prenom, string effGrade, Grade.Grade grade, string positionVehicule)
         {
             Id = id;
+            IdDiscord = idDiscord;
             Nom = nom;
             Prenom = prenom;
             EffGrade = effGrade;

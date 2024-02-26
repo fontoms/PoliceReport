@@ -46,8 +46,19 @@
         }
         #endregion
 
+        public Grade()
+        {
+        }
+
         public Grade(string type, string nom)
         {
+            Type = type;
+            Nom = nom;
+        }
+
+        public Grade(int id, string type, string nom)
+        {
+            Id = id;
             Type = type;
             Nom = nom;
         }

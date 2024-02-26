@@ -46,8 +46,19 @@
         }
         #endregion
 
+        public Infraction()
+        {
+        }
+
         public Infraction(string type, string nom)
         {
+            Type = type;
+            Nom = nom;
+        }
+
+        public Infraction(int id, string type, string nom)
+        {
+            Id = id;
             Type = type;
             Nom = nom;
         }

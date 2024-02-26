@@ -46,8 +46,19 @@
         }
         #endregion
 
+        public Vehicule()
+        {
+        }
+
         public Vehicule(string vehSpe, string nom)
         {
+            VehSpe = vehSpe;
+            Nom = nom;
+        }
+
+        public Vehicule(int id, string vehSpe, string nom)
+        {
+            Id = id;
             VehSpe = vehSpe;
             Nom = nom;
         }

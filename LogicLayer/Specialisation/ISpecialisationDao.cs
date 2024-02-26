@@ -4,6 +4,7 @@
     {
         void Add(Specialisation specialisation);
         void Remove(Specialisation specialisation);
+        void Update(Specialisation specialisation);
         List<Specialisation> GetAll();
     }
 }
