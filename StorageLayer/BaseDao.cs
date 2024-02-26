@@ -5,6 +5,7 @@ namespace StorageLayer
     public class BaseDao
     {
         private SQLiteConnection connection;
+        public event EventHandler<double> ProgressChanged;
 
         /// <summary>
         /// Constructor
@@ -17,16 +18,21 @@ namespace StorageLayer
             var connectionString = "Data Source=" + path + ";Version=3;";
             // création de la connexion
             connection = new SQLiteConnection(connectionString);
-            // création des tables
-            CreateTables();
         }
 
-        private void CreateTables()
+        /// <summary>
+        /// Crée les tables de la base de données
+        /// </summary>
+        public void CreateTables()
         {
             // Lis le fichier PRBaseDeDonnee.db.sql et exécute les commandes SQL
             var path = Environment.CurrentDirectory + "\\Installation.sql";
             var sql = File.ReadAllText(path);
             var commands = sql.Split(new string[] { ";\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            double progressStep = 100.0 / commands.Length;
+            double currentProgress = 0;
+
             foreach (var command in commands)
             {
                 // Ignore BEGIN TRANSACTION et COMMIT
@@ -34,9 +40,16 @@ namespace StorageLayer
                 {
                     ExecuteNonQuery(command);
                 }
+
+                currentProgress += progressStep;
+                // Envoyer l'événement de progression
+                OnProgressChanged(currentProgress);
             }
-            // Supprime le fichier d'installation
-            //File.Delete(path);
+        }
+
+        protected virtual void OnProgressChanged(double progress)
+        {
+            ProgressChanged?.Invoke(this, progress);
         }
 
         /// <summary>
