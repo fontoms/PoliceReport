@@ -43,6 +43,25 @@ Aucunes données personnelles n'est récupérées par le logiciel, seul une base
 
 ![image](https://github.com/Fontom71/PoliceReport/assets/64289613/8e08676f-ab4a-4265-9d3f-dd84d6670239)
 
+### Administration
+
+- Connexion sécurisé
+
+![image](https://github.com/Fontom71/PoliceReport/assets/64289613/f657b284-ae8c-46e5-affe-76615ba50bea)
+
+- Affichage des tables de la base de données
+- Ajout / Modification / Suppression de données
+
+![image](https://github.com/Fontom71/PoliceReport/assets/64289613/9eb64379-7e11-4368-bece-4540a157a57a)
+
+#### Ajout
+
+![image](https://github.com/Fontom71/PoliceReport/assets/64289613/0a72b3ee-1598-4890-81c9-3a5750c644db)
+
+#### Modification
+
+![image](https://github.com/Fontom71/PoliceReport/assets/64289613/7c59b36a-b5ed-4d7b-8f81-9c05e3565f5a)
+
 ### Exemple
 
 ![image](https://github.com/Fontom71/PoliceReport/assets/64289613/bf6b6e27-a2eb-4dd4-a8b7-3c814b240a7d)
