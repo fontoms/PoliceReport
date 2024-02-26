@@ -8,12 +8,20 @@ namespace StorageLayer.Dao
 
         public void Add(LogicLayer.Action.Action action)
         {
-            throw new NotImplementedException();
+            var req = "INSERT INTO Actions (Nom, ActInfraction) VALUES ('" + action.Nom + "', '" + action.ActInfraction + "')";
+            ExecuteNonQuery(req);
         }
 
         public void Remove(LogicLayer.Action.Action action)
         {
-            throw new NotImplementedException();
+            var req = "DELETE FROM Actions WHERE Id = " + action.Id;
+            ExecuteNonQuery(req);
+        }
+
+        public void Update(LogicLayer.Action.Action action)
+        {
+            var req = "UPDATE Actions SET Nom = '" + action.Nom + "', ActInfraction = '" + action.ActInfraction + "' WHERE Id = " + action.Id;
+            ExecuteNonQuery(req);
         }
 
         public List<LogicLayer.Action.Action> GetAllActions()
@@ -37,6 +45,19 @@ namespace StorageLayer.Dao
             while (reader.Read())
             {
                 actions.Add(new LogicLayer.Action.Action(reader.GetString(1), DateTime.Now));
+            }
+            reader.Close();
+            return actions;
+        }
+
+        public List<object> GetAll()
+        {
+            var req = "SELECT * FROM Actions";
+            var reader = ExecuteReader(req);
+            var actions = new List<object>();
+            while (reader.Read())
+            {
+                actions.Add(new LogicLayer.Action.Action(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
             }
             reader.Close();
             return actions;

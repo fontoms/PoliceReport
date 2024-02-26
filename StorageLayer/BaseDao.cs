@@ -17,6 +17,26 @@ namespace StorageLayer
             var connectionString = "Data Source=" + path + ";Version=3;";
             // création de la connexion
             connection = new SQLiteConnection(connectionString);
+            // création des tables
+            CreateTables();
+        }
+
+        private void CreateTables()
+        {
+            // Lis le fichier PRBaseDeDonnee.db.sql et exécute les commandes SQL
+            var path = Environment.CurrentDirectory + "\\Installation.sql";
+            var sql = File.ReadAllText(path);
+            var commands = sql.Split(new string[] { ";\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var command in commands)
+            {
+                // Ignore BEGIN TRANSACTION et COMMIT
+                if (command.Trim().Length > 0 && !command.Trim().StartsWith("BEGIN") && !command.Trim().StartsWith("COMMIT"))
+                {
+                    ExecuteNonQuery(command);
+                }
+            }
+            // Supprime le fichier d'installation
+            //File.Delete(path);
         }
 
         /// <summary>
@@ -52,6 +72,36 @@ namespace StorageLayer
         public void CloseConnection()
         {
             connection.Close();
+        }
+
+        public List<string> GetTables()
+        {
+            List<string> tables = new List<string>();
+            connection.Open();
+            var command = connection.CreateCommand();
+            command.CommandText = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'";
+            var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                tables.Add(reader.GetString(0));
+            }
+            connection.Close();
+            return tables;
+        }
+
+        public List<string> GetColumnsOfTable(string tableName)
+        {
+            List<string> columns = new List<string>();
+            connection.Open();
+            var command = connection.CreateCommand();
+            command.CommandText = "PRAGMA table_info(" + tableName + ")";
+            var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                columns.Add(reader.GetString(1));
+            }
+            connection.Close();
+            return columns;
         }
     }
 }

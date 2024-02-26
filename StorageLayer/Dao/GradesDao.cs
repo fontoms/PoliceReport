@@ -8,12 +8,14 @@ namespace StorageLayer.Dao
 
         public void Add(Grade grade)
         {
-            throw new NotImplementedException();
+            var req = "INSERT INTO Grades (Type, Nom) VALUES ('" + grade.Type + "', '" + grade.Nom + "')";
+            ExecuteNonQuery(req);
         }
 
         public void Remove(Grade grade)
         {
-            throw new NotImplementedException();
+            var req = "DELETE FROM Grades WHERE Id = " + grade.Id;
+            ExecuteNonQuery(req);
         }
 
         public List<Grade> GetAll()
@@ -23,10 +25,16 @@ namespace StorageLayer.Dao
             var grades = new List<Grade>();
             while (reader.Read())
             {
-                grades.Add(new Grade(reader.GetString(1), reader.GetString(2)));
+                grades.Add(new Grade(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
             }
             reader.Close();
             return grades;
+        }
+
+        public void Update(Grade grade)
+        {
+            var req = "UPDATE Grades SET Type = '" + grade.Type + "', Nom = '" + grade.Nom + "' WHERE Id = " + grade.Id;
+            ExecuteNonQuery(req);
         }
     }
 }

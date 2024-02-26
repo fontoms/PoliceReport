@@ -6,22 +6,24 @@ namespace StorageLayer.Dao
     {
         public void Add(Vehicule vehicule)
         {
-            throw new NotImplementedException();
+            var req = "INSERT INTO Vehicules (Nom, VehSpe) VALUES ('" + vehicule.Nom + "', '" + vehicule.VehSpe + "')";
+            ExecuteNonQuery(req);
         }
 
         public void Remove(Vehicule vehicule)
         {
-            throw new NotImplementedException();
+            var req = "DELETE FROM Vehicules WHERE Id = " + vehicule.Id;
+            ExecuteNonQuery(req);
         }
 
         public List<Vehicule> GetAll()
         {
-            var req = "SELECT * FROM Vehicules ORDER BY Nom";
+            var req = "SELECT * FROM Vehicules";
             var reader = ExecuteReader(req);
             var vehicules = new List<Vehicule>();
             while (reader.Read())
             {
-                vehicules.Add(new Vehicule(reader.GetString(1), reader.GetString(2)));
+                vehicules.Add(new Vehicule(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
             }
             reader.Close();
             return vehicules;
@@ -64,6 +66,12 @@ namespace StorageLayer.Dao
             }
             reader.Close();
             return vehicules;
+        }
+
+        public void Update(Vehicule vehicule)
+        {
+            var req = "UPDATE Vehicules SET Nom = '" + vehicule.Nom + "', VehSpe = '" + vehicule.VehSpe + "' WHERE Id = " + vehicule.Id;
+            ExecuteNonQuery(req);
         }
     }
 }

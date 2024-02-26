@@ -8,7 +8,21 @@ namespace StorageLayer.Dao
 
         public void Add(Effectif effectif)
         {
-            throw new NotImplementedException();
+            var req = "INSERT INTO Effectifs (IdDiscord, Nom, Prenom, EffGrade) VALUES ('" + effectif.IdDiscord + "', '" + effectif.Nom + "', '" + effectif.Prenom + "', '" + effectif.EffGrade + "')";
+            ExecuteNonQuery(req);
+        }
+
+        public List<Effectif> GetAll()
+        {
+            var req = "SELECT * FROM Effectifs";
+            var reader = ExecuteReader(req);
+            var effectifs = new List<Effectif>();
+            while (reader.Read())
+            {
+                effectifs.Add(new Effectif(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4)));
+            }
+            reader.Close();
+            return effectifs;
         }
 
         public List<Effectif> GetAllByGrade(string grade)
@@ -18,7 +32,7 @@ namespace StorageLayer.Dao
             var effectifs = new List<Effectif>();
             while (reader.Read())
             {
-                effectifs.Add(new Effectif(Convert.ToString(reader.GetValue(0)), reader.GetString(1), reader.GetString(2), reader.GetString(3)));
+                effectifs.Add(new Effectif(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4)));
             }
             reader.Close();
             return effectifs;
@@ -31,7 +45,7 @@ namespace StorageLayer.Dao
             var effectifs = new List<Effectif>();
             while (reader.Read())
             {
-                effectifs.Add(new Effectif(Convert.ToString(reader.GetValue(0)), reader.GetString(1), reader.GetString(2), reader.GetString(3)));
+                effectifs.Add(new Effectif(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4)));
             }
             reader.Close();
             return effectifs;
@@ -39,7 +53,14 @@ namespace StorageLayer.Dao
 
         public void Remove(Effectif effectif)
         {
-            throw new NotImplementedException();
+            var req = "DELETE FROM Effectifs WHERE Id = " + effectif.Id;
+            ExecuteNonQuery(req);
+        }
+
+        public void Update(Effectif effectif)
+        {
+            var req = "UPDATE Effectifs SET IdDiscord = '" + effectif.IdDiscord + "', Nom = '" + effectif.Nom + "', Prenom = '" + effectif.Prenom + "', EffGrade = '" + effectif.EffGrade + "' WHERE Id = " + effectif.Id;
+            ExecuteNonQuery(req);
         }
     }
 }
