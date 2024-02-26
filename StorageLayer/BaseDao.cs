@@ -79,7 +79,7 @@ namespace StorageLayer
             List<string> tables = new List<string>();
             connection.Open();
             var command = connection.CreateCommand();
-            command.CommandText = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'";
+            command.CommandText = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name";
             var reader = command.ExecuteReader();
             while (reader.Read())
             {
