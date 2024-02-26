@@ -7,10 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Installation.sql" />
     <None Remove="PRBaseDeDonnee.db" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Installation.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="PRBaseDeDonnee.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
