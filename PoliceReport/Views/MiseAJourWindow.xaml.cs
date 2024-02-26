@@ -73,7 +73,7 @@ namespace PoliceReport.Views
             {
                 ChargementWindow chargementWindow = new ChargementWindow("Mise à jour de la base de données");
                 chargementWindow.Show();
-                this.Hide();
+                Hide();
 
                 BaseDao baseDao = new BaseDao();
                 baseDao.ProgressChanged += (s, progress) =>

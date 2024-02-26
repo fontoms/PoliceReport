@@ -345,16 +345,19 @@ namespace PoliceReport.Views
 
         private void titleLabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+#if !DEBUG
             ConnexionWindow connexionWindow = new ConnexionWindow();
             connexionWindow.Owner = this;
             connexionWindow.ShowDialog();
 
-            connexionWindow.MotDePasseCorrect = true;
             if (connexionWindow.MotDePasseCorrect)
             {
-                AdministrationWindow administrationWindow = new AdministrationWindow();
-                administrationWindow.Show();
+#endif
+            AdministrationWindow administrationWindow = new AdministrationWindow();
+            administrationWindow.Show();
+#if !DEBUG
             }
+#endif
         }
     }
 }
