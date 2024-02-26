@@ -302,12 +302,6 @@ namespace PoliceReport.Views
 
         private void startServiceBtn_Click(object sender, RoutedEventArgs e)
         {
-            /*if (string.IsNullOrWhiteSpace(idTextBox.Text))
-            {
-                MessageBox.Show("Veuillez saisir votre identifiant Discord.", "Attention", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }*/
-
             idTextBox.IsEnabled = false;
             effectifComboBox.IsEnabled = false;
             gradeComboBox.IsEnabled = false;

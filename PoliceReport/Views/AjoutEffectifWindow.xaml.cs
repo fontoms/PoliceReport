@@ -54,12 +54,6 @@ namespace PoliceReport.Views
 
         private void Ajouter_Click(object sender, RoutedEventArgs e)
         {
-            /*if (string.IsNullOrEmpty(idTextBox.Text))
-            {
-                MessageBox.Show("Veuillez entrer un identifiant Discord.", "Attention", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }*/
-
             // Récupérer les informations de la personne depuis les contrôles
             _selectedItem = (Effectif)effectifComboBox.SelectedItem;
             //_selectedItem.Grade = (Grade)gradeComboBox.SelectedItem;
