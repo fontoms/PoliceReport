@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using LogicLayer.Outils.Cryptage;
+using System.Windows;
 
 namespace PoliceReport.Views
 {
@@ -19,7 +20,7 @@ namespace PoliceReport.Views
 
         private void connectionBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (MotDePasseAttendu == LogicLayer.Cryptage.HashHelper.CalculateSHA256(passBox.Password))
+            if (MotDePasseAttendu == HashHelper.CalculateSHA256(passBox.Password))
             {
                 MotDePasseCorrect = true;
                 this.Close();
