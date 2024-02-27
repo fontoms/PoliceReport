@@ -10,7 +10,7 @@ namespace PoliceReport.Views
     {
         private const string MotDePasseAttendu = "06c13f0db1e5f86ef5adc575da5a1d89528a0fdd93a568abdbe93145dc7e5d28";
 
-        public bool MotDePasseCorrect { get; set; }
+        public bool MotDePasseCorrect { get; private set; }
 
         public ConnexionWindow()
         {
