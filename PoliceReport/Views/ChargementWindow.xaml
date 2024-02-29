@@ -9,7 +9,11 @@
         <Grid.Background>
             <SolidColorBrush Color="White" Opacity="0.85"/>
         </Grid.Background>
-        <TextBlock Text="Chargement en cours..." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,20" FontSize="16"/>
-        <ProgressBar Name="progressBar" Width="200" Height="20" Margin="50,40,50,0" VerticalAlignment="Center"/>
+        <Border BorderThickness="5,5,5,5" BorderBrush="Black">
+            <Grid>
+                <TextBlock Text="Chargement en cours..." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,20" FontSize="16"/>
+                <ProgressBar Name="progressBar" Height="20" Margin="50,40,50,0" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
     </Grid>
 </Window>
