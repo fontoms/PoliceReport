@@ -1,4 +1,4 @@
-﻿using StorageLayer;
+﻿using LogicLayer.Outils.Cryptage;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -15,7 +15,10 @@ namespace PoliceReport.Views
         private bool updateAvailable = false;
         private static string owner = "Fontom71";
         private static string repo = "PoliceReport";
-        private static string repoUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
+        private string repoUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
+#if DEBUG
+        private string githubToken = "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";
+#endif
 
         public MiseAJourWindow()
         {
@@ -85,6 +88,9 @@ namespace PoliceReport.Views
         private bool CheckUpdateAvailable(out Version latestVersion, out Version currentVersion)
         {
             WebClient client = new WebClient();
+#if DEBUG
+            client.Headers.Add("Authorization", "Bearer " + githubToken);
+#endif
             client.Headers.Add("User-Agent", "request");
             string releaseInfoJson = client.DownloadString(repoUrl);
             string latestVersionStr = releaseInfoJson.Split(new string[] { "\"tag_name\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "");
@@ -116,6 +122,9 @@ namespace PoliceReport.Views
                 progressBar.Visibility = Visibility.Visible;
 
                 WebClient client = new WebClient();
+#if DEBUG
+                client.Headers.Add("Authorization", "Bearer " + githubToken);
+#endif
                 client.Headers.Add("User-Agent", "request");
                 string releaseInfoJson = await client.DownloadStringTaskAsync(repoUrl);
                 string latestSetupUrl = releaseInfoJson.Split(new string[] { "\"browser_download_url\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "").TrimEnd('}');

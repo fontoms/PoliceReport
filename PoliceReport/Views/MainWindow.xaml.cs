@@ -1,6 +1,7 @@
 ﻿using LogicLayer.Effectif;
 using LogicLayer.Grade;
 using LogicLayer.Infraction;
+using LogicLayer.Outils.Cryptage;
 using LogicLayer.Patrouille;
 using LogicLayer.PositionVeh;
 using StorageLayer;
@@ -22,7 +23,6 @@ namespace PoliceReport.Views
 
         public static ObservableCollection<Patrouille> Patrouilles { get; set; }
         public static ObservableCollection<LogicLayer.Action.Action> Actions { get; set; }
-        public static BaseDao Database;
         private ChargementWindow _chargementWindow;
 
         public MainWindow()
@@ -33,7 +33,7 @@ namespace PoliceReport.Views
             versionAuthorLbl.MouseLeftButtonDown += (sender, e) =>
             {
                 // Ouvrir le lien URL lorsque le label est cliqué
-                string url = "https://github.com/Fontom71/PoliceReport";
+                string url = $"https://github.com/Fontom71/{AppDomain.CurrentDomain.FriendlyName}";
                 Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
             };
 
@@ -47,15 +47,15 @@ namespace PoliceReport.Views
             DataContext = this;
 
             // Charger les autres éléments une fois que la base de données est prête
-            LoadEffectifs();
-            LoadGradeType();
-            LoadActions();
-            idTextBox.Focus();
+            LoadAllElements();
+            //idTextBox.Focus();
+            effectifComboBox.Focus();
         }
 
         private void LoadEffectifs()
         {
-            effectifComboBox.Items.Clear();
+            effectifComboBox.ItemsSource = null;
+
             EffectifsDao effectifDao = new EffectifsDao();
             List<Effectif> effectifs = effectifDao.GetAllEffectifs();
             GradesDao gradesDao = new GradesDao();
@@ -78,7 +78,8 @@ namespace PoliceReport.Views
 
         private void LoadGradeType()
         {
-            gradeComboBox.Items.Clear();
+            gradeComboBox.ItemsSource = null;
+
             GradesDao gradesDao = new GradesDao();
             gradeComboBox.ItemsSource = gradesDao.GetAll();
 
@@ -94,7 +95,7 @@ namespace PoliceReport.Views
 
         private void LoadActions()
         {
-            actionsListBox.Items.Clear();
+            actionsListBox.ItemsSource = null;
 
             _chargementWindow = new ChargementWindow("Chargement des actions...");
             _chargementWindow.Show();
@@ -304,6 +305,7 @@ namespace PoliceReport.Views
             idTextBox.IsEnabled = false;
             effectifComboBox.IsEnabled = false;
             gradeComboBox.IsEnabled = false;
+            updateBtn.IsEnabled = false;
             startServiceLbl.Content = "Prise de service : " + DateTime.Now.ToString("dd/MM/yyyy HH:mm");
             startServiceBtn.IsEnabled = !startServiceBtn.IsEnabled;
             endServiceBtn.IsEnabled = !endServiceBtn.IsEnabled;
@@ -337,6 +339,7 @@ namespace PoliceReport.Views
             idTextBox.Text = "";
             effectifComboBox.IsEnabled = true;
             gradeComboBox.IsEnabled = true;
+            updateBtn.IsEnabled = true;
             Patrouilles.Clear();
             AddPatrouilleBtn.IsEnabled = false;
             EditPatrouilleBtn.IsEnabled = false;
@@ -365,12 +368,17 @@ namespace PoliceReport.Views
             _chargementWindow = new ChargementWindow("Mise à jour de PoliceReport...");
             _chargementWindow.Show();
 
-            Database = new BaseDao();
-            string version = await Database.Update();
+            BaseDao database = new BaseDao();
+            database.ProgressChanged += (sender, e) =>
+            {
+                _chargementWindow.ProgressValue = e;
+            };
+            string version = await database.Update();
 
             if (version != null)
             {
                 _chargementWindow.Close();
+                LoadAllElements();
                 MessageBox.Show("La base de données a été mise à jour avec succès.\n\nNouvelle version : " + version, "Mise à jour", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
@@ -378,6 +386,13 @@ namespace PoliceReport.Views
                 _chargementWindow.Close();
                 MessageBox.Show("La base de données est déjà à jour.", "Mise à jour", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+        }
+
+        private void LoadAllElements()
+        {
+            LoadEffectifs();
+            LoadGradeType();
+            LoadActions();
         }
     }
 }
