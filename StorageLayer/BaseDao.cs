@@ -8,10 +8,11 @@ namespace StorageLayer
     public class BaseDao
     {
         private SQLiteConnection connection;
+        private static string owner = "Fontom71";
+        private static string repo = AppDomain.CurrentDomain.FriendlyName;
+        private static string folder = Assembly.GetExecutingAssembly().GetName().Name;
+        private string githubContentsUrl = $"https://api.github.com/repos/{owner}/{repo}/contents/{folder}";
         public event EventHandler<double> ProgressChanged;
-#if DEBUG
-        private string githubToken = "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";
-#endif
 
         /// <summary>
         /// Constructor
@@ -22,10 +23,17 @@ namespace StorageLayer
             string localDbFolderPath = Environment.CurrentDirectory;
             string[] localDbFiles = Directory.GetFiles(localDbFolderPath, "PR_BDD_*.db");
             var path = localDbFiles.OrderByDescending(f => f).FirstOrDefault();
-            // chaîne de connexion
-            var connectionString = "Data Source=" + path + ";Version=3;";
-            // création de la connexion
-            connection = new SQLiteConnection(connectionString);
+            if (path != null)
+            {
+                // chaîne de connexion
+                var connectionString = "Data Source=" + path + ";Version=3;";
+                // création de la connexion
+                connection = new SQLiteConnection(connectionString);
+            }
+            else
+            {
+                connection = new SQLiteConnection("Data Source=:memory:;Version=3;");
+            }
         }
 
         protected virtual void OnProgressChanged(double progress)
@@ -41,72 +49,56 @@ namespace StorageLayer
                 // Récupère la version du fichier local et ses dates
                 (string version, DateTime localCreateDate, DateTime localModifiedDate) localFile = GetLocalDatabaseVersion();
 
-                // URL pour récupérer les détails du dernier commit
-                string githubCommitUrl = $"https://api.github.com/repos/Fontom71/{AppDomain.CurrentDomain.FriendlyName}/commits";
                 WebClient client = new WebClient();
-#if DEBUG
-                client.Headers.Add("Authorization", "Bearer " + githubToken);
-#endif
                 client.Headers.Add("User-Agent", "request");
-                string githubCommitJson = await client.DownloadStringTaskAsync(githubCommitUrl);
                 client.DownloadProgressChanged += (sender, e) => OnProgressChanged(e.ProgressPercentage);
-                JArray githubCommitsArray = JArray.Parse(githubCommitJson);
+                string githubContentsJson = await client.DownloadStringTaskAsync(githubContentsUrl);
+                JArray githubContentsArray = JArray.Parse(githubContentsJson);
 
-                if (githubCommitsArray.Count > 0)
+                foreach (JObject content in githubContentsArray)
                 {
-                    JObject latestCommit = (JObject)githubCommitsArray[0];
-                    string commitSha = latestCommit["sha"].ToString();
+                    string remoteName = content["name"].ToString();
 
-                    // URL pour récupérer les détails du commit avec les fichiers modifiés
-                    string commitDetailsUrl = $"https://api.github.com/repos/Fontom71/{AppDomain.CurrentDomain.FriendlyName}/commits/{commitSha}";
-                    client.Headers.Add("User-Agent", "request");
-                    string commitDetailsJson = await client.DownloadStringTaskAsync(commitDetailsUrl);
-                    client.DownloadProgressChanged += (sender, e) => OnProgressChanged(e.ProgressPercentage);
-                    JObject commitDetails = JObject.Parse(commitDetailsJson);
-
-                    JArray filesArray = (JArray)commitDetails["files"];
-
-                    foreach (JObject file in filesArray)
+                    // Vérifie si le fichier est une base de données avec le bon format de nom
+                    if (remoteName.StartsWith("PR_BDD_") && remoteName.EndsWith(".db"))
                     {
-                        string remoteName = Path.GetFileNameWithoutExtension(file["filename"].ToString());
-
-                        // Vérifie si le fichier est une base de données avec le bon format de nom
-                        if (remoteName.Contains("PR_BDD_"))
+                        // Extrait la version du nom de fichier (format attendu : PR_BDD_x.x.x.db)
+                        string[] nameParts = remoteName.Split('_', '.');
+                        if (nameParts.Length >= 4)
                         {
-                            // Sépare les parties du nom de fichier pour obtenir la version
-                            string[] remoteNameParts = remoteName.Split('_', '.');
-                            string remoteVersionStr = string.Join(".", remoteNameParts.Skip(2));
-
-                            // Convertit la version en objet Version
+                            string remoteVersionStr = $"{nameParts[2]}.{nameParts[3]}.{nameParts[4]}";
                             Version remoteVersion = new Version(remoteVersionStr);
 
                             // Convertit la version locale en objet Version pour la comparaison
                             Version localVersion = new Version(localFile.version);
 
+                            OnProgressChanged(githubContentsArray.IndexOf(content) * 100 / githubContentsArray.Count);
+
                             // Compare les versions
                             if (remoteVersion > localVersion)
                             {
-                                return true; // Une mise à jour est disponible
-                            }
-
-                            // Compare la date du commit
-                            DateTime remoteCommitDate = commitDetails["commit"]["committer"]["date"].ToObject<DateTime>();
-
-                            // Compare les dates pour mise à jour si nécessaire
-                            if (localFile.localCreateDate < remoteCommitDate || localFile.localModifiedDate > remoteCommitDate)
-                            {
-                                return true; // Une mise à jour est disponible
+                                Settings.Default.LatestUpdate = DateTime.Now; // Met à jour la date de dernière mise à jour
+                                Settings.Default.Save();
+                                return true; // La base de données est mise à jour, donc retourne true
                             }
                         }
                     }
                 }
 
-                return false; // Aucune mise à jour disponible
+                // Compare la date de dernière mise à jour avec la date de modification locale du fichier de BDD
+                DateTime localDate = localFile.localModifiedDate.AddMinutes(-1); // Ajoute 5 minutes pour compenser le décalage horaire
+                if (localDate > Settings.Default.LatestUpdate)
+                {
+                    Settings.Default.LatestUpdate = DateTime.Now; // Met à jour la date de dernière mise à jour
+                    Settings.Default.Save();
+                    return true; // La base de données est mise à jour, donc retourne true
+                }
+
+                return false; // Aucune mise à jour disponible ou nécessaire
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Erreur lors de la vérification de la mise à jour : " + ex.Message);
-                return false;
+                throw new Exception(ex.Message, ex);
             }
         }
 
@@ -120,13 +112,10 @@ namespace StorageLayer
                 if (updateAvailable)
                 {
                     // Récupère la liste des fichiers dans le dossier GitHub
-                    string githubFilesUrl = $"https://api.github.com/repos/Fontom71/{AppDomain.CurrentDomain.FriendlyName}/contents/{Assembly.GetExecutingAssembly().GetName().Name}";
                     WebClient client = new WebClient();
-#if DEBUG
-                    client.Headers.Add("Authorization", "Bearer " + githubToken);
-#endif
                     client.Headers.Add("User-Agent", "request");
-                    string githubFilesJson = await client.DownloadStringTaskAsync(githubFilesUrl);
+                    client.DownloadProgressChanged += (sender, e) => OnProgressChanged(e.ProgressPercentage);
+                    string githubFilesJson = await client.DownloadStringTaskAsync(githubContentsUrl);
                     JArray githubFilesArray = JArray.Parse(githubFilesJson);
 
                     foreach (JObject file in githubFilesArray)
@@ -143,6 +132,8 @@ namespace StorageLayer
                             string fileVersionStr = string.Join(".", fileNameParts.Skip(2));
 
                             Version fileVersion = new Version(fileVersionStr);
+
+                            OnProgressChanged(githubFilesArray.IndexOf(file) * 100 / githubFilesArray.Count);
 
                             // Supprime l'ancienne base de données
                             string[] localDbFiles = Directory.GetFiles(Environment.CurrentDirectory, "PR_BDD_*.db");
@@ -170,7 +161,7 @@ namespace StorageLayer
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Erreur lors de la mise à jour : " + ex.Message);
+                throw new Exception(ex.Message, ex);
             }
 
             return null; // Aucune mise à jour effectuée
@@ -208,11 +199,18 @@ namespace StorageLayer
         /// <param name="req">SQLiteCommand</param>
         public void ExecuteNonQuery(string req)
         {
-            connection.Open();
-            var command = connection.CreateCommand();
-            command.CommandText = req;
-            command.ExecuteNonQuery();
-            connection.Close();
+            try
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = req;
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch (Exception)
+            {
+                throw new Exception("Erreur avec la base de données :\n" + req);
+            }
         }
 
         /// <summary>
@@ -222,11 +220,18 @@ namespace StorageLayer
         /// <returns>SQLiteDataReader</returns>
         public SQLiteDataReader ExecuteReader(string req)
         {
-            connection.Open();
-            var command = connection.CreateCommand();
-            command.CommandText = req;
-            var reader = command.ExecuteReader();
-            return reader;
+            try
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = req;
+                var reader = command.ExecuteReader();
+                return reader;
+            }
+            catch (Exception)
+            {
+                throw new Exception("Erreur avec la base de données :\n" + req);
+            }
         }
 
         /// <summary>

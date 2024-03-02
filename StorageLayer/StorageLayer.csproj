@@ -7,13 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Installation.sql" />
-    <None Remove="PR_BDD_1.0.42.db" />
-    <None Remove="PR_BDD_1.0.43.db" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="PR_BDD_1.0.42.db">
+    <Content Include="PR_BDD_*.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -27,11 +21,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="PRBaseDeDonnee.db">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Update="PR_BDD_v1.db">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    <Compile Update="Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
 

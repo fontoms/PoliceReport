@@ -1,7 +1,6 @@
 ﻿using LogicLayer.Effectif;
 using LogicLayer.Grade;
 using LogicLayer.Infraction;
-using LogicLayer.Outils.Cryptage;
 using LogicLayer.Patrouille;
 using LogicLayer.PositionVeh;
 using StorageLayer;
@@ -368,31 +367,46 @@ namespace PoliceReport.Views
             _chargementWindow = new ChargementWindow("Mise à jour de PoliceReport...");
             _chargementWindow.Show();
 
-            BaseDao database = new BaseDao();
-            database.ProgressChanged += (sender, e) =>
+            try
             {
-                _chargementWindow.ProgressValue = e;
-            };
-            string version = await database.Update();
+                BaseDao database = new BaseDao();
+                database.ProgressChanged += (sender, e) =>
+                {
+                    _chargementWindow.ProgressValue = e;
+                };
+                string version = await database.Update();
 
-            if (version != null)
-            {
-                _chargementWindow.Close();
-                LoadAllElements();
-                MessageBox.Show("La base de données a été mise à jour avec succès.\n\nNouvelle version : " + version, "Mise à jour", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (version != null)
+                {
+                    _chargementWindow.Close();
+                    LoadAllElements();
+                    MessageBox.Show("La base de données a été mise à jour avec succès.\n\nNouvelle version : " + version, "Mise à jour", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    _chargementWindow.Close();
+                    MessageBox.Show("La base de données est déjà à jour.", "Mise à jour", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
             }
-            else
+            catch (Exception ex)
             {
                 _chargementWindow.Close();
-                MessageBox.Show("La base de données est déjà à jour.", "Mise à jour", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Erreur lors de la mise à jour de la base de données :\n" + ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void LoadAllElements()
         {
-            LoadEffectifs();
-            LoadGradeType();
-            LoadActions();
+            try
+            {
+                LoadEffectifs();
+                LoadGradeType();
+                LoadActions();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur lors du chargement des éléments :\n\n" + ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

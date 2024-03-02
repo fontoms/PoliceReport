@@ -1,5 +1,4 @@
-﻿using LogicLayer.Outils.Cryptage;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -16,9 +15,6 @@ namespace PoliceReport.Views
         private static string owner = "Fontom71";
         private static string repo = "PoliceReport";
         private string repoUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
-#if DEBUG
-        private string githubToken = "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";
-#endif
 
         public MiseAJourWindow()
         {
@@ -72,7 +68,7 @@ namespace PoliceReport.Views
 
         private async void DisplayMessageBoxError(Exception ex)
         {
-            MessageBoxResult result = MessageBox.Show($"Erreur lors de la vérification des mises à jour : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBoxResult result = MessageBox.Show($"Erreur lors de la vérification des mises à jour :\n{ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             if (result == MessageBoxResult.OK)
             {
                 MainWindow mainWindow = new MainWindow();
@@ -88,9 +84,6 @@ namespace PoliceReport.Views
         private bool CheckUpdateAvailable(out Version latestVersion, out Version currentVersion)
         {
             WebClient client = new WebClient();
-#if DEBUG
-            client.Headers.Add("Authorization", "Bearer " + githubToken);
-#endif
             client.Headers.Add("User-Agent", "request");
             string releaseInfoJson = client.DownloadString(repoUrl);
             string latestVersionStr = releaseInfoJson.Split(new string[] { "\"tag_name\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "");
@@ -122,9 +115,6 @@ namespace PoliceReport.Views
                 progressBar.Visibility = Visibility.Visible;
 
                 WebClient client = new WebClient();
-#if DEBUG
-                client.Headers.Add("Authorization", "Bearer " + githubToken);
-#endif
                 client.Headers.Add("User-Agent", "request");
                 string releaseInfoJson = await client.DownloadStringTaskAsync(repoUrl);
                 string latestSetupUrl = releaseInfoJson.Split(new string[] { "\"browser_download_url\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "").TrimEnd('}');
