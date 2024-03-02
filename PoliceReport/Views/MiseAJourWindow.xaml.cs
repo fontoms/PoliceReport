@@ -1,5 +1,4 @@
-﻿using StorageLayer;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -15,7 +14,7 @@ namespace PoliceReport.Views
         private bool updateAvailable = false;
         private static string owner = "Fontom71";
         private static string repo = "PoliceReport";
-        private static string repoUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
+        private string repoUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
 
         public MiseAJourWindow()
         {
@@ -69,7 +68,7 @@ namespace PoliceReport.Views
 
         private async void DisplayMessageBoxError(Exception ex)
         {
-            MessageBoxResult result = MessageBox.Show($"Erreur lors de la vérification des mises à jour : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBoxResult result = MessageBox.Show($"Erreur lors de la vérification des mises à jour :\n{ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             if (result == MessageBoxResult.OK)
             {
                 MainWindow mainWindow = new MainWindow();
