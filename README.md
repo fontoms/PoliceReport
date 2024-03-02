@@ -26,7 +26,7 @@ Aucunes données personnelles n'est récupérées par le logiciel, seul une base
 - Bouton de réinitialisation à la fin de service
 - Bloc-notes pour ne rien oublier
 
-![image](https://github.com/Fontom71/PoliceReport/assets/64289613/61412249-6295-4af8-a0cb-44e09c7e798c)
+![image](https://github.com/Fontom71/PoliceReport/assets/64289613/2bd5e79a-9826-4675-9869-8e505a4a6a02)
 
 ### Ajout / Modification d'une patrouille
 
