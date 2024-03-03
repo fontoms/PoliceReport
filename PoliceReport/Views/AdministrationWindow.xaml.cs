@@ -293,7 +293,7 @@ namespace PoliceReport
                                 dynamic daoInstance = Activator.CreateInstance(daoType);
 
                                 // Vérifie si la classe DAO a une méthode Add ou Update en fonction de estAjout
-                                MethodInfo actionMethod = estAjout ? daoType.GetMethod("Add") : daoType.GetMethod("Update");
+                                MethodInfo actionMethod = estAjout ? daoType.GetMethod("Add") : daoType.GetMethod("Update", [newItem.GetType()]);
 
                                 if (actionMethod != null)
                                 {
