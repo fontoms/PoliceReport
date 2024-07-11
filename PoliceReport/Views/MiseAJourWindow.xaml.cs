@@ -12,9 +12,6 @@ namespace PoliceReport.Views
     public partial class MiseAJourWindow : Window
     {
         private bool updateAvailable = false;
-        private static string owner = "Fontom71";
-        private static string repo = "PoliceReport";
-        private string repoUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
 
         public MiseAJourWindow()
         {
@@ -85,7 +82,7 @@ namespace PoliceReport.Views
         {
             WebClient client = new WebClient();
             client.Headers.Add("User-Agent", "request");
-            string releaseInfoJson = client.DownloadString(repoUrl);
+            string releaseInfoJson = client.DownloadString(Constants.ApiRepoUrl);
             string latestVersionStr = releaseInfoJson.Split(new string[] { "\"tag_name\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "");
             latestVersion = new Version(latestVersionStr);
             currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
@@ -116,7 +113,7 @@ namespace PoliceReport.Views
 
                 WebClient client = new WebClient();
                 client.Headers.Add("User-Agent", "request");
-                string releaseInfoJson = await client.DownloadStringTaskAsync(repoUrl);
+                string releaseInfoJson = await client.DownloadStringTaskAsync(Constants.ApiRepoUrl);
                 string latestSetupUrl = releaseInfoJson.Split(new string[] { "\"browser_download_url\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "").TrimEnd('}');
                 string setupFileName = Path.Combine(Path.GetTempPath(), "PoliceReportSetup.exe");
                 Uri uri = new Uri(latestSetupUrl);

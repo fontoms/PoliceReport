@@ -8,7 +8,7 @@ namespace PoliceReport.Views
     /// </summary>
     public partial class ConnexionWindow : Window
     {
-        private const string MotDePasseAttendu = "06c13f0db1e5f86ef5adc575da5a1d89528a0fdd93a568abdbe93145dc7e5d28";
+        private const string MotDePasseAttendu = Constants.AdminPassword;
 
         public bool MotDePasseCorrect { get; private set; }
 

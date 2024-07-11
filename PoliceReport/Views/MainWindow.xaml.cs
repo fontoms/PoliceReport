@@ -28,11 +28,11 @@ namespace PoliceReport.Views
         {
             InitializeComponent();
 
-            versionAuthorLbl.Content = "Version " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version + " - Fontom's (677154388065910822)";
+            versionAuthorLbl.Content = "Version " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version + " - " + Constants.Author;
             versionAuthorLbl.MouseLeftButtonDown += (sender, e) =>
             {
                 // Ouvrir le lien URL lorsque le label est cliqué
-                string url = $"https://github.com/Fontom71/{AppDomain.CurrentDomain.FriendlyName}";
+                string url = Constants.RepoUrl;
                 Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
             };
 
@@ -47,7 +47,6 @@ namespace PoliceReport.Views
 
             // Charger les autres éléments une fois que la base de données est prête
             LoadAllElements();
-            //idTextBox.Focus();
             effectifComboBox.Focus();
         }
 
@@ -72,23 +71,6 @@ namespace PoliceReport.Views
             else
             {
                 effectifComboBox.IsEnabled = false;
-            }
-        }
-
-        private void LoadGradeType()
-        {
-            gradeComboBox.ItemsSource = null;
-
-            GradesDao gradesDao = new GradesDao();
-            gradeComboBox.ItemsSource = gradesDao.GetAll();
-
-            if (gradeComboBox.Items.Count > 0)
-            {
-                gradeComboBox.SelectedIndex = 0;
-            }
-            else
-            {
-                gradeComboBox.IsEnabled = false;
             }
         }
 
@@ -301,9 +283,7 @@ namespace PoliceReport.Views
 
         private void startServiceBtn_Click(object sender, RoutedEventArgs e)
         {
-            idTextBox.IsEnabled = false;
             effectifComboBox.IsEnabled = false;
-            gradeComboBox.IsEnabled = false;
             updateBtn.IsEnabled = false;
             startServiceLbl.Content = "Prise de service : " + DateTime.Now.ToString("dd/MM/yyyy HH:mm");
             startServiceBtn.IsEnabled = !startServiceBtn.IsEnabled;
@@ -334,10 +314,7 @@ namespace PoliceReport.Views
             endServiceBtn.IsEnabled = false;
             genererRapportButton.IsEnabled = false;
             restartServiceBtn.IsEnabled = false;
-            idTextBox.IsEnabled = true;
-            idTextBox.Text = "";
             effectifComboBox.IsEnabled = true;
-            gradeComboBox.IsEnabled = true;
             updateBtn.IsEnabled = true;
             Patrouilles.Clear();
             AddPatrouilleBtn.IsEnabled = false;
@@ -355,8 +332,8 @@ namespace PoliceReport.Views
             if (connexionWindow.MotDePasseCorrect)
             {
 #endif
-            AdministrationWindow administrationWindow = new AdministrationWindow();
-            administrationWindow.Show();
+                AdministrationWindow administrationWindow = new AdministrationWindow();
+                administrationWindow.Show();
 #if !DEBUG
             }
 #endif
@@ -400,7 +377,6 @@ namespace PoliceReport.Views
             try
             {
                 LoadEffectifs();
-                LoadGradeType();
                 LoadActions();
             }
             catch (Exception ex)

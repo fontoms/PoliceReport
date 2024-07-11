@@ -42,20 +42,6 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Grid x:Name="Grades" Margin="150,100,150,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Visibility="Hidden">
-                <Label x:Name="gradeLabel" Content="Grade :" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Left"/>
-                <ComboBox x:Name="gradeComboBox" VerticalAlignment="Center" Margin="54,0,0,0" TabIndex="2">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Nom}"/>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-            </Grid>
-            <Grid Margin="150,50,150,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Visibility="Hidden">
-                <Label Content="ID :" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <TextBox x:Name="idTextBox" TextWrapping="Wrap" Margin="29,0,0,0" FontSize="14" VerticalAlignment="Center" MaxLines="1" MaxLength="18" TabIndex="1"/>
-            </Grid>
             <Button x:Name="genererRapportButton" Content="Générer le rapport de patrouille" VerticalAlignment="Bottom" Margin="50,0,50,10" FontSize="16" FontWeight="Bold" Foreground="#FFDE1E1E" Click="genererRapportButton_Click" Height="25" Grid.ColumnSpan="2" IsEnabled="False" TabIndex="6"/>
             <Button x:Name="startServiceBtn" Content="Début de service" Margin="50,0,20,75" FontSize="16" FontWeight="Bold" Foreground="#FF00C800" VerticalAlignment="Bottom" Height="30" Click="startServiceBtn_Click" TabIndex="3"/>
             <Button x:Name="endServiceBtn" Grid.Column="1" Content="Fin de service" VerticalAlignment="Bottom" Margin="20,0,50,75" Height="30" FontWeight="Bold" FontSize="16" Foreground="#FFC80000" IsEnabled="False" Click="endServiceBtn_Click" TabIndex="5"/>
