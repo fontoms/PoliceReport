@@ -8,7 +8,7 @@ namespace StorageLayer.Dao
 
         public void Add(Unite unite)
         {
-            var req = "INSERT INTO Unites (Nom, Type, UnitSpe) VALUES ('" + unite.Nom + "', '" + unite.Type + "', '" + unite.UnitSpe + "')";
+            var req = "INSERT INTO Unites (Nom, Type, UnitSpecialisation) VALUES ('" + unite.Nom + "', '" + unite.Type + "', '" + unite.UnitSpecialisation + "')";
             ExecuteNonQuery(req);
         }
 
@@ -43,7 +43,7 @@ namespace StorageLayer.Dao
 
         public List<Unite> GetAllBySpecialisation(string specialisation)
         {
-            var req = "SELECT * FROM Unites WHERE UnitSpe = '" + specialisation + "' ORDER BY UnitSpe ASC";
+            var req = "SELECT * FROM Unites WHERE UnitSpecialisation = '" + specialisation + "' ORDER BY UnitSpecialisation ASC";
             var reader = ExecuteReader(req);
             var unites = new List<Unite>();
             while (reader.Read())
@@ -69,7 +69,7 @@ namespace StorageLayer.Dao
 
         public void Update(Unite unite)
         {
-            var req = "UPDATE Unites SET Nom = '" + unite.Nom + "', Type = '" + unite.Type + "', UnitSpe = '" + unite.UnitSpe + "' WHERE Id = " + unite.Id;
+            var req = "UPDATE Unites SET Nom = '" + unite.Nom + "', Type = '" + unite.Type + "', UnitSpecialisation = '" + unite.UnitSpecialisation + "' WHERE Id = " + unite.Id;
             ExecuteNonQuery(req);
         }
     }

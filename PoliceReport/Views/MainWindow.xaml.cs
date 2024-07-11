@@ -332,8 +332,8 @@ namespace PoliceReport.Views
             if (connexionWindow.MotDePasseCorrect)
             {
 #endif
-                AdministrationWindow administrationWindow = new AdministrationWindow();
-                administrationWindow.Show();
+            AdministrationWindow administrationWindow = new AdministrationWindow();
+            administrationWindow.Show();
 #if !DEBUG
             }
 #endif

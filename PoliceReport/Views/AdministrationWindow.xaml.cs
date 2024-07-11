@@ -140,19 +140,16 @@ namespace PoliceReport
 
         private void GérerAjoutModification(bool estAjout)
         {
-            // Logique pour ajouter ou modifier un élément dans la liste
             if (TableSelector.SelectedItem != null)
             {
                 string selectedTable = ((ComboBoxItem)TableSelector.SelectedItem).Content.ToString();
                 string tableName = selectedTable;
 
-                // Vérifier si le nom se termine par "s", si oui, le supprimer
                 if (selectedTable.EndsWith("s"))
                 {
                     selectedTable = selectedTable.Remove(selectedTable.Length - 1);
                 }
 
-                // Construire le chemin complet de la classe dans LogicLayer
                 string logicLayerNamespace = "LogicLayer." + selectedTable + "." + selectedTable;
                 Type logicLayerType = Type.GetType(logicLayerNamespace + ", LogicLayer");
 
@@ -160,12 +157,10 @@ namespace PoliceReport
                 {
                     if (!estAjout && DataGridItems.SelectedItem == null)
                     {
-                        // Si aucune ligne n'est sélectionnée pour la modification
                         MessageBox.Show("Veuillez sélectionner un élément à modifier.", tableName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                         return;
                     }
 
-                    // Créer une fenêtre dynamique pour ajouter/modifier un élément
                     dynamic addWindow = new Window();
                     addWindow.Title = estAjout ? "Ajouter " + selectedTable : "Modifier " + selectedTable;
                     addWindow.Width = Width / 2;
@@ -175,82 +170,87 @@ namespace PoliceReport
                     addWindow.Background = Background;
                     addWindow.Icon = Icon;
 
-                    // Créer un Grid pour contenir les contrôles
                     Grid grid = new Grid();
                     SolidColorBrush brush = new SolidColorBrush();
                     brush.Color = Color.FromRgb(240, 240, 240);
                     brush.Opacity = 0.85;
                     grid.Background = brush;
 
-                    // Créer un StackPanel pour contenir les contrôles
                     StackPanel stackPanel = new StackPanel();
                     stackPanel.Orientation = Orientation.Vertical;
                     stackPanel.Margin = new Thickness(50, 10, 50, 10);
-
-                    // Ajouter le StackPanel au Grid
                     grid.Children.Add(stackPanel);
 
-                    // Récupérer les colonnes de DataGridItems
                     var columns = DataGridItems.Columns;
 
                     foreach (var column in columns)
                     {
-                        // Créer un label pour le nom de la colonne
                         Label label = new Label();
                         label.Content = column.Header.ToString();
                         label.Margin = new Thickness(0, 10, 0, 0);
 
-                        // Créer une TextBox pour l'utilisateur à saisir
-                        TextBox textBox = new TextBox();
-                        textBox.Name = "TextBox_" + column.Header.ToString(); // Nom unique pour référencer plus tard
-                        textBox.Margin = new Thickness(0, 0, 0, 10);
+                        string tableForeignKey = CheckIfForeignKey(column.Header.ToString());
 
-                        // Si la colonne est "Id", pré-remplir avec un numéro incrémenté
-                        if (estAjout && column.Header.ToString() == "Id")
+                        if (tableForeignKey != null)
                         {
-                            // Trouver le prochain numéro d'Id disponible
-                            int? nextId = TrouverProchainIdDisponible() as int?;
+                            dynamic classe = DataGridItems.SelectedItem;
+                            PropertyInfo selectedProperty = classe.GetType().GetProperty(column.Header.ToString());
+                            object value = selectedProperty.GetValue(classe);
 
-                            if (nextId.HasValue)
+                            ComboBox comboBox = new ComboBox();
+                            comboBox.Name = "ComboBox_" + column.Header.ToString();
+                            comboBox.Margin = new Thickness(0, 0, 0, 10);
+                            comboBox.DisplayMemberPath = "Nom";
+                            comboBox.SelectedValuePath = "Type";
+                            comboBox.ItemsSource = GetForeignKeyData(tableForeignKey);
+                            comboBox.SelectedValue = value;
+                            stackPanel.Children.Add(label);
+                            stackPanel.Children.Add(comboBox);
+                        }
+                        else
+                        {
+                            TextBox textBox = new TextBox();
+                            textBox.Name = "TextBox_" + column.Header.ToString();
+                            textBox.Margin = new Thickness(0, 0, 0, 10);
+
+                            if (estAjout && column.Header.ToString() == "Id")
                             {
-                                // Pré-remplir le champ "Id" avec le prochain numéro
-                                textBox.Text = nextId.Value.ToString();
-                                textBox.IsEnabled = false; // Désactiver la modification de l'Id
+                                int? nextId = TrouverProchainIdDisponible() as int?;
+                                if (nextId.HasValue)
+                                {
+                                    textBox.Text = nextId.Value.ToString();
+                                    textBox.IsEnabled = false;
+                                }
+                                else
+                                {
+                                    textBox.Text = "";
+                                    textBox.IsEnabled = true;
+                                }
                             }
-                            else
+                            else if (!estAjout && column.Header.ToString() == "Id")
                             {
-                                textBox.Text = ""; // Réinitialiser le champ "Id" si aucun ID disponible
-                                textBox.IsEnabled = true; // Activer la modification de l'Id
+                                dynamic selectedItem = DataGridItems.SelectedItem;
+                                textBox.Text = selectedItem.Id.ToString();
+                                textBox.IsEnabled = false;
                             }
-                        }
-                        else if (!estAjout && column.Header.ToString() == "Id")
-                        {
-                            // Si c'est une modification, remplir le champ "Id" avec la valeur existante
-                            dynamic selectedItem = DataGridItems.SelectedItem;
-                            textBox.Text = selectedItem.Id.ToString();
-                            textBox.IsEnabled = false; // Désactiver la modification de l'Id
-                        }
-                        else if (!estAjout)
-                        {
-                            // Si c'est une modification, remplir les champs avec les valeurs existantes
-                            dynamic selectedItem = DataGridItems.SelectedItem;
-                            object propertyValue = selectedItem.GetType().GetProperty(column.Header.ToString()).GetValue(selectedItem).ToString();
-                            textBox.Text = propertyValue.ToString();
-                        }
+                            else if (!estAjout)
+                            {
+                                dynamic selectedItem = DataGridItems.SelectedItem;
+                                object propertyValue = selectedItem.GetType().GetProperty(column.Header.ToString()).GetValue(selectedItem).ToString();
+                                textBox.Text = propertyValue.ToString();
+                            }
 
-                        // Ajouter label et textBox au StackPanel
-                        stackPanel.Children.Add(label);
-                        stackPanel.Children.Add(textBox);
+                            stackPanel.Children.Add(label);
+                            stackPanel.Children.Add(textBox);
+                        }
                     }
 
-                    // Créer un bouton "Ajouter" ou "Modifier" en fonction de l'opération
                     Button actionButton = new Button();
                     actionButton.Content = estAjout ? "Ajouter" : "Modifier";
                     actionButton.Margin = new Thickness(0, 10, 0, 20);
                     actionButton.Padding = new Thickness(10, 5, 10, 5);
                     actionButton.Click += (obj, args) =>
                     {
-                        // Vérifier que tous les champs sont remplis
                         bool allFieldsFilled = true;
                         foreach (var child in stackPanel.Children)
                         {
@@ -259,52 +259,60 @@ namespace PoliceReport
                                 allFieldsFilled = false;
                                 break;
                             }
+                            else if (child is ComboBox comboBox && comboBox.SelectedItem == null)
+                            {
+                                allFieldsFilled = false;
+                                break;
+                            }
                         }
 
-                        // Si tous les champs sont remplis, procéder à l'ajout/modification
                         if (allFieldsFilled)
                         {
-                            // Créer un nouvel objet avec les valeurs des TextBox
                             dynamic newItem = Activator.CreateInstance(logicLayerType);
 
                             foreach (var child in stackPanel.Children)
                             {
                                 if (child is TextBox textBox)
                                 {
-                                    // Récupérer le nom de la propriété à partir du nom de la TextBox
                                     string propertyName = textBox.Name.Replace("TextBox_", "");
-                                    // Trouver la propriété correspondante dans l'objet et définir sa valeur
                                     PropertyInfo property = logicLayerType.GetProperty(propertyName);
                                     if (property != null)
                                     {
                                         property.SetValue(newItem, Convert.ChangeType(textBox.Text, property.PropertyType));
                                     }
                                 }
+                                else if (child is ComboBox comboBox)
+                                {
+                                    string propertyName = comboBox.Name.Replace("ComboBox_", "");
+                                    PropertyInfo property = logicLayerType.GetProperty(propertyName);
+                                    if (property != null)
+                                    {
+                                        dynamic classe = comboBox.SelectedItem;
+                                        PropertyInfo selectedProperty = classe.GetType().GetProperty("Type");
+                                        object value = selectedProperty.GetValue(classe);
+
+
+                                        property.SetValue(newItem, Convert.ChangeType(value, property.PropertyType));
+                                    }
+                                }
                             }
 
                             string daoClassName = tableName + "Dao";
-
-                            // Assurez-vous que la classe DAO existe dans le namespace approprié (ici, j'utilise StorageLayer.Dao)
                             Type daoType = Type.GetType("StorageLayer.Dao." + daoClassName + ", StorageLayer");
 
                             if (daoType != null)
                             {
-                                // Crée une instance de la classe DAO
                                 dynamic daoInstance = Activator.CreateInstance(daoType);
-
-                                // Vérifie si la classe DAO a une méthode Add ou Update en fonction de estAjout
                                 MethodInfo actionMethod = estAjout ? daoType.GetMethod("Add") : daoType.GetMethod("Update", [newItem.GetType()]);
 
                                 if (actionMethod != null)
                                 {
                                     actionMethod.Invoke(daoInstance, new object[] { newItem });
-
-                                    // Rafraîchir l'affichage
                                     AfficherTable(tableName);
                                 }
                             }
 
-                            addWindow.Close(); // Fermer la fenêtre une fois l'ajout/modification terminé
+                            addWindow.Close();
                         }
                         else
                         {
@@ -312,22 +320,67 @@ namespace PoliceReport
                         }
                     };
 
-                    // Ajouter le bouton "Ajouter" ou "Modifier" au StackPanel
                     stackPanel.Children.Add(actionButton);
-
-                    // Ajouter le StackPanel à la fenêtre
                     addWindow.Content = grid;
-
-                    // Afficher la fenêtre
                     addWindow.ShowDialog();
                 }
             }
             else
             {
-                // Si aucune table n'est sélectionnée
                 MessageBox.Show("Veuillez sélectionner une table.", Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
         }
+
+        // Méthode pour vérifier si une colonne correspond à une table de la base de données
+        private string CheckIfForeignKey(string columnName)
+        {
+            string searchString = columnName + "s";
+            List<string> tables = Database.GetTables();
+            foreach (string table in tables)
+            {
+                if (searchString.Contains(table, StringComparison.Ordinal))
+                {
+                    return table;
+                }
+            }
+            return null;
+        }
+
+
+        // Méthode pour récupérer les données de la table correspondante
+        private dynamic GetForeignKeyData(string tableName)
+        {
+            // Nom de la classe DAO est formé en concaténant le nom de la table avec "Dao" à la fin
+            string daoClassName = tableName + "Dao";
+
+            // Assurez-vous que la classe DAO existe dans le namespace approprié (ici, j'utilise StorageLayer.Dao)
+            Type daoType = Type.GetType("StorageLayer.Dao." + daoClassName + ", StorageLayer");
+
+            if (daoType != null)
+            {
+                // Crée une instance de la classe DAO
+                dynamic daoInstance = Activator.CreateInstance(daoType);
+
+                // Vérifie si la classe DAO a une méthode GetAll()
+                MethodInfo getAllRowsMethod = daoType.GetMethod("GetAll");
+
+                if (getAllRowsMethod != null)
+                {
+                    // Appel de la méthode GetAll() pour récupérer les données de la table
+                    dynamic rows = getAllRowsMethod.Invoke(daoInstance, null);
+
+                    return rows;
+                }
+                else
+                {
+                    // Si la classe DAO correspondante n'a pas de méthode GetAll()
+                    // Affichez un message d'erreur
+                    MessageBox.Show("Erreur : Impossible de récupérer les données de la table.", daoClassName, MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            return null;
+        }
+
 
         // Méthode pour trouver le prochain Id disponible
         private object TrouverProchainIdDisponible()

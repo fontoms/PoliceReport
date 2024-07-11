@@ -4,7 +4,7 @@
     {
         #region Attributs
         private int _id;
-        private string _vehSpe;
+        private string _vehSpecialisation;
         private string _nom;
         #endregion
 
@@ -21,14 +21,14 @@
             }
         }
 
-        public string VehSpe
+        public string VehSpecialisation
         {
-            get => _vehSpe;
+            get => _vehSpecialisation;
             set
             {
-                if (_vehSpe != value)
+                if (_vehSpecialisation != value)
                 {
-                    _vehSpe = value;
+                    _vehSpecialisation = value;
                 }
             }
         }
@@ -50,16 +50,16 @@
         {
         }
 
-        public Vehicule(string vehSpe, string nom)
+        public Vehicule(string vehSpecialisation, string nom)
         {
-            VehSpe = vehSpe;
+            VehSpecialisation = vehSpecialisation;
             Nom = nom;
         }
 
-        public Vehicule(int id, string vehSpe, string nom)
+        public Vehicule(int id, string vehSpecialisation, string nom)
         {
             Id = id;
-            VehSpe = vehSpe;
+            VehSpecialisation = vehSpecialisation;
             Nom = nom;
         }
     }

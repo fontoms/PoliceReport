@@ -191,7 +191,7 @@ namespace PoliceReport.Views
                 Unite unite = unitesDao.GetType(typeUnite);
 
                 // Si l'unité est spécialisée dans OPJ, chargez tous les véhicules contenant "bana" dans le nom
-                if (unite.UnitSpe == "OPJ")
+                if (unite.UnitSpecialisation == "OPJ")
                 {
                     VehiculesDao vehiculesDao = new VehiculesDao();
                     List<Vehicule> vehicules = vehiculesDao.GetAllByNameContains("bana");
@@ -211,7 +211,7 @@ namespace PoliceReport.Views
                 {
                     // Si ce n'est pas une unité spécialisée dans OPJ, chargez les véhicules correspondants à cette unité
                     VehiculesDao vehiculesDao = new VehiculesDao();
-                    List<Vehicule> vehicules = vehiculesDao.GetAllBySpecialisation(unite.UnitSpe);
+                    List<Vehicule> vehicules = vehiculesDao.GetAllBySpecialisation(unite.UnitSpecialisation);
 
                     chargementVehicules.MaxValue = vehicules.Count;
 

@@ -6,7 +6,7 @@
         private int _id;
         private string _type;
         private string _nom;
-        private string _unitSpe;
+        private string _unitSpecialisation;
         #endregion
 
         #region Properties
@@ -46,14 +46,14 @@
             }
         }
 
-        public string UnitSpe
+        public string UnitSpecialisation
         {
-            get => _unitSpe;
+            get => _unitSpecialisation;
             set
             {
-                if (_unitSpe != value)
+                if (_unitSpecialisation != value)
                 {
-                    _unitSpe = value;
+                    _unitSpecialisation = value;
                 }
             }
         }
@@ -63,19 +63,19 @@
         {
         }
 
-        public Unite(string type, string nom, string uniSpe)
+        public Unite(string type, string nom, string uniSpecialisation)
         {
             Type = type;
             Nom = nom;
-            UnitSpe = uniSpe;
+            UnitSpecialisation = uniSpecialisation;
         }
 
-        public Unite(int id, string type, string nom, string uniSpe)
+        public Unite(int id, string type, string nom, string uniSpecialisation)
         {
             Id = id;
             Type = type;
             Nom = nom;
-            UnitSpe = uniSpe;
+            UnitSpecialisation = uniSpecialisation;
         }
     }
 }
