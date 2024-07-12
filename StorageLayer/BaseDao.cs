@@ -1,17 +1,14 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using LogicLayer.Outils;
+using Newtonsoft.Json.Linq;
 using System.Data.SQLite;
 using System.Net;
-using System.Reflection;
 
 namespace StorageLayer
 {
     public class BaseDao
     {
         private SQLiteConnection connection;
-        private static string owner = "Fontom71";
-        private static string repo = AppDomain.CurrentDomain.FriendlyName;
-        private static string folder = Assembly.GetExecutingAssembly().GetName().Name;
-        private string githubContentsUrl = $"https://api.github.com/repos/{owner}/{repo}/contents/{folder}";
+        private string githubContentsUrl = Constants.ApiContentUrl;
         public event EventHandler<double> ProgressChanged;
 
         /// <summary>
