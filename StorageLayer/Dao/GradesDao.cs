@@ -1,4 +1,5 @@
 ﻿using LogicLayer.Grade;
+using System.Data.SQLite;
 
 namespace StorageLayer.Dao
 {
@@ -19,21 +20,21 @@ namespace StorageLayer.Dao
 
         public void Add(Grade grade)
         {
-            var req = "INSERT INTO Grades (Type, Nom) VALUES ('" + grade.Type + "', '" + grade.Nom + "')";
+            string req = "INSERT INTO Grades (Type, Nom) VALUES ('" + grade.Type + "', '" + grade.Nom + "')";
             ExecuteNonQuery(req);
         }
 
         public void Remove(Grade grade)
         {
-            var req = "DELETE FROM Grades WHERE Id = " + grade.Id;
+            string req = "DELETE FROM Grades WHERE Id = " + grade.Id;
             ExecuteNonQuery(req);
         }
 
         public List<Grade> GetAll()
         {
-            var req = "SELECT * FROM Grades";
-            var reader = ExecuteReader(req);
-            var grades = new List<Grade>();
+            string req = "SELECT * FROM Grades";
+            SQLiteDataReader reader = ExecuteReader(req);
+            List<Grade> grades = [];
             while (reader.Read())
             {
                 grades.Add(new Grade(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
@@ -45,7 +46,7 @@ namespace StorageLayer.Dao
 
         public void Update(Grade grade)
         {
-            var req = "UPDATE Grades SET Type = '" + grade.Type + "', Nom = '" + grade.Nom + "' WHERE Id = " + grade.Id;
+            string req = "UPDATE Grades SET Type = '" + grade.Type + "', Nom = '" + grade.Nom + "' WHERE Id = " + grade.Id;
             ExecuteNonQuery(req);
         }
     }

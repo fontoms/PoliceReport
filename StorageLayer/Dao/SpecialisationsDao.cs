@@ -1,4 +1,5 @@
 ﻿using LogicLayer.Specialisation;
+using System.Data.SQLite;
 
 namespace StorageLayer.Dao
 {
@@ -19,21 +20,21 @@ namespace StorageLayer.Dao
 
         public void Add(Specialisation specialisation)
         {
-            var req = "INSERT INTO Specialisations (Nom, Type) VALUES ('" + specialisation.Nom + "', '" + specialisation.Type + "')";
+            string req = "INSERT INTO Specialisations (Nom, Type) VALUES ('" + specialisation.Nom + "', '" + specialisation.Type + "')";
             ExecuteNonQuery(req);
         }
 
         public void Remove(Specialisation specialisation)
         {
-            var req = "DELETE FROM Specialisations WHERE Id = " + specialisation.Id;
+            string req = "DELETE FROM Specialisations WHERE Id = " + specialisation.Id;
             ExecuteNonQuery(req);
         }
 
         public List<Specialisation> GetAll()
         {
-            var req = "SELECT * FROM Specialisations";
-            var reader = ExecuteReader(req);
-            var specialisations = new List<Specialisation>();
+            string req = "SELECT * FROM Specialisations";
+            SQLiteDataReader reader = ExecuteReader(req);
+            List<Specialisation> specialisations = [];
             while (reader.Read())
             {
                 specialisations.Add(new Specialisation(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
@@ -45,7 +46,7 @@ namespace StorageLayer.Dao
 
         public void Update(Specialisation specialisation)
         {
-            var req = "UPDATE Specialisations SET Nom = '" + specialisation.Nom + "', Type = '" + specialisation.Type + "' WHERE Id = " + specialisation.Id;
+            string req = "UPDATE Specialisations SET Nom = '" + specialisation.Nom + "', Type = '" + specialisation.Type + "' WHERE Id = " + specialisation.Id;
             ExecuteNonQuery(req);
         }
     }

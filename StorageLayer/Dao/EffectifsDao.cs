@@ -1,4 +1,5 @@
 ﻿using LogicLayer.Effectif;
+using System.Data.SQLite;
 
 namespace StorageLayer.Dao
 {
@@ -19,15 +20,27 @@ namespace StorageLayer.Dao
 
         public void Add(Effectif effectif)
         {
-            var req = "INSERT INTO Effectifs (IdDiscord, Nom, Prenom, EffGrade) VALUES ('" + effectif.IdDiscord + "', '" + effectif.Nom + "', '" + effectif.Prenom + "', '" + effectif.EffGrade + "')";
+            string req = "INSERT INTO Effectifs (IdDiscord, Nom, Prenom, EffGrade) VALUES ('" + effectif.IdDiscord + "', '" + effectif.Nom + "', '" + effectif.Prenom + "', '" + effectif.EffGrade + "')";
+            ExecuteNonQuery(req);
+        }
+
+        public void Remove(Effectif effectif)
+        {
+            string req = "DELETE FROM Effectifs WHERE Id = " + effectif.Id;
+            ExecuteNonQuery(req);
+        }
+
+        public void Update(Effectif effectif)
+        {
+            string req = "UPDATE Effectifs SET IdDiscord = '" + effectif.IdDiscord + "', Nom = '" + effectif.Nom + "', Prenom = '" + effectif.Prenom + "', EffGrade = '" + effectif.EffGrade + "' WHERE Id = " + effectif.Id;
             ExecuteNonQuery(req);
         }
 
         public List<Effectif> GetAll()
         {
-            var req = "SELECT * FROM Effectifs";
-            var reader = ExecuteReader(req);
-            var effectifs = new List<Effectif>();
+            string req = "SELECT * FROM Effectifs";
+            SQLiteDataReader reader = ExecuteReader(req);
+            List<Effectif> effectifs = [];
             while (reader.Read())
             {
                 effectifs.Add(new Effectif(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4)));
@@ -39,9 +52,9 @@ namespace StorageLayer.Dao
 
         public List<Effectif> GetAllByGrade(string grade)
         {
-            var req = "SELECT * FROM Effectifs WHERE EffGrade = '" + grade + "' INNER JOIN Grades ON EffGrade = Type ORDER BY Grades.Id ASC";
-            var reader = ExecuteReader(req);
-            var effectifs = new List<Effectif>();
+            string req = "SELECT * FROM Effectifs WHERE EffGrade = '" + grade + "' INNER JOIN Grades ON EffGrade = Type ORDER BY Grades.Id ASC";
+            SQLiteDataReader reader = ExecuteReader(req);
+            List<Effectif> effectifs = [];
             while (reader.Read())
             {
                 effectifs.Add(new Effectif(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4)));
@@ -53,9 +66,9 @@ namespace StorageLayer.Dao
 
         public List<Effectif> GetAllEffectifs()
         {
-            var req = "SELECT * FROM Effectifs ORDER BY Nom ASC";
-            var reader = ExecuteReader(req);
-            var effectifs = new List<Effectif>();
+            string req = "SELECT * FROM Effectifs ORDER BY Nom ASC";
+            SQLiteDataReader reader = ExecuteReader(req);
+            List<Effectif> effectifs = [];
             while (reader.Read())
             {
                 effectifs.Add(new Effectif(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4)));
@@ -63,18 +76,6 @@ namespace StorageLayer.Dao
             reader.Close();
             CloseConnection();
             return effectifs;
-        }
-
-        public void Remove(Effectif effectif)
-        {
-            var req = "DELETE FROM Effectifs WHERE Id = " + effectif.Id;
-            ExecuteNonQuery(req);
-        }
-
-        public void Update(Effectif effectif)
-        {
-            var req = "UPDATE Effectifs SET IdDiscord = '" + effectif.IdDiscord + "', Nom = '" + effectif.Nom + "', Prenom = '" + effectif.Prenom + "', EffGrade = '" + effectif.EffGrade + "' WHERE Id = " + effectif.Id;
-            ExecuteNonQuery(req);
         }
     }
 }

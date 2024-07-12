@@ -1,4 +1,5 @@
 ﻿using LogicLayer.Action;
+using System.Data.SQLite;
 
 namespace StorageLayer.Dao
 {
@@ -19,27 +20,27 @@ namespace StorageLayer.Dao
 
         public void Add(LogicLayer.Action.Action action)
         {
-            var req = "INSERT INTO Actions (Nom, ActInfraction) VALUES ('" + action.Nom + "', '" + action.ActInfraction + "')";
+            string req = "INSERT INTO Actions (Nom, ActInfraction) VALUES ('" + action.Nom + "', '" + action.ActInfraction + "')";
             ExecuteNonQuery(req);
         }
 
         public void Remove(LogicLayer.Action.Action action)
         {
-            var req = "DELETE FROM Actions WHERE Id = " + action.Id;
+            string req = "DELETE FROM Actions WHERE Id = " + action.Id;
             ExecuteNonQuery(req);
         }
 
         public void Update(LogicLayer.Action.Action action)
         {
-            var req = "UPDATE Actions SET Nom = '" + action.Nom + "', ActInfraction = '" + action.ActInfraction + "' WHERE Id = " + action.Id;
+            string req = "UPDATE Actions SET Nom = '" + action.Nom + "', ActInfraction = '" + action.ActInfraction + "' WHERE Id = " + action.Id;
             ExecuteNonQuery(req);
         }
 
         public List<LogicLayer.Action.Action> GetAllActions()
         {
-            var req = "SELECT * FROM Actions ORDER BY Nom ASC";
-            var reader = ExecuteReader(req);
-            var actions = new List<LogicLayer.Action.Action>();
+            string req = "SELECT * FROM Actions ORDER BY Nom ASC";
+            SQLiteDataReader reader = ExecuteReader(req);
+            List<LogicLayer.Action.Action> actions = [];
             while (reader.Read())
             {
                 actions.Add(new LogicLayer.Action.Action(reader.GetString(1), DateTime.Now));
@@ -51,9 +52,9 @@ namespace StorageLayer.Dao
 
         public List<LogicLayer.Action.Action> GetAllByInfractions(string infraction)
         {
-            var req = "SELECT * FROM Actions WHERE ActInfraction = '" + infraction + "' ORDER BY ActInfraction ASC";
-            var reader = ExecuteReader(req);
-            var actions = new List<LogicLayer.Action.Action>();
+            string req = "SELECT * FROM Actions WHERE ActInfraction = '" + infraction + "' ORDER BY ActInfraction ASC";
+            SQLiteDataReader reader = ExecuteReader(req);
+            List<LogicLayer.Action.Action> actions = [];
             while (reader.Read())
             {
                 actions.Add(new LogicLayer.Action.Action(reader.GetString(1), DateTime.Now));
@@ -63,11 +64,11 @@ namespace StorageLayer.Dao
             return actions;
         }
 
-        public List<object> GetAll()
+        public List<LogicLayer.Action.Action> GetAll()
         {
-            var req = "SELECT * FROM Actions";
-            var reader = ExecuteReader(req);
-            var actions = new List<object>();
+            string req = "SELECT * FROM Actions";
+            SQLiteDataReader reader = ExecuteReader(req);
+            List<LogicLayer.Action.Action> actions = [];
             while (reader.Read())
             {
                 actions.Add(new LogicLayer.Action.Action(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));

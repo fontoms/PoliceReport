@@ -5,7 +5,7 @@
         void Add(Action action);
         void Remove(Action action);
         void Update(Action action);
-        List<object> GetAll();
+        List<Action> GetAll();
         List<Action> GetAllActions();
         List<Action> GetAllByInfractions(string infraction);
     }

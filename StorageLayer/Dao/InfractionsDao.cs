@@ -1,4 +1,5 @@
 ﻿using LogicLayer.Infraction;
+using System.Data.SQLite;
 
 namespace StorageLayer.Dao
 {
@@ -19,21 +20,21 @@ namespace StorageLayer.Dao
 
         public void Add(Infraction infraction)
         {
-            var req = "INSERT INTO Infractions (Nom, Type) VALUES ('" + infraction.Nom + "', '" + infraction.Type + "')";
+            string req = "INSERT INTO Infractions (Nom, Type) VALUES ('" + infraction.Nom + "', '" + infraction.Type + "')";
             ExecuteNonQuery(req);
         }
 
         public void Remove(Infraction infraction)
         {
-            var req = "DELETE FROM Infractions WHERE Id = " + infraction.Id;
+            string req = "DELETE FROM Infractions WHERE Id = " + infraction.Id;
             ExecuteNonQuery(req);
         }
 
         public List<Infraction> GetAll()
         {
-            var req = "SELECT * FROM Infractions";
-            var reader = ExecuteReader(req);
-            var infractions = new List<Infraction>();
+            string req = "SELECT * FROM Infractions";
+            SQLiteDataReader reader = ExecuteReader(req);
+            List<Infraction> infractions = [];
             while (reader.Read())
             {
                 infractions.Add(new Infraction(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
@@ -45,7 +46,7 @@ namespace StorageLayer.Dao
 
         public void Update(Infraction infraction)
         {
-            var req = "UPDATE Infractions SET Nom = '" + infraction.Nom + "', Type = '" + infraction.Type + "' WHERE Id = " + infraction.Id;
+            string req = "UPDATE Infractions SET Nom = '" + infraction.Nom + "', Type = '" + infraction.Type + "' WHERE Id = " + infraction.Id;
             ExecuteNonQuery(req);
         }
     }
