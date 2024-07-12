@@ -54,10 +54,8 @@ namespace PoliceReport.Views
         {
             effectifComboBox.ItemsSource = null;
 
-            EffectifsDao effectifDao = new EffectifsDao();
-            List<Effectif> effectifs = effectifDao.GetAllEffectifs();
-            GradesDao gradesDao = new GradesDao();
-            List<Grade> grades = gradesDao.GetAll();
+            List<Effectif> effectifs = EffectifsDao.Instance.GetAllEffectifs();
+            List<Grade> grades = GradesDao.Instance.GetAll();
             foreach (Effectif effectif in effectifs)
             {
                 effectif.Grade = grades.FirstOrDefault(g => g.Type == effectif.EffGrade);
@@ -82,8 +80,7 @@ namespace PoliceReport.Views
             _chargementWindow.Show();
 
             List<LogicLayer.Action.Action> actionsList = new List<LogicLayer.Action.Action>();
-            InfractionsDao infractionsDao = new InfractionsDao();
-            List<Infraction> infractions = infractionsDao.GetAll();
+            List<Infraction> infractions = InfractionsDao.Instance.GetAll();
 
             _chargementWindow.MaxValue = infractions.Count;
 
@@ -91,8 +88,7 @@ namespace PoliceReport.Views
             {
                 actionsList.Add(new LogicLayer.Action.Action(infraction.Nom, DateTime.Now));
 
-                ActionsDao actionsDao = new ActionsDao();
-                List<LogicLayer.Action.Action> actions = actionsDao.GetAllByInfractions(infraction.Nom);
+                List<LogicLayer.Action.Action> actions = ActionsDao.Instance.GetAllByInfractions(infraction.Type);
                 foreach (LogicLayer.Action.Action action in actions)
                 {
                     action.ActInfraction = infraction.Type;
@@ -109,7 +105,7 @@ namespace PoliceReport.Views
         private void actionsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             // Ajouter l'infraction sélectionnée à la liste des infractions
-            if (actionsListBox.SelectedItem != null && ((LogicLayer.Action.Action)actionsListBox.SelectedItem).ActInfraction != null)
+            if (actionsListBox.SelectedItem != null && ((LogicLayer.Action.Action)actionsListBox.SelectedItem).ActInfraction != null && !startServiceBtn.IsEnabled)
             {
                 LogicLayer.Action.Action action = new LogicLayer.Action.Action(((LogicLayer.Action.Action)actionsListBox.SelectedItem).Nom, DateTime.Now);
                 _lastActionId++;

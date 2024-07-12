@@ -4,7 +4,18 @@ namespace StorageLayer.Dao
 {
     public class SpecialisationsDao : BaseDao, ISpecialisationDao
     {
-        public SpecialisationsDao() : base() { }
+        private static SpecialisationsDao? _instance;
+
+        private SpecialisationsDao() : base() { }
+
+        public static SpecialisationsDao Instance
+        {
+            get
+            {
+                _instance ??= new SpecialisationsDao();
+                return _instance;
+            }
+        }
 
         public void Add(Specialisation specialisation)
         {
@@ -28,6 +39,7 @@ namespace StorageLayer.Dao
                 specialisations.Add(new Specialisation(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
             }
             reader.Close();
+            CloseConnection();
             return specialisations;
         }
 

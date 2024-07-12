@@ -4,7 +4,18 @@ namespace StorageLayer.Dao
 {
     public class GradesDao : BaseDao, IGradeDao
     {
-        public GradesDao() : base() { }
+        private static GradesDao? _instance;
+
+        private GradesDao() : base() { }
+
+        public static GradesDao Instance
+        {
+            get
+            {
+                _instance ??= new GradesDao();
+                return _instance;
+            }
+        }
 
         public void Add(Grade grade)
         {
@@ -28,6 +39,7 @@ namespace StorageLayer.Dao
                 grades.Add(new Grade(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
             }
             reader.Close();
+            CloseConnection();
             return grades;
         }
 

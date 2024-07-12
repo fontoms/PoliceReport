@@ -4,6 +4,19 @@ namespace StorageLayer.Dao
 {
     public class InfractionsDao : BaseDao, IInfractionDao
     {
+        private static InfractionsDao? _instance;
+
+        private InfractionsDao() : base() { }
+
+        public static InfractionsDao Instance
+        {
+            get
+            {
+                _instance ??= new InfractionsDao();
+                return _instance;
+            }
+        }
+
         public void Add(Infraction infraction)
         {
             var req = "INSERT INTO Infractions (Nom, Type) VALUES ('" + infraction.Nom + "', '" + infraction.Type + "')";
@@ -26,6 +39,7 @@ namespace StorageLayer.Dao
                 infractions.Add(new Infraction(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
             }
             reader.Close();
+            CloseConnection();
             return infractions;
         }
 

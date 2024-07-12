@@ -4,7 +4,18 @@ namespace StorageLayer.Dao
 {
     public class EffectifsDao : BaseDao, IEffectifDao
     {
-        public EffectifsDao() : base() { }
+        private static EffectifsDao? _instance;
+
+        private EffectifsDao() : base() { }
+
+        public static EffectifsDao Instance
+        {
+            get
+            {
+                _instance ??= new EffectifsDao();
+                return _instance;
+            }
+        }
 
         public void Add(Effectif effectif)
         {
@@ -22,6 +33,7 @@ namespace StorageLayer.Dao
                 effectifs.Add(new Effectif(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4)));
             }
             reader.Close();
+            CloseConnection();
             return effectifs;
         }
 
@@ -35,6 +47,7 @@ namespace StorageLayer.Dao
                 effectifs.Add(new Effectif(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4)));
             }
             reader.Close();
+            CloseConnection();
             return effectifs;
         }
 
@@ -48,6 +61,7 @@ namespace StorageLayer.Dao
                 effectifs.Add(new Effectif(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4)));
             }
             reader.Close();
+            CloseConnection();
             return effectifs;
         }
 

@@ -4,7 +4,18 @@ namespace StorageLayer.Dao
 {
     public class ActionsDao : BaseDao, IActionDao
     {
-        public ActionsDao() : base() { }
+        private static ActionsDao? _instance;
+
+        private ActionsDao() : base() { }
+
+        public static ActionsDao Instance
+        {
+            get
+            {
+                _instance ??= new ActionsDao();
+                return _instance;
+            }
+        }
 
         public void Add(LogicLayer.Action.Action action)
         {
@@ -34,6 +45,7 @@ namespace StorageLayer.Dao
                 actions.Add(new LogicLayer.Action.Action(reader.GetString(1), DateTime.Now));
             }
             reader.Close();
+            CloseConnection();
             return actions;
         }
 
@@ -47,6 +59,7 @@ namespace StorageLayer.Dao
                 actions.Add(new LogicLayer.Action.Action(reader.GetString(1), DateTime.Now));
             }
             reader.Close();
+            CloseConnection();
             return actions;
         }
 
@@ -60,6 +73,7 @@ namespace StorageLayer.Dao
                 actions.Add(new LogicLayer.Action.Action(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
             }
             reader.Close();
+            CloseConnection();
             return actions;
         }
     }

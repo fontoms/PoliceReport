@@ -4,7 +4,18 @@ namespace StorageLayer.Dao
 {
     public class UnitesDao : BaseDao, IUniteDao
     {
-        public UnitesDao() : base() { }
+        private static UnitesDao? _instance;
+
+        private UnitesDao() : base() { }
+
+        public static UnitesDao Instance
+        {
+            get
+            {
+                _instance ??= new UnitesDao();
+                return _instance;
+            }
+        }
 
         public void Add(Unite unite)
         {
@@ -25,6 +36,7 @@ namespace StorageLayer.Dao
             reader.Read();
             var unite = new Unite(reader.GetString(1), reader.GetString(2), reader.GetString(3));
             reader.Close();
+            CloseConnection();
             return unite;
         }
 
@@ -38,6 +50,7 @@ namespace StorageLayer.Dao
                 unites.Add(new Unite(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3)));
             }
             reader.Close();
+            CloseConnection();
             return unites;
         }
 
@@ -51,6 +64,7 @@ namespace StorageLayer.Dao
                 unites.Add(new Unite(reader.GetString(1), reader.GetString(2), reader.GetString(3)));
             }
             reader.Close();
+            CloseConnection();
             return unites;
         }
 
@@ -64,6 +78,7 @@ namespace StorageLayer.Dao
                 unites.Add(new Unite(reader.GetString(1), reader.GetString(2), reader.GetString(3)));
             }
             reader.Close();
+            CloseConnection();
             return unites;
         }
 

@@ -52,8 +52,8 @@ namespace PoliceReport
 
             if (daoType != null)
             {
-                // Crée une instance de la classe DAO
-                dynamic daoInstance = Activator.CreateInstance(daoType);
+                // Récupère l'instance de la classe DAO
+                dynamic daoInstance = daoType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null);
 
                 // Vérifie si la classe DAO a une méthode GetAll()
                 MethodInfo getAllRowsMethod = daoType.GetMethod("GetAll");

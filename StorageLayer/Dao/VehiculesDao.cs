@@ -4,6 +4,17 @@ namespace StorageLayer.Dao
 {
     public class VehiculesDao : BaseDao, IVehiculeDao
     {
+        private static VehiculesDao? _instance;
+
+        public static VehiculesDao Instance
+        {
+            get
+            {
+                _instance ??= new VehiculesDao();
+                return _instance;
+            }
+        }
+
         public void Add(Vehicule vehicule)
         {
             var req = "INSERT INTO Vehicules (Nom, VehSpecialisation) VALUES ('" + vehicule.Nom + "', '" + vehicule.VehSpecialisation + "')";
@@ -26,6 +37,7 @@ namespace StorageLayer.Dao
                 vehicules.Add(new Vehicule(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
             }
             reader.Close();
+            CloseConnection();
             return vehicules;
         }
 
@@ -39,6 +51,7 @@ namespace StorageLayer.Dao
                 vehicules.Add(new Vehicule(reader.GetString(1), reader.GetString(2)));
             }
             reader.Close();
+            CloseConnection();
             return vehicules;
         }
 
@@ -52,6 +65,7 @@ namespace StorageLayer.Dao
                 vehicules.Add(new Vehicule(reader.GetString(1), reader.GetString(2)));
             }
             reader.Close();
+            CloseConnection();
             return vehicules;
         }
 
@@ -65,6 +79,7 @@ namespace StorageLayer.Dao
                 vehicules.Add(new Vehicule(reader.GetString(1), reader.GetString(2)));
             }
             reader.Close();
+            CloseConnection();
             return vehicules;
         }
 

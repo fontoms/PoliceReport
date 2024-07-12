@@ -75,10 +75,8 @@ namespace PoliceReport.Views
 
         private void LoadEffectifs()
         {
-            EffectifsDao effectifsDao = new EffectifsDao();
-            List<Effectif> effectifs = effectifsDao.GetAllEffectifs();
-            GradesDao gradesDao = new GradesDao();
-            List<Grade> grades = gradesDao.GetAll();
+            List<Effectif> effectifs = EffectifsDao.Instance.GetAllEffectifs();
+            List<Grade> grades = GradesDao.Instance.GetAll();
             foreach (Effectif effectif in effectifs)
             {
                 effectif.Grade = grades.Find(g => g.Type == effectif.EffGrade);
@@ -98,8 +96,7 @@ namespace PoliceReport.Views
         private void LoadGrades()
         {
             gradeComboBox.Items.Clear();
-            GradesDao gradesDao = new GradesDao();
-            gradeComboBox.ItemsSource = gradesDao.GetAll();
+            gradeComboBox.ItemsSource = GradesDao.Instance.GetAll();
 
             if (gradeComboBox.Items.Count > 0)
             {
