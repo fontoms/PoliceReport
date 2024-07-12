@@ -1,4 +1,5 @@
-﻿using LogicLayer.Outils.Cryptage;
+﻿using LogicLayer.Outils;
+using LogicLayer.Outils.Cryptage;
 using System.Windows;
 
 namespace PoliceReport.Views

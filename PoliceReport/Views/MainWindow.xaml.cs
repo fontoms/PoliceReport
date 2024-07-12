@@ -1,6 +1,7 @@
 ﻿using LogicLayer.Effectif;
 using LogicLayer.Grade;
 using LogicLayer.Infraction;
+using LogicLayer.Outils;
 using LogicLayer.Patrouille;
 using LogicLayer.PositionVeh;
 using StorageLayer;
