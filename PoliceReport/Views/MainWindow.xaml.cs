@@ -48,6 +48,7 @@ namespace PoliceReport.Views
 
             // Charger les autres éléments une fois que la base de données est prête
             LoadAllElements();
+            if (!effectifComboBox.IsEnabled) startServiceBtn.IsEnabled = false;
             effectifComboBox.Focus();
         }
 

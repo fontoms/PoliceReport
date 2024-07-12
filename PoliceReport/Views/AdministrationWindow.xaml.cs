@@ -193,7 +193,16 @@ namespace PoliceReport
 
                         if (tableForeignKey != null)
                         {
-                            dynamic classe = DataGridItems.SelectedItem;
+                            var selectedItem = estAjout ? null : DataGridItems.SelectedItem;
+                            object[] args = Array.Empty<object>();
+
+                            if (selectedItem != null)
+                            {
+                                var properties = selectedItem.GetType().GetProperties();
+                                args = properties.Select(prop =>  prop.GetValue(selectedItem)).ToArray();
+                            }
+
+                            dynamic classe = Activator.CreateInstance(logicLayerType, args);
                             PropertyInfo selectedProperty = classe.GetType().GetProperty(column.Header.ToString());
                             object value = selectedProperty.GetValue(classe);
 
@@ -203,7 +212,17 @@ namespace PoliceReport
                             comboBox.DisplayMemberPath = "Nom";
                             comboBox.SelectedValuePath = "Type";
                             comboBox.ItemsSource = GetForeignKeyData(tableForeignKey);
-                            comboBox.SelectedValue = value;
+
+                            if (comboBox.Items.Count > 0)
+                            {
+                                comboBox.SelectedIndex = 0;
+                                if (value != null) comboBox.SelectedValue = value;
+                            }
+                            else
+                            {
+                                comboBox.IsEnabled = false;
+                            }
+
                             stackPanel.Children.Add(label);
                             stackPanel.Children.Add(comboBox);
                         }
@@ -302,7 +321,7 @@ namespace PoliceReport
 
                             if (daoType != null)
                             {
-                                dynamic daoInstance = Activator.CreateInstance(daoType);
+                                dynamic daoInstance = daoType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null);
                                 MethodInfo actionMethod = estAjout ? daoType.GetMethod("Add") : daoType.GetMethod("Update", [newItem.GetType()]);
 
                                 if (actionMethod != null)
@@ -350,31 +369,24 @@ namespace PoliceReport
         // Méthode pour récupérer les données de la table correspondante
         private dynamic GetForeignKeyData(string tableName)
         {
-            // Nom de la classe DAO est formé en concaténant le nom de la table avec "Dao" à la fin
             string daoClassName = tableName + "Dao";
 
-            // Assurez-vous que la classe DAO existe dans le namespace approprié (ici, j'utilise StorageLayer.Dao)
             Type daoType = Type.GetType("StorageLayer.Dao." + daoClassName + ", StorageLayer");
 
             if (daoType != null)
             {
-                // Crée une instance de la classe DAO
-                dynamic daoInstance = Activator.CreateInstance(daoType);
+                dynamic daoInstance = daoType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null);
 
                 // Vérifie si la classe DAO a une méthode GetAll()
                 MethodInfo getAllRowsMethod = daoType.GetMethod("GetAll");
 
                 if (getAllRowsMethod != null)
                 {
-                    // Appel de la méthode GetAll() pour récupérer les données de la table
                     dynamic rows = getAllRowsMethod.Invoke(daoInstance, null);
-
                     return rows;
                 }
                 else
                 {
-                    // Si la classe DAO correspondante n'a pas de méthode GetAll()
-                    // Affichez un message d'erreur
                     MessageBox.Show("Erreur : Impossible de récupérer les données de la table.", daoClassName, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -422,7 +434,6 @@ namespace PoliceReport
 
         private void Supprimer_Click(object sender, RoutedEventArgs e)
         {
-            // Logique pour supprimer les éléments sélectionnés
             if (DataGridItems.SelectedItems != null && DataGridItems.SelectedItems.Count > 0)
             {
                 if (TableSelector.SelectedItem != null)
@@ -430,25 +441,21 @@ namespace PoliceReport
                     string selectedTable = ((ComboBoxItem)TableSelector.SelectedItem).Content.ToString();
 
                     // Construire le chemin complet de la classe dans StorageLayer
-                    string storageLayerNamespace = "StorageLayer.Dao." + selectedTable + "Dao";
-                    Type storageLayerType = Type.GetType(storageLayerNamespace + ", StorageLayer");
+                    string daoClassName = "StorageLayer.Dao." + selectedTable + "Dao";
+                    Type daoType = Type.GetType(daoClassName + ", StorageLayer");
 
-                    if (storageLayerType != null)
+                    if (daoType != null)
                     {
-                        // Créer une instance de la classe de logique correspondante
-                        dynamic logicInstance = Activator.CreateInstance(storageLayerType);
+                        dynamic daoInstance = daoType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null);
 
-                        // Créer une copie temporaire des éléments sélectionnés
                         List<dynamic> selectedItemsCopy = new List<dynamic>(DataGridItems.SelectedItems.Cast<dynamic>());
 
-                        // Parcourir les éléments sélectionnés et les supprimer un par un
                         foreach (dynamic selectedItem in selectedItemsCopy)
                         {
-                            // Appeler la méthode de suppression appropriée dans la classe de logique
-                            MethodInfo deleteMethod = storageLayerType.GetMethod("Remove"); // La méthode de suppression est généralement nommée "Remove"
+                            MethodInfo deleteMethod = daoType.GetMethod("Remove");
                             if (deleteMethod != null)
                             {
-                                deleteMethod.Invoke(logicInstance, new object[] { selectedItem });
+                                deleteMethod.Invoke(daoInstance, new object[] { selectedItem });
                             }
                         }
 

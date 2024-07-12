@@ -83,6 +83,14 @@ namespace LogicLayer.Action
             ActInfraction = actInfraction;
         }
 
+        public Action(int id, string nom, DateTime heure, string actInfraction)
+        {
+            Id = id;
+            Nom = nom;
+            Heure = heure;
+            ActInfraction = actInfraction;
+        }
+
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
