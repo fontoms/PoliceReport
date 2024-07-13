@@ -18,9 +18,21 @@ namespace PoliceReport.Views
         private bool _isDisplayList = true;
         private Patrouille _selectedItem;
 
-        public static ObservableCollection<Effectif> Effectifs { get; set; }
+        public Patrouille SelectedItem { get => _selectedItem; set { _selectedItem = value; } }
 
-        public AjoutPatrouilleWindow(Patrouille selectedItem)
+        public ObservableCollection<Effectif> Effectifs { get; set; }
+
+        private static AjoutPatrouilleWindow? _instance;
+        public static AjoutPatrouilleWindow Instance
+        {
+            get
+            {
+                _instance ??= new AjoutPatrouilleWindow();
+                return _instance;
+            }
+        }
+
+        private AjoutPatrouilleWindow()
         {
             InitializeComponent();
             LoadIndicatifs();
@@ -28,8 +40,6 @@ namespace PoliceReport.Views
             {
                 LoadVehicules();
             }
-
-            _selectedItem = selectedItem;
 
             Effectifs = new ObservableCollection<Effectif>();
             DataContext = this;
@@ -147,9 +157,9 @@ namespace PoliceReport.Views
         {
             List<Specialisation> specialisations = SpecialisationsDao.Instance.GetAll();
 
-            ChargementWindow chargementVehicules = new ChargementWindow("Chargement des véhicules...");
-            chargementVehicules.Show();
-            chargementVehicules.MaxValue = specialisations.Count;
+            ChargementWindow.Instance.Title = "Chargement des véhicules...";
+            ChargementWindow.Instance.Show();
+            ChargementWindow.Instance.MaxValue = specialisations.Count;
 
             foreach (Specialisation specialisation in specialisations)
             {
@@ -167,16 +177,14 @@ namespace PoliceReport.Views
                     vehiculeComboBox.Items.Add(vehiculeItem);
                 }
 
-                chargementVehicules.ProgressValue++;
+                ChargementWindow.Instance.ProgressValue++;
             }
-
-            chargementVehicules.Close();
         }
 
         private void DisplayVehiculeByIndicatif()
         {
-            ChargementWindow chargementVehicules = new ChargementWindow("Chargement des véhicules...");
-            chargementVehicules.Show();
+            ChargementWindow.Instance.Title = "Chargement des véhicules...";
+            ChargementWindow.Instance.Show();
 
             if (((ComboBoxItem)indicatifComboBox.SelectedItem).Tag != null)
             {
@@ -190,7 +198,7 @@ namespace PoliceReport.Views
                 {
                     List<Vehicule> vehicules = VehiculesDao.Instance.GetAllByNameContains("bana");
 
-                    chargementVehicules.MaxValue = vehicules.Count;
+                    ChargementWindow.Instance.MaxValue = vehicules.Count;
 
                     foreach (Vehicule vehicule in vehicules)
                     {
@@ -198,7 +206,7 @@ namespace PoliceReport.Views
                         vehiculeItem.Content = vehicule.Nom;
                         vehiculeComboBox.Items.Add(vehiculeItem);
 
-                        chargementVehicules.ProgressValue++;
+                        ChargementWindow.Instance.ProgressValue++;
                     }
                 }
                 else
@@ -206,7 +214,7 @@ namespace PoliceReport.Views
                     // Si ce n'est pas une unité spécialisée dans OPJ, chargez les véhicules correspondants à cette unité
                     List<Vehicule> vehicules = VehiculesDao.Instance.GetAllBySpecialisation(unite.UnitSpecialisation);
 
-                    chargementVehicules.MaxValue = vehicules.Count;
+                    ChargementWindow.Instance.MaxValue = vehicules.Count;
 
                     foreach (Vehicule vehicule in vehicules)
                     {
@@ -214,7 +222,7 @@ namespace PoliceReport.Views
                         vehiculeItem.Content = vehicule.Nom;
                         vehiculeComboBox.Items.Add(vehiculeItem);
 
-                        chargementVehicules.ProgressValue++;
+                        ChargementWindow.Instance.ProgressValue++;
                     }
                 }
             }
@@ -222,7 +230,7 @@ namespace PoliceReport.Views
             {
                 List<Specialisation> specialisations = SpecialisationsDao.Instance.GetAll();
 
-                chargementVehicules.MaxValue = specialisations.Count;
+                ChargementWindow.Instance.MaxValue = specialisations.Count;
 
                 foreach (Specialisation specialisation in specialisations)
                 {
@@ -240,18 +248,15 @@ namespace PoliceReport.Views
                         vehiculeComboBox.Items.Add(vehiculeItem);
                     }
 
-                    chargementVehicules.ProgressValue++;
+                    ChargementWindow.Instance.ProgressValue++;
                 }
             }
-
-            chargementVehicules.Close();
         }
 
         private void AjouterEffectif_Click(object sender, RoutedEventArgs e)
         {
-            AjoutEffectifWindow ajoutPersonneWindow = new AjoutEffectifWindow(null);
-            ajoutPersonneWindow.Owner = this;
-            ajoutPersonneWindow.ShowDialog();
+            AjoutEffectifWindow.Instance.Owner = this;
+            AjoutEffectifWindow.Instance.ShowDialog();
         }
 
         private void Valider_Click(object sender, RoutedEventArgs e)
@@ -269,23 +274,23 @@ namespace PoliceReport.Views
             // Ajouter/Modifier la patrouille à la liste
             if (_selectedItem.Id == 0)
             {
-                MainWindow.AddPatrouille(_selectedItem);
+                MainWindow.Instance.AddPatrouille(_selectedItem);
             }
             else
             {
-                MainWindow.EditPatrouille(_selectedItem);
+                MainWindow.Instance.EditPatrouille(_selectedItem);
             }
 
             // Fermer la fenêtre d'ajout de patrouille
             Close();
         }
 
-        public static void AddEffectif(Effectif personne)
+        public void AddEffectif(Effectif personne)
         {
             Effectifs.Add(personne);
         }
 
-        public static void EditEffectif(Effectif personne)
+        public void EditEffectif(Effectif personne)
         {
             int index = Effectifs.IndexOf(Effectifs.First(p => p.IdDiscord == personne.IdDiscord));
             Effectifs[index] = personne;
@@ -307,9 +312,9 @@ namespace PoliceReport.Views
         {
             if (effectifsListBox.SelectedItem != null)
             {
-                AjoutEffectifWindow ajoutPersonneWindow = new AjoutEffectifWindow((Effectif)effectifsListBox.SelectedItem);
-                ajoutPersonneWindow.Owner = this;
-                ajoutPersonneWindow.ShowDialog();
+                AjoutEffectifWindow.Instance.SelectedItem = (Effectif)effectifsListBox.SelectedItem;
+                AjoutEffectifWindow.Instance.Owner = this;
+                AjoutEffectifWindow.Instance.ShowDialog();
             }
             else
             {

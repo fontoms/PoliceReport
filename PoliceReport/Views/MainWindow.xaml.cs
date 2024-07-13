@@ -17,15 +17,24 @@ namespace PoliceReport.Views
 {
     public partial class MainWindow : Window
     {
-        private static int _lastPatrouilleId = 0;
+        private int _lastPatrouilleId = 0;
         private int _lastActionId = 0;
         private const string _searchInfractionDefaultText = "Rechercher une infraction ou action...";
 
-        public static ObservableCollection<Patrouille> Patrouilles { get; set; }
-        public static ObservableCollection<LogicLayer.Action.Action> Actions { get; set; }
-        private ChargementWindow _chargementWindow;
+        public ObservableCollection<Patrouille> Patrouilles { get; set; }
+        public ObservableCollection<LogicLayer.Action.Action> Actions { get; set; }
 
-        public MainWindow()
+        private static MainWindow? _instance;
+        public static MainWindow Instance
+        {
+            get
+            {
+                _instance ??= new MainWindow();
+                return _instance;
+            }
+        }
+
+        private MainWindow()
         {
             InitializeComponent();
 
@@ -78,13 +87,13 @@ namespace PoliceReport.Views
         {
             actionsListBox.ItemsSource = null;
 
-            _chargementWindow = new ChargementWindow("Chargement des actions...");
-            _chargementWindow.Show();
+            ChargementWindow.Instance.Title = "Chargement des actions...";
+            ChargementWindow.Instance.Show();
 
             List<LogicLayer.Action.Action> actionsList = new List<LogicLayer.Action.Action>();
             List<Infraction> infractions = InfractionsDao.Instance.GetAll();
 
-            _chargementWindow.MaxValue = infractions.Count;
+            ChargementWindow.Instance.MaxValue = infractions.Count;
 
             foreach (Infraction infraction in infractions)
             {
@@ -97,10 +106,9 @@ namespace PoliceReport.Views
                     actionsList.Add(action);
                 }
 
-                _chargementWindow.ProgressValue++;
+                ChargementWindow.Instance.ProgressValue++;
             }
 
-            _chargementWindow.Close();
             actionsListBox.ItemsSource = actionsList;
         }
 
@@ -116,7 +124,7 @@ namespace PoliceReport.Views
             }
         }
 
-        public static void AddPatrouille(Patrouille patrouille)
+        public void AddPatrouille(Patrouille patrouille)
         {
             if (Patrouilles.Count > 0)
             {
@@ -128,7 +136,7 @@ namespace PoliceReport.Views
             Patrouilles.Add(patrouille);
         }
 
-        public static void EditPatrouille(Patrouille patrouille)
+        public void EditPatrouille(Patrouille patrouille)
         {
             Patrouille patrouilleToEdit = Patrouilles.FirstOrDefault(p => p.Id == patrouille.Id);
             if (patrouilleToEdit != null)
@@ -147,12 +155,12 @@ namespace PoliceReport.Views
         {
             Effectif effectif = (Effectif)effectifComboBox.SelectedItem;
             effectif.PositionVehicule = PositionVeh.ChefDeBord;
-            AjoutPatrouilleWindow ajoutPatrouilleWindow = new AjoutPatrouilleWindow(new Patrouille
+            AjoutPatrouilleWindow.Instance.SelectedItem = new Patrouille
             {
                 Effectifs = new List<Effectif> { effectif },
-            });
-            ajoutPatrouilleWindow.Owner = this;
-            ajoutPatrouilleWindow.ShowDialog();
+            };
+            AjoutPatrouilleWindow.Instance.Owner = this;
+            AjoutPatrouilleWindow.Instance.ShowDialog();
 
         }
 
@@ -178,9 +186,9 @@ namespace PoliceReport.Views
         {
             if (patrouilleListBox.SelectedItem != null)
             {
-                AjoutPatrouilleWindow ajoutPatrouilleWindow = new AjoutPatrouilleWindow((Patrouille)patrouilleListBox.SelectedItem);
-                ajoutPatrouilleWindow.Owner = this;
-                ajoutPatrouilleWindow.ShowDialog();
+                AjoutPatrouilleWindow.Instance.SelectedItem = (Patrouille)patrouilleListBox.SelectedItem;
+                AjoutPatrouilleWindow.Instance.Owner = this;
+                AjoutPatrouilleWindow.Instance.ShowDialog();
             }
             else
             {
@@ -323,49 +331,44 @@ namespace PoliceReport.Views
         private void titleLabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
 #if !DEBUG
-            ConnexionWindow connexionWindow = new ConnexionWindow();
-            connexionWindow.Owner = this;
-            connexionWindow.ShowDialog();
+            ConnexionWindow.Instance.Owner = this;
+            ConnexionWindow.Instance.ShowDialog();
 
-            if (connexionWindow.MotDePasseCorrect)
+            if (ConnexionWindow.Instance.MotDePasseCorrect)
             {
-#endif
-            AdministrationWindow administrationWindow = new AdministrationWindow();
-            administrationWindow.Show();
-#if !DEBUG
+                AdministrationWindow.Instance.Show();
             }
+#else
+            AdministrationWindow.Instance.Show();
 #endif
         }
 
         private async void updateBtn_Click(object sender, RoutedEventArgs e)
         {
-            _chargementWindow = new ChargementWindow("Mise à jour de PoliceReport...");
-            _chargementWindow.Show();
+            ChargementWindow.Instance.Title = "Mise à jour de PoliceReport...";
+            ChargementWindow.Instance.Show();
 
             try
             {
                 BaseDao database = new BaseDao();
                 database.ProgressChanged += (sender, e) =>
                 {
-                    _chargementWindow.ProgressValue = e;
+                    ChargementWindow.Instance.ProgressValue = e;
                 };
                 string version = await database.Update();
 
                 if (version != null)
                 {
-                    _chargementWindow.Close();
                     LoadAllElements();
                     MessageBox.Show("La base de données a été mise à jour avec succès.\n\nNouvelle version : " + version, "Mise à jour", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    _chargementWindow.Close();
                     MessageBox.Show("La base de données est déjà à jour.", "Mise à jour", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
             {
-                _chargementWindow.Close();
                 MessageBox.Show("Erreur lors de la mise à jour de la base de données :\n" + ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

@@ -20,6 +20,12 @@ namespace PoliceReport.Views
             {
                 _progressValue = value;
                 UpdateProgress(_progressValue);
+
+                // Fermer la fenêtre si la valeur maximale est atteinte
+                if (_progressValue >= _maxValue)
+                {
+                    Close();
+                }
             }
         }
 
@@ -34,7 +40,17 @@ namespace PoliceReport.Views
         }
         #endregion
 
-        public ChargementWindow(string nom = "")
+        private static ChargementWindow? _instance;
+        public static ChargementWindow Instance
+        {
+            get
+            {
+                _instance ??= new ChargementWindow();
+                return _instance;
+            }
+        }
+
+        private ChargementWindow(string nom = "")
         {
             InitializeComponent();
             Title = nom;

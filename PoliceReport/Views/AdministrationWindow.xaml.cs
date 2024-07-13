@@ -11,7 +11,17 @@ namespace PoliceReport
     {
         private BaseDao Database;
 
-        public AdministrationWindow()
+        private static AdministrationWindow? _instance;
+        public static AdministrationWindow Instance
+        {
+            get
+            {
+                _instance ??= new AdministrationWindow();
+                return _instance;
+            }
+        }
+
+        private AdministrationWindow()
         {
             InitializeComponent();
             Database = new BaseDao();
