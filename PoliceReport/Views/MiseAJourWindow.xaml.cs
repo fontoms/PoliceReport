@@ -14,17 +14,7 @@ namespace PoliceReport.Views
     {
         private bool updateAvailable = false;
 
-        private static MiseAJourWindow? _instance;
-        public static MiseAJourWindow Instance
-        {
-            get
-            {
-                _instance ??= new MiseAJourWindow();
-                return _instance;
-            }
-        }
-
-        private MiseAJourWindow()
+        public MiseAJourWindow()
         {
             InitializeComponent();
             CheckForInternetConnection();
@@ -79,7 +69,8 @@ namespace PoliceReport.Views
             MessageBoxResult result = MessageBox.Show($"Erreur lors de la vérification des mises à jour :\n{ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             if (result == MessageBoxResult.OK)
             {
-                MainWindow.Instance.Show();
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.Show();
                 Close();
             }
             else
@@ -107,7 +98,8 @@ namespace PoliceReport.Views
             }
             else
             {
-                MainWindow.Instance.Show();
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.Show();
                 Close();
             }
         }

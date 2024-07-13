@@ -10,21 +10,10 @@ namespace PoliceReport.Views
     {
         private Effectif _selectedItem;
 
-        public Effectif? SelectedItem { get => _selectedItem; set { _selectedItem = value; } }
-
-        private static AjoutEffectifWindow? _instance;
-        public static AjoutEffectifWindow Instance
-        {
-            get
-            {
-                _instance ??= new AjoutEffectifWindow();
-                return _instance;
-            }
-        }
-
-        private AjoutEffectifWindow()
+        public AjoutEffectifWindow(Effectif selectedItem)
         {
             InitializeComponent();
+            _selectedItem = selectedItem;
 
             LoadEffectifs();
             LoadGrades();
@@ -71,13 +60,13 @@ namespace PoliceReport.Views
             _selectedItem.PositionVehicule = positionComboBox.SelectedItem.ToString();
 
             // Ajouter/Modifier la personne à la liste
-            if (AjoutPatrouilleWindow.Instance.Effectifs.All(p => p.Id != _selectedItem.Id))
+            if (AjoutPatrouilleWindow.Effectifs.All(p => p.Id != _selectedItem.Id))
             {
-                AjoutPatrouilleWindow.Instance.AddEffectif(_selectedItem);
+                AjoutPatrouilleWindow.AddEffectif(_selectedItem);
             }
             else
             {
-                AjoutPatrouilleWindow.Instance.EditEffectif(_selectedItem);
+                AjoutPatrouilleWindow.EditEffectif(_selectedItem);
             }
 
             // Fermer la fenêtre d'ajout de personne

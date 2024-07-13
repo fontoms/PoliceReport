@@ -13,17 +13,7 @@ namespace PoliceReport.Views
 
         public bool MotDePasseCorrect { get; private set; }
 
-        private static ConnexionWindow? _instance;
-        public static ConnexionWindow Instance
-        {
-            get
-            {
-                _instance ??= new ConnexionWindow();
-                return _instance;
-            }
-        }
-
-        private ConnexionWindow()
+        public ConnexionWindow()
         {
             InitializeComponent();
             MotDePasseCorrect = false;

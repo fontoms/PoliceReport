@@ -1,5 +1,4 @@
-﻿using PoliceReport.Views;
-using System.Windows;
+﻿using System.Windows;
 
 namespace PoliceReport
 {
@@ -8,10 +7,6 @@ namespace PoliceReport
     /// </summary>
     public partial class App : Application
     {
-        private void Application_Startup(object sender, StartupEventArgs e)
-        {
-            MiseAJourWindow.Instance.Show();
-        }
     }
 
 }
