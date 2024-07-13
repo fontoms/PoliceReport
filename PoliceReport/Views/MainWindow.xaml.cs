@@ -331,6 +331,7 @@ namespace PoliceReport.Views
             {
 #endif
             AdministrationWindow administrationWindow = new AdministrationWindow();
+            administrationWindow.Owner = this;
             administrationWindow.Show();
 #if !DEBUG
             }
