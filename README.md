@@ -13,7 +13,7 @@ Aucunes données personnelles n'est récupérées par le logiciel, seul une base
 - Mise à jour automatique vers la dernière version stable
 - Installation automatique
 
-![image](https://github.com/Fontom71/PoliceReport/assets/64289613/31133409-a0ae-4a3b-8152-a9bff2a5b3b8)
+![image](https://github.com/user-attachments/assets/63ffe08e-0234-41e7-a74c-05c9a54d91d0)
 
 ### Tableau de bord
 
@@ -47,20 +47,24 @@ Aucunes données personnelles n'est récupérées par le logiciel, seul une base
 
 - Connexion sécurisé
 
-![image](https://github.com/Fontom71/PoliceReport/assets/64289613/f657b284-ae8c-46e5-affe-76615ba50bea)
+*Par défaut :*
+- Utilisateur : admin
+- Mot de passe : admin
+
+![image](https://github.com/user-attachments/assets/33b4b36d-c252-490a-9635-ce87ca30c7f7)
 
 - Affichage des tables de la base de données
 - Ajout / Modification / Suppression de données
 
-![image](https://github.com/Fontom71/PoliceReport/assets/64289613/9eb64379-7e11-4368-bece-4540a157a57a)
+![image](https://github.com/user-attachments/assets/1257aebb-3da6-4492-af0e-4e1c8f43a2f8)
 
 #### Ajout
 
-![image](https://github.com/Fontom71/PoliceReport/assets/64289613/0a72b3ee-1598-4890-81c9-3a5750c644db)
+![image](https://github.com/user-attachments/assets/8b61bccb-2a1e-4ed4-b08f-730fbc9b2a13)
 
 #### Modification
 
-![image](https://github.com/Fontom71/PoliceReport/assets/64289613/7c59b36a-b5ed-4d7b-8f81-9c05e3565f5a)
+![image](https://github.com/user-attachments/assets/4160b278-7b72-48f3-a453-13d2e8aebdd6)
 
 ### Exemple
 
