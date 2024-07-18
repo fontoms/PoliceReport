@@ -43,21 +43,21 @@ namespace StorageLayer.Dao
             List<Effectif> effectifs = [];
             while (reader.Read())
             {
-                effectifs.Add(new Effectif(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4)));
+                effectifs.Add(new Effectif(reader.GetInt16(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetInt16(4)));
             }
             reader.Close();
             CloseConnection();
             return effectifs;
         }
 
-        public List<Effectif> GetAllByGrade(string grade)
+        public List<Effectif> GetAllByGrade(int grade)
         {
             string req = "SELECT * FROM Effectifs WHERE EffGrade = '" + grade + "' INNER JOIN Grades ON EffGrade = Type ORDER BY Grades.Id ASC";
             SQLiteDataReader reader = ExecuteReader(req);
             List<Effectif> effectifs = [];
             while (reader.Read())
             {
-                effectifs.Add(new Effectif(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4)));
+                effectifs.Add(new Effectif(reader.GetInt16(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetInt16(4)));
             }
             reader.Close();
             CloseConnection();
@@ -71,7 +71,7 @@ namespace StorageLayer.Dao
             List<Effectif> effectifs = [];
             while (reader.Read())
             {
-                effectifs.Add(new Effectif(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4)));
+                effectifs.Add(new Effectif(reader.GetInt16(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetInt16(4)));
             }
             reader.Close();
             CloseConnection();

@@ -95,12 +95,12 @@ namespace PoliceReport.Views
                 comboBoxItem.IsEnabled = false;
                 indicatifComboBox.Items.Add(comboBoxItem);
 
-                List<Unite> unites = UnitesDao.Instance.GetAllBySpecialisation(specialisation.Type);
+                List<Unite> unites = UnitesDao.Instance.GetAllBySpecialisation(specialisation.Id);
                 foreach (Unite unite in unites)
                 {
                     ComboBoxItem uniteItem = new ComboBoxItem();
                     uniteItem.Content = unite.Nom;
-                    uniteItem.Tag = unite.Type;
+                    uniteItem.Tag = unite.Id;
                     indicatifComboBox.Items.Add(uniteItem);
                 }
             }
@@ -136,6 +136,7 @@ namespace PoliceReport.Views
             else if (!_isDisplayList && vehiculeComboBox.Items.Count > 0)
             {
                 vehiculeComboBox.SelectedIndex = 0;
+                vehiculeComboBox.IsEnabled = true;
             }
             else
             {
@@ -159,7 +160,7 @@ namespace PoliceReport.Views
                 comboBoxItem.IsEnabled = false;
                 vehiculeComboBox.Items.Add(comboBoxItem);
 
-                List<Vehicule> vehicules = VehiculesDao.Instance.GetAllBySpecialisation(specialisation.Type);
+                List<Vehicule> vehicules = VehiculesDao.Instance.GetAllBySpecialisation(specialisation.Id);
                 foreach (Vehicule vehicule in vehicules)
                 {
                     ComboBoxItem vehiculeItem = new ComboBoxItem();
@@ -178,15 +179,16 @@ namespace PoliceReport.Views
             ChargementWindow chargementVehicules = new ChargementWindow("Chargement des véhicules...");
             chargementVehicules.Show();
 
-            if (((ComboBoxItem)indicatifComboBox.SelectedItem).Tag != null)
+            if ((int)((ComboBoxItem)indicatifComboBox.SelectedItem).Tag != 0)
             {
                 // Obtenez le type d'unité
-                string typeUnite = ((ComboBoxItem)indicatifComboBox.SelectedItem).Tag.ToString();
+                int idUnite = (int)((ComboBoxItem)indicatifComboBox.SelectedItem).Tag;
 
-                Unite unite = UnitesDao.Instance.GetType(typeUnite);
+                Unite unite = UnitesDao.Instance.GetId(idUnite);
+                //Specialisation specialisation = SpecialisationsDao.Instance.get
 
                 // Si l'unité est spécialisée dans OPJ, chargez tous les véhicules contenant "bana" dans le nom
-                if (unite.UnitSpecialisation == "OPJ")
+                if (unite.UnitSpecialisation == 5)
                 {
                     List<Vehicule> vehicules = VehiculesDao.Instance.GetAllByNameContains("bana");
 
@@ -232,7 +234,7 @@ namespace PoliceReport.Views
                     comboBoxItem.IsEnabled = false;
                     vehiculeComboBox.Items.Add(comboBoxItem);
 
-                    List<Vehicule> vehicules = VehiculesDao.Instance.GetAllBySpecialisation(specialisation.Type);
+                    List<Vehicule> vehicules = VehiculesDao.Instance.GetAllBySpecialisation(specialisation.Id);
                     foreach (Vehicule vehicule in vehicules)
                     {
                         ComboBoxItem vehiculeItem = new ComboBoxItem();

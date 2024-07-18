@@ -7,6 +7,6 @@
         void Update(Action action);
         List<Action> GetAll();
         List<Action> GetAllActions();
-        List<Action> GetAllByInfractions(string infraction);
+        List<Action> GetAllByInfractions(int infraction);
     }
 }

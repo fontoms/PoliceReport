@@ -35,21 +35,21 @@ namespace StorageLayer.Dao
             List<Vehicule> vehicules = [];
             while (reader.Read())
             {
-                vehicules.Add(new Vehicule(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
+                vehicules.Add(new Vehicule(reader.GetInt16(0), reader.GetInt16(1), reader.GetString(2)));
             }
             reader.Close();
             CloseConnection();
             return vehicules;
         }
 
-        public List<Vehicule> GetAllBySpecialisation(string specialisation)
+        public List<Vehicule> GetAllBySpecialisation(int specialisation)
         {
             string req = "SELECT * FROM Vehicules WHERE VehSpecialisation = '" + specialisation + "' ORDER BY Nom";
             SQLiteDataReader reader = ExecuteReader(req);
             List<Vehicule> vehicules = [];
             while (reader.Read())
             {
-                vehicules.Add(new Vehicule(reader.GetString(1), reader.GetString(2)));
+                vehicules.Add(new Vehicule(reader.GetInt16(1), reader.GetString(2)));
             }
             reader.Close();
             CloseConnection();
@@ -63,7 +63,7 @@ namespace StorageLayer.Dao
             List<Vehicule> vehicules = [];
             while (reader.Read())
             {
-                vehicules.Add(new Vehicule(reader.GetString(1), reader.GetString(2)));
+                vehicules.Add(new Vehicule(reader.GetInt16(1), reader.GetString(2)));
             }
             reader.Close();
             CloseConnection();
@@ -77,7 +77,7 @@ namespace StorageLayer.Dao
             List<Vehicule> vehicules = [];
             while (reader.Read())
             {
-                vehicules.Add(new Vehicule(reader.GetString(1), reader.GetString(2)));
+                vehicules.Add(new Vehicule(reader.GetInt16(1), reader.GetString(2)));
             }
             reader.Close();
             CloseConnection();

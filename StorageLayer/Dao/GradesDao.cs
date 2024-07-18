@@ -20,7 +20,7 @@ namespace StorageLayer.Dao
 
         public void Add(Grade grade)
         {
-            string req = "INSERT INTO Grades (Type, Nom) VALUES ('" + grade.Type + "', '" + grade.Nom + "')";
+            string req = "INSERT INTO Grades (Nom) VALUES ('" + grade.Nom + "')";
             ExecuteNonQuery(req);
         }
 
@@ -37,7 +37,7 @@ namespace StorageLayer.Dao
             List<Grade> grades = [];
             while (reader.Read())
             {
-                grades.Add(new Grade(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
+                grades.Add(new Grade(reader.GetInt16(0), reader.GetString(1)));
             }
             reader.Close();
             CloseConnection();
@@ -46,7 +46,7 @@ namespace StorageLayer.Dao
 
         public void Update(Grade grade)
         {
-            string req = "UPDATE Grades SET Type = '" + grade.Type + "', Nom = '" + grade.Nom + "' WHERE Id = " + grade.Id;
+            string req = "UPDATE Grades SET Nom = '" + grade.Nom + "' WHERE Id = " + grade.Id;
             ExecuteNonQuery(req);
         }
     }

@@ -4,7 +4,7 @@
     {
         #region Attributs
         private int _id;
-        private string _vehSpecialisation;
+        private int _vehSpecialisation;
         private string _nom;
         #endregion
 
@@ -21,7 +21,7 @@
             }
         }
 
-        public string VehSpecialisation
+        public int VehSpecialisation
         {
             get => _vehSpecialisation;
             set
@@ -50,13 +50,13 @@
         {
         }
 
-        public Vehicule(string vehSpecialisation, string nom)
+        public Vehicule(int vehSpecialisation, string nom)
         {
             VehSpecialisation = vehSpecialisation;
             Nom = nom;
         }
 
-        public Vehicule(int id, string vehSpecialisation, string nom)
+        public Vehicule(int id, int vehSpecialisation, string nom)
         {
             Id = id;
             VehSpecialisation = vehSpecialisation;

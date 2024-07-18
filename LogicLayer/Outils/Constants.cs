@@ -13,7 +13,11 @@
         public const string ApiRepoUrl = $"https://api.github.com/repos/{RepoOwner}/{RepoName}/releases/latest";
 
         // Connexion
-        public const string AdminPassword = "06c13f0db1e5f86ef5adc575da5a1d89528a0fdd93a568abdbe93145dc7e5d28";
+        public static List<Utilisateur.Utilisateur> Users = [
+            new("admin", "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", 1),
+            new("editor", "262121c5372be8af3ae6ff0d3d138d9e6e1249335222c7f0e02535e35073bb0b", 2),
+            new("reader", "3316348dbadfb7b11c7c2ea235949419e23f9fa898ad2c198f999617912a9925", 3)
+            ];
 
         //=== StorageLayer ===\\
         public const string FolderBdd = "StorageLayer";

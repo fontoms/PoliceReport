@@ -20,7 +20,7 @@ namespace StorageLayer.Dao
 
         public void Add(Infraction infraction)
         {
-            string req = "INSERT INTO Infractions (Nom, Type) VALUES ('" + infraction.Nom + "', '" + infraction.Type + "')";
+            string req = "INSERT INTO Infractions (Nom) VALUES ('" + infraction.Nom + "')";
             ExecuteNonQuery(req);
         }
 
@@ -37,7 +37,7 @@ namespace StorageLayer.Dao
             List<Infraction> infractions = [];
             while (reader.Read())
             {
-                infractions.Add(new Infraction(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
+                infractions.Add(new Infraction(reader.GetInt16(0), reader.GetString(1)));
             }
             reader.Close();
             CloseConnection();
@@ -46,7 +46,7 @@ namespace StorageLayer.Dao
 
         public void Update(Infraction infraction)
         {
-            string req = "UPDATE Infractions SET Nom = '" + infraction.Nom + "', Type = '" + infraction.Type + "' WHERE Id = " + infraction.Id;
+            string req = "UPDATE Infractions SET Nom = '" + infraction.Nom + "' WHERE Id = " + infraction.Id;
             ExecuteNonQuery(req);
         }
     }

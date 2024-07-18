@@ -4,22 +4,22 @@ using System.Windows.Data;
 
 namespace PoliceReport.Converters
 {
-    public class NullToBoldConverter : IValueConverter
+    public class ZeroToBoldConverter : IValueConverter
     {
-        private static NullToBoldConverter _instance;
+        private static ZeroToBoldConverter _instance;
 
-        public static NullToBoldConverter Instance
+        public static ZeroToBoldConverter Instance
         {
             get
             {
-                _instance ??= new NullToBoldConverter();
+                _instance ??= new ZeroToBoldConverter();
                 return _instance;
             }
         }
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value == null ? FontWeights.Bold : FontWeights.Normal;
+            return (int)value == 0 ? FontWeights.Bold : FontWeights.Normal;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

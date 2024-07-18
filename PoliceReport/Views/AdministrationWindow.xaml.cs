@@ -1,4 +1,6 @@
-﻿using StorageLayer;
+﻿using LogicLayer.Role;
+using LogicLayer.Utilisateur;
+using StorageLayer;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,12 +12,46 @@ namespace PoliceReport
     public partial class AdministrationWindow : Window
     {
         private BaseDao Database;
+        private Utilisateur _user;
+        public Utilisateur User
+        {
+            get => _user;
+            set
+            {
+                if (value != _user)
+                {
+                    _user = value;
+                    SetRoles(_user);
+                }
+            }
+        }
 
         public AdministrationWindow()
         {
             InitializeComponent();
             Database = new BaseDao();
             LoadTables();
+        }
+
+        private void SetRoles(Utilisateur? utilisateur)
+        {
+            // Modifie les accès suivant le rôle
+            switch (utilisateur.Role)
+            {
+                case (int)Role.Administrateur:
+                    break;
+                case (int)Role.Editeur:
+                    deleteBtn.IsEnabled = false;
+                    break;
+                case (int)Role.Lecteur:
+                    ajoutBtn.IsEnabled = false;
+                    deleteBtn.IsEnabled = false;
+                    editBtn.IsEnabled = false;
+                    dataGridItems.IsReadOnly = true;
+                    dataGridItems.IsHitTestVisible = true;
+                    dataGridItems.MouseDoubleClick -= DataGridItems_MouseDoubleClick;
+                    break;
+            }
         }
 
         private void LoadTables()
@@ -26,15 +62,15 @@ namespace PoliceReport
             {
                 ComboBoxItem item = new ComboBoxItem();
                 item.Content = table;
-                TableSelector.Items.Add(item);
+                tableSelector.Items.Add(item);
             }
         }
 
         private void TableSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (TableSelector.SelectedItem != null)
+            if (tableSelector.SelectedItem != null)
             {
-                string selectedTable = ((ComboBoxItem)TableSelector.SelectedItem).Content.ToString();
+                string selectedTable = ((ComboBoxItem)tableSelector.SelectedItem).Content.ToString();
                 AfficherTable(selectedTable);
             }
         }
@@ -42,7 +78,7 @@ namespace PoliceReport
         private void AfficherTable(string tableName)
         {
             // Supprimer les colonnes existantes
-            DataGridItems.Columns.Clear();
+            dataGridItems.Columns.Clear();
 
             // Nom de la classe DAO est formé en concaténant le nom de la table avec "Dao" à la fin
             string daoClassName = tableName + "Dao";
@@ -64,32 +100,50 @@ namespace PoliceReport
                     dynamic rows = getAllRowsMethod.Invoke(daoInstance, null);
 
                     // Récupérer les colonnes de la table
-                    List<string> columns = Database.GetColumnsOfTable(tableName);
+                    List<(string Name, Type Type)> columns = Database.GetColumnsOfTable(tableName);
 
                     if (columns.Count > 0)
                     {
                         // Créer des colonnes pour le DataGrid
-                        foreach (string column in columns)
+                        foreach (var column in columns)
                         {
                             DataGridTextColumn textColumn = new DataGridTextColumn();
-                            textColumn.Header = column;
-                            textColumn.Binding = new Binding(column);
+                            textColumn.Header = column.Name;
+                            textColumn.Binding = new Binding(column.Name);
 
                             // Appliquer le style pour le retour à la ligne
                             textColumn.ElementStyle = Resources["WrapCellStyle"] as Style;
 
-                            if (column != "Id")
+                            if (column.Type == typeof(int))
+                            {
+                                textColumn.Width = new DataGridLength(1, DataGridLengthUnitType.Auto); // Ajuster la largeur des colonnes int automatiquement
+                            }
+                            else
                             {
                                 textColumn.Width = new DataGridLength(1, DataGridLengthUnitType.Star); // Ajuster la largeur des autres colonnes
                             }
 
-                            DataGridItems.Columns.Add(textColumn);
+                            dataGridItems.Columns.Add(textColumn);
                         }
                     }
 
                     // Affichage des données où vous le souhaitez
-                    // Par exemple, supposons que vous ayez une DataGrid nommée "DataGridItems" dans votre interface
-                    DataGridItems.ItemsSource = rows;
+                    // Par exemple, supposons que vous ayez une DataGrid nommée "dataGridItems" dans votre interface
+                    dataGridItems.ItemsSource = rows;
+
+                    // Bloque la première ligne des utilisateurs (considérer comme le propriétaire)
+                    if (tableName.Equals("Utilisateurs", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (dataGridItems.Items.Count > 0)
+                        {
+                            dataGridItems.UpdateLayout();
+                            var firstRow = dataGridItems.ItemContainerGenerator.ContainerFromIndex(0) as DataGridRow;
+                            if (firstRow != null)
+                            {
+                                firstRow.IsEnabled = false;
+                            }
+                        }
+                    }
 
                     // Mettre à jour le label d'information
                     UpdateInfoLabel();
@@ -111,7 +165,7 @@ namespace PoliceReport
 
         private void DataGridItems_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (DataGridItems.SelectedItem != null)
+            if (dataGridItems.SelectedItem != null)
             {
                 GérerAjoutModification(false);
             }
@@ -119,10 +173,10 @@ namespace PoliceReport
 
         private void UpdateInfoLabel()
         {
-            if (DataGridItems.Items != null)
+            if (dataGridItems.Items != null)
             {
-                int totalItems = DataGridItems.Items.Count;
-                int selectedItems = DataGridItems.SelectedItems.Count;
+                int totalItems = dataGridItems.Items.Count;
+                int selectedItems = dataGridItems.SelectedItems.Count;
 
                 CountLabel.Content = selectedItems > 0 ? $"Total : {totalItems}, Sélectionnés : {selectedItems}" : (object)$"Total : {totalItems}";
             }
@@ -140,9 +194,9 @@ namespace PoliceReport
 
         private void GérerAjoutModification(bool estAjout)
         {
-            if (TableSelector.SelectedItem != null)
+            if (tableSelector.SelectedItem != null)
             {
-                string selectedTable = ((ComboBoxItem)TableSelector.SelectedItem).Content.ToString();
+                string selectedTable = ((ComboBoxItem)tableSelector.SelectedItem).Content.ToString();
                 string tableName = selectedTable;
 
                 if (selectedTable.EndsWith("s"))
@@ -155,13 +209,13 @@ namespace PoliceReport
 
                 if (logicLayerType != null)
                 {
-                    if (!estAjout && DataGridItems.SelectedItem == null)
+                    if (!estAjout && dataGridItems.SelectedItem == null)
                     {
                         MessageBox.Show("Veuillez sélectionner un élément à modifier.", tableName, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                         return;
                     }
 
-                    dynamic addWindow = new Window();
+                    Window addWindow = new Window();
                     addWindow.Title = estAjout ? "Ajouter " + selectedTable : "Modifier " + selectedTable;
                     addWindow.Width = Width / 2;
                     addWindow.SizeToContent = SizeToContent.Height;
@@ -181,7 +235,7 @@ namespace PoliceReport
                     stackPanel.Margin = new Thickness(50, 10, 50, 10);
                     grid.Children.Add(stackPanel);
 
-                    var columns = DataGridItems.Columns;
+                    var columns = dataGridItems.Columns;
 
                     foreach (var column in columns)
                     {
@@ -190,33 +244,36 @@ namespace PoliceReport
                         label.Margin = new Thickness(0, 10, 0, 0);
 
                         string tableForeignKey = CheckIfForeignKey(column.Header.ToString());
+                        List<object> tableEnumKey = CheckIfEnum(column.Header.ToString());
 
-                        if (tableForeignKey != null)
+                        if (tableForeignKey != null || tableEnumKey.Count > 0)
                         {
-                            var selectedItem = estAjout ? null : DataGridItems.SelectedItem;
+                            var selectedItem = estAjout ? null : dataGridItems.SelectedItem;
                             object[] args = Array.Empty<object>();
 
                             if (selectedItem != null)
                             {
                                 var properties = selectedItem.GetType().GetProperties();
-                                args = properties.Select(prop =>  prop.GetValue(selectedItem)).ToArray();
+                                args = properties.Select(prop => prop.GetValue(selectedItem)).ToArray();
                             }
 
                             dynamic classe = Activator.CreateInstance(logicLayerType, args);
                             PropertyInfo selectedProperty = classe.GetType().GetProperty(column.Header.ToString());
                             object value = selectedProperty.GetValue(classe);
 
+                            dynamic items = null;
+                            if (tableForeignKey != null) items = GetForeignKeyData(tableForeignKey);
+                            if (tableEnumKey.Count > 0) items = tableEnumKey;
+
                             ComboBox comboBox = new ComboBox();
                             comboBox.Name = "ComboBox_" + column.Header.ToString();
                             comboBox.Margin = new Thickness(0, 0, 0, 10);
                             comboBox.DisplayMemberPath = "Nom";
-                            comboBox.SelectedValuePath = "Type";
-                            comboBox.ItemsSource = GetForeignKeyData(tableForeignKey);
+                            comboBox.ItemsSource = items;
 
                             if (comboBox.Items.Count > 0)
                             {
-                                comboBox.SelectedIndex = 0;
-                                if (value != null) comboBox.SelectedValue = value;
+                                comboBox.SelectedIndex = estAjout ? (int)value : (int)value - 1;
                             }
                             else
                             {
@@ -248,13 +305,13 @@ namespace PoliceReport
                             }
                             else if (!estAjout && column.Header.ToString() == "Id")
                             {
-                                dynamic selectedItem = DataGridItems.SelectedItem;
+                                dynamic selectedItem = dataGridItems.SelectedItem;
                                 textBox.Text = selectedItem.Id.ToString();
                                 textBox.IsEnabled = false;
                             }
                             else if (!estAjout)
                             {
-                                dynamic selectedItem = DataGridItems.SelectedItem;
+                                dynamic selectedItem = dataGridItems.SelectedItem;
                                 object propertyValue = selectedItem.GetType().GetProperty(column.Header.ToString()).GetValue(selectedItem).ToString();
                                 textBox.Text = propertyValue.ToString();
                             }
@@ -307,7 +364,7 @@ namespace PoliceReport
                                     if (property != null)
                                     {
                                         dynamic classe = comboBox.SelectedItem;
-                                        PropertyInfo selectedProperty = classe.GetType().GetProperty("Type");
+                                        PropertyInfo selectedProperty = classe.GetType().GetProperty("Id");
                                         object value = selectedProperty.GetValue(classe);
 
 
@@ -365,6 +422,30 @@ namespace PoliceReport
             return null;
         }
 
+        // Méthode pour vérifier si une colonne possède une énumération
+        private List<dynamic> CheckIfEnum(string columnName)
+        {
+            Type enumType = Type.GetType("LogicLayer." + columnName + "." + columnName + ", LogicLayer");
+            if (enumType != null && enumType.IsEnum)
+            {
+                string[] names = Enum.GetNames(enumType);
+                Array values = Enum.GetValues(enumType);
+
+                List<dynamic> enumList = new List<dynamic>();
+
+                for (int i = 0; i < names.Length; i++)
+                {
+                    dynamic enumItem = new
+                    {
+                        Id = (int)values.GetValue(i),
+                        Nom = names[i]
+                    };
+                    enumList.Add(enumItem);
+                }
+                return enumList;
+            }
+            return new List<dynamic>();
+        }
 
         // Méthode pour récupérer les données de la table correspondante
         private dynamic GetForeignKeyData(string tableName)
@@ -398,9 +479,9 @@ namespace PoliceReport
         private object TrouverProchainIdDisponible()
         {
             // Vérifier le type de l'ID
-            if (DataGridItems.Items.Count > 0)
+            if (dataGridItems.Items.Count > 0)
             {
-                var firstItem = DataGridItems.Items[0];
+                var firstItem = dataGridItems.Items[0];
                 dynamic dynamicFirstItem = firstItem;
                 object idValue = dynamicFirstItem.Id;
 
@@ -408,7 +489,7 @@ namespace PoliceReport
                 {
                     // Si c'est un integer, chercher le prochain ID disponible
                     int maxId = 0;
-                    foreach (var item in DataGridItems.Items)
+                    foreach (var item in dataGridItems.Items)
                     {
                         dynamic dynamicItem = item;
                         int id = dynamicItem.Id;
@@ -434,11 +515,11 @@ namespace PoliceReport
 
         private void Supprimer_Click(object sender, RoutedEventArgs e)
         {
-            if (DataGridItems.SelectedItems != null && DataGridItems.SelectedItems.Count > 0)
+            if (dataGridItems.SelectedItems != null && dataGridItems.SelectedItems.Count > 0)
             {
-                if (TableSelector.SelectedItem != null)
+                if (tableSelector.SelectedItem != null)
                 {
-                    string selectedTable = ((ComboBoxItem)TableSelector.SelectedItem).Content.ToString();
+                    string selectedTable = ((ComboBoxItem)tableSelector.SelectedItem).Content.ToString();
 
                     // Construire le chemin complet de la classe dans StorageLayer
                     string daoClassName = "StorageLayer.Dao." + selectedTable + "Dao";
@@ -448,7 +529,7 @@ namespace PoliceReport
                     {
                         dynamic daoInstance = daoType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null);
 
-                        List<dynamic> selectedItemsCopy = new List<dynamic>(DataGridItems.SelectedItems.Cast<dynamic>());
+                        List<dynamic> selectedItemsCopy = new List<dynamic>(dataGridItems.SelectedItems.Cast<dynamic>());
 
                         foreach (dynamic selectedItem in selectedItemsCopy)
                         {
