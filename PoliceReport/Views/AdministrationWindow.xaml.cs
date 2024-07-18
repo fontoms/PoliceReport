@@ -1,5 +1,6 @@
 ﻿using LogicLayer.Role;
 using LogicLayer.Utilisateur;
+using PoliceReport.Views;
 using StorageLayer;
 using System.Reflection;
 using System.Windows;
@@ -31,6 +32,7 @@ namespace PoliceReport
             InitializeComponent();
             Database = new BaseDao();
             LoadTables();
+            LoadSettings();
         }
 
         private void SetRoles(Utilisateur? utilisateur)
@@ -44,6 +46,7 @@ namespace PoliceReport
                     deleteBtn.IsEnabled = false;
                     break;
                 case (int)Role.Lecteur:
+                    chkIsDisplayList.IsEnabled = false;
                     ajoutBtn.IsEnabled = false;
                     deleteBtn.IsEnabled = false;
                     editBtn.IsEnabled = false;
@@ -52,6 +55,11 @@ namespace PoliceReport
                     dataGridItems.MouseDoubleClick -= DataGridItems_MouseDoubleClick;
                     break;
             }
+        }
+
+        private void LoadSettings()
+        {
+            chkIsDisplayList.IsChecked = Settings.Default.VehDisplayList;
         }
 
         private void LoadTables()
@@ -560,6 +568,12 @@ namespace PoliceReport
         private void DataGridItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateInfoLabel();
+        }
+
+        private void ChkIsDisplayList_Click(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.VehDisplayList = chkIsDisplayList.IsChecked ?? false;
+            Settings.Default.Save();
         }
     }
 }

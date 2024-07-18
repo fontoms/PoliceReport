@@ -17,7 +17,7 @@ namespace PoliceReport.Views
 {
     public partial class MainWindow : Window
     {
-        private static int _lastPatrouilleId = 0;
+        private static int LastPatrouilleId = 0;
         private int _lastActionId = 0;
         private const string _searchInfractionDefaultText = "Rechercher une infraction ou action...";
 
@@ -121,8 +121,8 @@ namespace PoliceReport.Views
                 Patrouille patrouillePrecedente = Patrouilles[Patrouilles.Count - 1];
                 patrouillePrecedente.HeureFinPatrouille = DateTime.Now;
             }
-            _lastPatrouilleId++;
-            patrouille.Id = _lastPatrouilleId;
+            LastPatrouilleId++;
+            patrouille.Id = LastPatrouilleId;
             Patrouilles.Add(patrouille);
         }
 
@@ -331,7 +331,9 @@ namespace PoliceReport.Views
                 administrationWindow.Show();
                 administrationWindow.Closed += (obj, arg) =>
                 {
-                    LoadAllElements();
+                    MainWindow mainWindow = new MainWindow();
+                    mainWindow.Show();
+                    Close();
                 };
             }
         }

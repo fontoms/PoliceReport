@@ -56,9 +56,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Images\Logo.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
+    </None>
+    <None Update="Views\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
 

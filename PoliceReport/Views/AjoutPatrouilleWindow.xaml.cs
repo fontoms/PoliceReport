@@ -15,8 +15,8 @@ namespace PoliceReport.Views
     /// </summary>
     public partial class AjoutPatrouilleWindow : Window
     {
-        private bool _isDisplayList = true;
-        private Patrouille _selectedItem;
+        private readonly bool _isDisplayList = Settings.Default.VehDisplayList;
+        private readonly Patrouille _selectedItem;
 
         public static ObservableCollection<Effectif> Effectifs { get; set; }
 
