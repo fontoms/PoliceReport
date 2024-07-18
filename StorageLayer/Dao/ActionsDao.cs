@@ -50,7 +50,7 @@ namespace StorageLayer.Dao
             return actions;
         }
 
-        public List<LogicLayer.Action.Action> GetAllByInfractions(string infraction)
+        public List<LogicLayer.Action.Action> GetAllByInfractions(int infraction)
         {
             string req = "SELECT * FROM Actions WHERE ActInfraction = '" + infraction + "' ORDER BY ActInfraction ASC";
             SQLiteDataReader reader = ExecuteReader(req);
@@ -71,7 +71,7 @@ namespace StorageLayer.Dao
             List<LogicLayer.Action.Action> actions = [];
             while (reader.Read())
             {
-                actions.Add(new LogicLayer.Action.Action(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
+                actions.Add(new LogicLayer.Action.Action(reader.GetInt16(0), reader.GetString(1), reader.GetInt16(2)));
             }
             reader.Close();
             CloseConnection();

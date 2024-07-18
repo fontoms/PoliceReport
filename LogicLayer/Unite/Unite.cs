@@ -4,9 +4,8 @@
     {
         #region Attributs
         private int _id;
-        private string _type;
         private string _nom;
-        private string _unitSpecialisation;
+        private int _unitSpecialisation;
         #endregion
 
         #region Properties
@@ -18,18 +17,6 @@
                 if (_id != value)
                 {
                     _id = value;
-                }
-            }
-        }
-
-        public string Type
-        {
-            get => _type;
-            set
-            {
-                if (_type != value)
-                {
-                    _type = value;
                 }
             }
         }
@@ -46,7 +33,7 @@
             }
         }
 
-        public string UnitSpecialisation
+        public int UnitSpecialisation
         {
             get => _unitSpecialisation;
             set
@@ -63,17 +50,15 @@
         {
         }
 
-        public Unite(string type, string nom, string uniSpecialisation)
+        public Unite(string nom, int uniSpecialisation)
         {
-            Type = type;
             Nom = nom;
             UnitSpecialisation = uniSpecialisation;
         }
 
-        public Unite(int id, string type, string nom, string uniSpecialisation)
+        public Unite(int id, string nom, int uniSpecialisation)
         {
             Id = id;
-            Type = type;
             Nom = nom;
             UnitSpecialisation = uniSpecialisation;
         }

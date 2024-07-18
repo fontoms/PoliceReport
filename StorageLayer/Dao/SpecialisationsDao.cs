@@ -20,7 +20,7 @@ namespace StorageLayer.Dao
 
         public void Add(Specialisation specialisation)
         {
-            string req = "INSERT INTO Specialisations (Nom, Type) VALUES ('" + specialisation.Nom + "', '" + specialisation.Type + "')";
+            string req = "INSERT INTO Specialisations (Nom) VALUES ('" + specialisation.Nom + "')";
             ExecuteNonQuery(req);
         }
 
@@ -37,7 +37,7 @@ namespace StorageLayer.Dao
             List<Specialisation> specialisations = [];
             while (reader.Read())
             {
-                specialisations.Add(new Specialisation(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
+                specialisations.Add(new Specialisation(reader.GetInt16(0), reader.GetString(1)));
             }
             reader.Close();
             CloseConnection();
@@ -46,7 +46,7 @@ namespace StorageLayer.Dao
 
         public void Update(Specialisation specialisation)
         {
-            string req = "UPDATE Specialisations SET Nom = '" + specialisation.Nom + "', Type = '" + specialisation.Type + "' WHERE Id = " + specialisation.Id;
+            string req = "UPDATE Specialisations SET Nom = '" + specialisation.Nom + "' WHERE Id = " + specialisation.Id;
             ExecuteNonQuery(req);
         }
     }

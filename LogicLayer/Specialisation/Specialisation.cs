@@ -4,7 +4,6 @@
     {
         #region Attributs
         private int _id;
-        private string _type;
         private string _nom;
         #endregion
 
@@ -17,18 +16,6 @@
                 if (_id != value)
                 {
                     _id = value;
-                }
-            }
-        }
-
-        public string Type
-        {
-            get => _type;
-            set
-            {
-                if (_type != value)
-                {
-                    _type = value;
                 }
             }
         }
@@ -50,16 +37,14 @@
         {
         }
 
-        public Specialisation(string type, string nom)
+        public Specialisation(string nom)
         {
-            Type = type;
             Nom = nom;
         }
 
-        public Specialisation(int id, string type, string nom)
+        public Specialisation(int id, string nom)
         {
             Id = id;
-            Type = type;
             Nom = nom;
         }
     }

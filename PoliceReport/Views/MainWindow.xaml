@@ -25,9 +25,9 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid x:Name="HeaderBar" Height="30" VerticalAlignment="Center" Grid.ColumnSpan="2">
-            <Label x:Name="titleLabel" HorizontalAlignment="Left" Content="{Binding Title, ElementName=window}" VerticalAlignment="Center" Width="120" FontSize="16" FontWeight="Bold" Margin="20,0,0,0" MouseDoubleClick="titleLabel_MouseDoubleClick"/>
+            <Label x:Name="titleLabel" HorizontalAlignment="Left" Content="{Binding Title, ElementName=window}" VerticalAlignment="Center" Width="120" FontSize="16" FontWeight="Bold" Margin="20,0,0,0" MouseDoubleClick="TitleLabel_MouseDoubleClick"/>
         </Grid>
-        <Button x:Name="updateBtn" Grid.Column="1" Grid.RowSpan="2" Height="25" VerticalAlignment="Top" Margin="0,15,25,0" Padding="0,0,0,0" HorizontalAlignment="Right" Width="90" Click="updateBtn_Click">
+        <Button x:Name="updateBtn" Grid.Column="1" Grid.RowSpan="2" Height="25" VerticalAlignment="Top" Margin="0,15,25,0" Padding="0,0,0,0" HorizontalAlignment="Right" Width="90" Click="UpdateBtn_Click">
             <StackPanel Orientation="Horizontal">
                 <Image Height="15" Source="/Images/SyncIcon.png"/>
                 <Label Content="Mise à jour" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="9"/>
@@ -42,12 +42,12 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="genererRapportButton" Content="Générer le rapport de patrouille" VerticalAlignment="Bottom" Margin="50,0,50,10" FontSize="16" FontWeight="Bold" Foreground="#FFDE1E1E" Click="genererRapportButton_Click" Height="25" Grid.ColumnSpan="2" IsEnabled="False" TabIndex="6"/>
-            <Button x:Name="startServiceBtn" Content="Début de service" Margin="50,0,20,75" FontSize="16" FontWeight="Bold" Foreground="#FF00C800" VerticalAlignment="Bottom" Height="30" Click="startServiceBtn_Click" TabIndex="3"/>
-            <Button x:Name="endServiceBtn" Grid.Column="1" Content="Fin de service" VerticalAlignment="Bottom" Margin="20,0,50,75" Height="30" FontWeight="Bold" FontSize="16" Foreground="#FFC80000" IsEnabled="False" Click="endServiceBtn_Click" TabIndex="5"/>
+            <Button x:Name="genererRapportButton" Content="Générer le rapport de patrouille" VerticalAlignment="Bottom" Margin="50,0,50,10" FontSize="16" FontWeight="Bold" Foreground="#FFDE1E1E" Click="GenererRapportButton_Click" Height="25" Grid.ColumnSpan="2" IsEnabled="False" TabIndex="6"/>
+            <Button x:Name="startServiceBtn" Content="Début de service" Margin="50,0,20,75" FontSize="16" FontWeight="Bold" Foreground="#FF00C800" VerticalAlignment="Bottom" Height="30" Click="StartServiceBtn_Click" TabIndex="3"/>
+            <Button x:Name="endServiceBtn" Grid.Column="1" Content="Fin de service" VerticalAlignment="Bottom" Margin="20,0,50,75" Height="30" FontWeight="Bold" FontSize="16" Foreground="#FFC80000" IsEnabled="False" Click="EndServiceBtn_Click" TabIndex="5"/>
             <Label x:Name="startServiceLbl" Content="Hors service" VerticalAlignment="Bottom" Foreground="#FF00C800" Margin="50,0,20,50" HorizontalContentAlignment="Center"/>
             <Label x:Name="endServiceLbl" Grid.Column="1" Content="Hors service" Margin="20,0,50,50" VerticalAlignment="Bottom" Foreground="#FFC80000" HorizontalContentAlignment="Center"/>
-            <Button x:Name="restartServiceBtn" VerticalAlignment="Bottom" Height="30" Width="30" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,0,0,75" Click="restartServiceBtn_Click" IsEnabled="False" TabIndex="4">
+            <Button x:Name="restartServiceBtn" VerticalAlignment="Bottom" Height="30" Width="30" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,0,0,75" Click="RestartServiceBtn_Click" IsEnabled="False" TabIndex="4">
                 <Image Source="/Images/switchIcon.png"/>
             </Button>
             <Grid Grid.ColumnSpan="2" Margin="50,0,50,100" VerticalAlignment="Center">
@@ -66,7 +66,7 @@
         </Grid>
         <Grid Grid.Column="1" Grid.Row="3" Margin="25,0,25,25" Grid.RowSpan="2">
             <Label Grid.Column="1" Content="RESUME" HorizontalAlignment="Left" Grid.Row="2" VerticalAlignment="Top" FontWeight="Bold" Height="25"/>
-            <ListBox x:Name="selectedActionsListBox" Margin="0,25,0,0" FontSize="14" ItemsSource="{Binding Actions}" Grid.Column="1" Grid.Row="2" MouseDoubleClick="selectedActionsListBox_MouseDoubleClick" TabIndex="13">
+            <ListBox x:Name="selectedActionsListBox" Margin="0,25,0,0" FontSize="14" ItemsSource="{Binding Actions}" Grid.Column="1" Grid.Row="2" MouseDoubleClick="SelectedActionsListBox_MouseDoubleClick" TabIndex="13">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -79,12 +79,12 @@
         </Grid>
         <Grid Grid.Column="1" Grid.Row="1" Margin="25,0,25,0" Grid.RowSpan="2">
             <Label Content="INFRACTIONS/ACTIONS" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Grid.Row="1" Grid.Column="1" Height="25"/>
-            <TextBox x:Name="searchInfractionTextBox" Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,25,0,0" Height="20" TextChanged="searchInfractionTextBox_TextChanged" AutomationProperties.HelpText="Rechercher" GotFocus="searchInfractionTextBox_GotFocus" LostFocus="searchInfractionTextBox_LostFocus" Text="Rechercher une infraction ou action..." TabIndex="7"/>
-            <ListBox x:Name="actionsListBox" Margin="0,45,0,25" FontSize="14"  ItemsSource="{Binding Actions}" MouseDoubleClick="actionsListBox_MouseDoubleClick" Grid.Column="1" Grid.Row="1" TabIndex="8">
+            <TextBox x:Name="searchInfractionTextBox" Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,25,0,0" Height="20" TextChanged="SearchInfractionTextBox_TextChanged" AutomationProperties.HelpText="Rechercher" GotFocus="SearchInfractionTextBox_GotFocus" LostFocus="SearchInfractionTextBox_LostFocus" Text="Rechercher une infraction ou action..." TabIndex="7"/>
+            <ListBox x:Name="actionsListBox" Margin="0,45,0,25" FontSize="14"  ItemsSource="{Binding Actions}" MouseDoubleClick="ActionsListBox_MouseDoubleClick" Grid.Column="1" Grid.Row="1" TabIndex="8">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
-                            <TextBlock Text="{Binding Nom}" FontWeight="{Binding ActInfraction, Converter={x:Static local:NullToBoldConverter.Instance}}"/>
+                            <TextBlock Text="{Binding Nom}" FontWeight="{Binding ActInfraction, Converter={x:Static local:ZeroToBoldConverter.Instance}}"/>
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

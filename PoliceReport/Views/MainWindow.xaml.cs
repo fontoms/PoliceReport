@@ -48,7 +48,6 @@ namespace PoliceReport.Views
 
             // Charger les autres éléments une fois que la base de données est prête
             LoadAllElements();
-            if (!effectifComboBox.IsEnabled) startServiceBtn.IsEnabled = false;
             effectifComboBox.Focus();
         }
 
@@ -60,13 +59,14 @@ namespace PoliceReport.Views
             List<Grade> grades = GradesDao.Instance.GetAll();
             foreach (Effectif effectif in effectifs)
             {
-                effectif.Grade = grades.FirstOrDefault(g => g.Type == effectif.EffGrade);
+                effectif.Grade = grades.FirstOrDefault(g => g.Id == effectif.EffGrade);
             }
             effectifComboBox.ItemsSource = effectifs;
 
             if (effectifComboBox.Items.Count > 0)
             {
                 effectifComboBox.SelectedIndex = 0;
+                effectifComboBox.IsEnabled = true;
             }
             else
             {
@@ -90,10 +90,10 @@ namespace PoliceReport.Views
             {
                 actionsList.Add(new LogicLayer.Action.Action(infraction.Nom, DateTime.Now));
 
-                List<LogicLayer.Action.Action> actions = ActionsDao.Instance.GetAllByInfractions(infraction.Type);
+                List<LogicLayer.Action.Action> actions = ActionsDao.Instance.GetAllByInfractions(infraction.Id);
                 foreach (LogicLayer.Action.Action action in actions)
                 {
-                    action.ActInfraction = infraction.Type;
+                    action.ActInfraction = infraction.Id;
                     actionsList.Add(action);
                 }
 
@@ -104,14 +104,12 @@ namespace PoliceReport.Views
             actionsListBox.ItemsSource = actionsList;
         }
 
-        private void actionsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void ActionsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             // Ajouter l'infraction sélectionnée à la liste des infractions
-            if (actionsListBox.SelectedItem != null && ((LogicLayer.Action.Action)actionsListBox.SelectedItem).ActInfraction != null && !startServiceBtn.IsEnabled)
+            if (actionsListBox.SelectedItem != null && ((LogicLayer.Action.Action)actionsListBox.SelectedItem).ActInfraction != 0 && !startServiceBtn.IsEnabled)
             {
-                LogicLayer.Action.Action action = new LogicLayer.Action.Action(((LogicLayer.Action.Action)actionsListBox.SelectedItem).Nom, DateTime.Now);
-                _lastActionId++;
-                action.Id = _lastActionId;
+                LogicLayer.Action.Action action = new LogicLayer.Action.Action(_lastActionId++, ((LogicLayer.Action.Action)actionsListBox.SelectedItem).Nom, DateTime.Now, ((LogicLayer.Action.Action)actionsListBox.SelectedItem).ActInfraction);
                 Actions.Add(action);
             }
         }
@@ -188,16 +186,16 @@ namespace PoliceReport.Views
             }
         }
 
-        private void selectedActionsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void SelectedActionsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             // Supprimer l'infraction sélectionnée de la liste des infractions
-            if (selectedActionsListBox.SelectedItem != null && ((LogicLayer.Action.Action)selectedActionsListBox.SelectedItem).ActInfraction != null)
+            if (selectedActionsListBox.SelectedItem != null && ((LogicLayer.Action.Action)selectedActionsListBox.SelectedItem).ActInfraction != 0)
             {
                 Actions.Remove((LogicLayer.Action.Action)selectedActionsListBox.SelectedItem);
             }
         }
 
-        private void searchInfractionTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void SearchInfractionTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             // Filtrer la liste des infractions
             if (string.IsNullOrWhiteSpace(searchInfractionTextBox.Text))
@@ -213,7 +211,7 @@ namespace PoliceReport.Views
                 actionsListBox.Items.Filter = item =>
                 {
                     LogicLayer.Action.Action action = (LogicLayer.Action.Action)item;
-                    return action.ActInfraction != null && NormalizeText(action.Nom.ToLower()).Contains(searchTextNormalized);
+                    return action.ActInfraction != 0 && NormalizeText(action.Nom.ToLower()).Contains(searchTextNormalized);
                 };
             }
         }
@@ -224,7 +222,7 @@ namespace PoliceReport.Views
             return text.Normalize(NormalizationForm.FormD).Replace('\u0300', '\u0065');
         }
 
-        private void searchInfractionTextBox_GotFocus(object sender, RoutedEventArgs e)
+        private void SearchInfractionTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             // Effacer le texte par défaut
             if (searchInfractionTextBox.Text == _searchInfractionDefaultText)
@@ -233,7 +231,7 @@ namespace PoliceReport.Views
             }
         }
 
-        private void searchInfractionTextBox_LostFocus(object sender, RoutedEventArgs e)
+        private void SearchInfractionTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             // Remettre le texte par défaut
             if (string.IsNullOrWhiteSpace(searchInfractionTextBox.Text))
@@ -242,7 +240,7 @@ namespace PoliceReport.Views
             }
         }
 
-        private void genererRapportButton_Click(object sender, RoutedEventArgs e)
+        private void GenererRapportButton_Click(object sender, RoutedEventArgs e)
         {
             // Générer le rapport
             StringBuilder rapport = new StringBuilder();
@@ -279,7 +277,7 @@ namespace PoliceReport.Views
             MessageBox.Show("Le rapport a été généré et copié dans le presse-papier.", "Rapport généré", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void startServiceBtn_Click(object sender, RoutedEventArgs e)
+        private void StartServiceBtn_Click(object sender, RoutedEventArgs e)
         {
             effectifComboBox.IsEnabled = false;
             updateBtn.IsEnabled = false;
@@ -291,7 +289,7 @@ namespace PoliceReport.Views
             DeletePatrouilleBtn.IsEnabled = !DeletePatrouilleBtn.IsEnabled;
         }
 
-        private void endServiceBtn_Click(object sender, RoutedEventArgs e)
+        private void EndServiceBtn_Click(object sender, RoutedEventArgs e)
         {
             endServiceLbl.Content = "Fin de service : " + DateTime.Now.ToString("dd/MM/yyyy HH:mm");
             endServiceBtn.IsEnabled = !endServiceBtn.IsEnabled;
@@ -304,7 +302,7 @@ namespace PoliceReport.Views
             }
         }
 
-        private void restartServiceBtn_Click(object sender, RoutedEventArgs e)
+        private void RestartServiceBtn_Click(object sender, RoutedEventArgs e)
         {
             startServiceLbl.Content = "Hors service";
             startServiceBtn.IsEnabled = true;
@@ -320,25 +318,25 @@ namespace PoliceReport.Views
             DeletePatrouilleBtn.IsEnabled = false;
         }
 
-        private void titleLabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void TitleLabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-#if !DEBUG
             ConnexionWindow connexionWindow = new ConnexionWindow();
             connexionWindow.Owner = this;
             connexionWindow.ShowDialog();
 
             if (connexionWindow.MotDePasseCorrect)
             {
-#endif
-            AdministrationWindow administrationWindow = new AdministrationWindow();
-            administrationWindow.Owner = this;
-            administrationWindow.Show();
-#if !DEBUG
+                AdministrationWindow administrationWindow = new AdministrationWindow();
+                administrationWindow.User = connexionWindow.User;
+                administrationWindow.Show();
+                administrationWindow.Closed += (obj, arg) =>
+                {
+                    LoadAllElements();
+                };
             }
-#endif
         }
 
-        private async void updateBtn_Click(object sender, RoutedEventArgs e)
+        private async void UpdateBtn_Click(object sender, RoutedEventArgs e)
         {
             _chargementWindow = new ChargementWindow("Mise à jour de PoliceReport...");
             _chargementWindow.Show();
@@ -377,6 +375,7 @@ namespace PoliceReport.Views
             {
                 LoadEffectifs();
                 LoadActions();
+                startServiceBtn.IsEnabled = effectifComboBox.IsEnabled;
             }
             catch (Exception ex)
             {

@@ -20,7 +20,7 @@ namespace StorageLayer.Dao
 
         public void Add(Unite unite)
         {
-            string req = "INSERT INTO Unites (Nom, Type, UnitSpecialisation) VALUES ('" + unite.Nom + "', '" + unite.Type + "', '" + unite.UnitSpecialisation + "')";
+            string req = "INSERT INTO Unites (Nom, UnitSpecialisation) VALUES ('" + unite.Nom + "', '" + unite.UnitSpecialisation + "')";
             ExecuteNonQuery(req);
         }
 
@@ -30,12 +30,23 @@ namespace StorageLayer.Dao
             ExecuteNonQuery(req);
         }
 
+        public Unite GetId(int id)
+        {
+            string req = "SELECT * FROM Unites WHERE Id = '" + id + "'";
+            SQLiteDataReader reader = ExecuteReader(req);
+            reader.Read();
+            Unite unite = new Unite(reader.GetString(1), reader.GetInt16(2));
+            reader.Close();
+            CloseConnection();
+            return unite;
+        }
+
         public Unite GetType(string type)
         {
             string req = "SELECT * FROM Unites WHERE Type = '" + type + "'";
             SQLiteDataReader reader = ExecuteReader(req);
             reader.Read();
-            Unite unite = new(reader.GetString(1), reader.GetString(2), reader.GetString(3));
+            Unite unite = new Unite(reader.GetString(1), reader.GetInt16(2));
             reader.Close();
             CloseConnection();
             return unite;
@@ -48,21 +59,21 @@ namespace StorageLayer.Dao
             List<Unite> unites = [];
             while (reader.Read())
             {
-                unites.Add(new Unite(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3)));
+                unites.Add(new Unite(reader.GetInt16(0), reader.GetString(1), reader.GetInt16(2)));
             }
             reader.Close();
             CloseConnection();
             return unites;
         }
 
-        public List<Unite> GetAllBySpecialisation(string specialisation)
+        public List<Unite> GetAllBySpecialisation(int specialisation)
         {
             string req = "SELECT * FROM Unites WHERE UnitSpecialisation = '" + specialisation + "' ORDER BY UnitSpecialisation ASC";
             SQLiteDataReader reader = ExecuteReader(req);
             List<Unite> unites = [];
             while (reader.Read())
             {
-                unites.Add(new Unite(reader.GetString(1), reader.GetString(2), reader.GetString(3)));
+                unites.Add(new Unite(reader.GetInt16(0), reader.GetString(1), reader.GetInt16(2)));
             }
             reader.Close();
             CloseConnection();
@@ -76,7 +87,7 @@ namespace StorageLayer.Dao
             List<Unite> unites = [];
             while (reader.Read())
             {
-                unites.Add(new Unite(reader.GetString(1), reader.GetString(2), reader.GetString(3)));
+                unites.Add(new Unite(reader.GetString(1), reader.GetInt16(2)));
             }
             reader.Close();
             CloseConnection();
@@ -85,7 +96,7 @@ namespace StorageLayer.Dao
 
         public void Update(Unite unite)
         {
-            string req = "UPDATE Unites SET Nom = '" + unite.Nom + "', Type = '" + unite.Type + "', UnitSpecialisation = '" + unite.UnitSpecialisation + "' WHERE Id = " + unite.Id;
+            string req = "UPDATE Unites SET Nom = '" + unite.Nom + "', UnitSpecialisation = '" + unite.UnitSpecialisation + "' WHERE Id = " + unite.Id;
             ExecuteNonQuery(req);
         }
     }

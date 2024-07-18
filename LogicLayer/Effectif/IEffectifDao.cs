@@ -7,6 +7,6 @@
         void Update(Effectif effectif);
         List<Effectif> GetAll();
         List<Effectif> GetAllEffectifs();
-        List<Effectif> GetAllByGrade(string grade);
+        List<Effectif> GetAllByGrade(int grade);
     }
 }

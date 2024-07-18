@@ -9,7 +9,7 @@ namespace LogicLayer.Effectif
         private string _idDiscord;
         private string _nom;
         private string _prenom;
-        private string _effGrade;
+        private int _effGrade;
         private Grade.Grade _grade;
         private string _positionVehicule;
         #endregion
@@ -67,7 +67,7 @@ namespace LogicLayer.Effectif
             }
         }
 
-        public string EffGrade
+        public int EffGrade
         {
             get => _effGrade;
             set
@@ -115,7 +115,7 @@ namespace LogicLayer.Effectif
         {
         }
 
-        public Effectif(int id, string idDiscord, string nom, string prenom, string effGrade)
+        public Effectif(int id, string idDiscord, string nom, string prenom, int effGrade)
         {
             Id = id;
             IdDiscord = idDiscord;
@@ -124,7 +124,7 @@ namespace LogicLayer.Effectif
             EffGrade = effGrade;
         }
 
-        public Effectif(int id, string idDiscord, string nom, string prenom, string effGrade, Grade.Grade grade, string positionVehicule)
+        public Effectif(int id, string idDiscord, string nom, string prenom, int effGrade, Grade.Grade grade, string positionVehicule)
         {
             Id = id;
             IdDiscord = idDiscord;

@@ -9,7 +9,7 @@ namespace LogicLayer.Action
         private int _id;
         private string _nom;
         private DateTime _heure;
-        private string _actInfraction;
+        private int _actInfraction;
         #endregion
 
         #region Properties
@@ -52,7 +52,7 @@ namespace LogicLayer.Action
             }
         }
 
-        public string ActInfraction
+        public int ActInfraction
         {
             get => _actInfraction;
             set
@@ -76,14 +76,14 @@ namespace LogicLayer.Action
             Heure = heure;
         }
 
-        public Action(int id, string nom, string actInfraction)
+        public Action(int id, string nom, int actInfraction)
         {
             Id = id;
             Nom = nom;
             ActInfraction = actInfraction;
         }
 
-        public Action(int id, string nom, DateTime heure, string actInfraction)
+        public Action(int id, string nom, DateTime heure, int actInfraction)
         {
             Id = id;
             Nom = nom;

@@ -1,5 +1,6 @@
 ﻿using LogicLayer.Outils;
 using LogicLayer.Outils.Cryptage;
+using LogicLayer.Utilisateur;
 using System.Windows;
 
 namespace PoliceReport.Views
@@ -9,21 +10,27 @@ namespace PoliceReport.Views
     /// </summary>
     public partial class ConnexionWindow : Window
     {
-        private const string MotDePasseAttendu = Constants.AdminPassword;
-
         public bool MotDePasseCorrect { get; private set; }
+        public Utilisateur User { get; private set; }
 
         public ConnexionWindow()
         {
             InitializeComponent();
             MotDePasseCorrect = false;
+            userBox.Focus();
         }
 
         private void connectionBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (MotDePasseAttendu == HashHelper.CalculateSHA256(passBox.Password))
+#if DEBUG
+            Utilisateur user = Constants.Users.FirstOrDefault(u => u.Username == userBox.Text && u.Password == HashHelper.CalculateSHA256(passBox.Password));
+#else
+            Utilisateur userDb = UtilisateursDao.Instance.GetUser(userBox.Text, HashHelper.CalculateSHA256(passBox.Password));
+#endif
+            if (user != null)
             {
                 MotDePasseCorrect = true;
+                User = user;
                 Close();
             }
             else

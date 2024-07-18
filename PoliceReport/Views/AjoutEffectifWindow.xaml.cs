@@ -34,7 +34,7 @@ namespace PoliceReport.Views
                 }
                 foreach (var grade in gradeComboBox.Items)
                 {
-                    if (((Grade)grade).Type == _selectedItem.Grade.Type)
+                    if (((Grade)grade).Id == _selectedItem.Grade.Id)
                     {
                         gradeComboBox.SelectedItem = grade;
                         break;
@@ -79,7 +79,7 @@ namespace PoliceReport.Views
             List<Grade> grades = GradesDao.Instance.GetAll();
             foreach (Effectif effectif in effectifs)
             {
-                effectif.Grade = grades.Find(g => g.Type == effectif.EffGrade);
+                effectif.Grade = grades.Find(g => g.Id == effectif.EffGrade);
             }
             effectifComboBox.ItemsSource = effectifs;
 
