@@ -4,7 +4,7 @@ namespace StorageLayer
 {
     public class StorageDao : BaseDao
     {
-        private SQLiteConnection connection;
+        private readonly SQLiteConnection connection;
 
         public StorageDao(string fileName) : base()
         {

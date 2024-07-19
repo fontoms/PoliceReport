@@ -8,7 +8,7 @@ namespace StorageLayer
     public class BaseDao
     {
         private SQLiteConnection connection;
-        private string githubContentsUrl = Constants.ApiContentUrl;
+        private readonly string githubContentsUrl = Constants.ApiContentUrl;
         public event EventHandler<double> ProgressChanged;
 
         /// <summary>

@@ -12,7 +12,7 @@ namespace PoliceReport
 {
     public partial class AdministrationWindow : Window
     {
-        private BaseDao Database;
+        private readonly BaseDao Database;
         private Utilisateur _user;
         public Utilisateur User
         {
