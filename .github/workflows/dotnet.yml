@@ -26,11 +26,11 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    - name: Publish build artifacts
-      run: dotnet publish --configuration Release --no-restore --output ./output 
+    - name: Publish the executable
+      run: dotnet publish --configuration Release --runtime win-x64 --self-contained --output ./output
 
-    - name: Upload artifacts
+    - name: Upload the executable artifact
       uses: actions/upload-artifact@v3
       with:
-        name: published-app
+        name: published-exe
         path: ./output
