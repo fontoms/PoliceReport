@@ -6,7 +6,7 @@ J'ai conçu ce logiciel car j'ai remarqué que les joueurs avaient un bloc-notes
 
 ## Fonctionnalités
 
-Aucunes données personnelles n'est récupérées par le logiciel, seul une base de donnée en local permet la conservation des données importées dans l'application (grades, véhicules, actions, etc).
+Aucune donnée personnelle n'est récupérée par le logiciel, seule une base de données en local permet la conservation des données importées dans l'application (grades, véhicules, actions, etc).
 
 ### Mise à jour
 

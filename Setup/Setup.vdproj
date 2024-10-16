@@ -21,7 +21,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A34539CBE87F4683AE556A724E1922BB"
+        "MsmKey" = "8:_2B1A87C3712049628BBB7A13FBB62895"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -142,10 +142,10 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A34539CBE87F4683AE556A724E1922BB"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2B1A87C3712049628BBB7A13FBB62895"
             {
-            "SourcePath" = "8:..\\PoliceReport\\Logo.ico"
-            "TargetName" = "8:Logo.ico"
+            "SourcePath" = "8:..\\icon.ico"
+            "TargetName" = "8:icon.ico"
             "Tag" = "8:"
             "Folder" = "8:_27F0A1550C1D4F3992541CC9ABE6939E"
             "Condition" = "8:"
@@ -236,7 +236,7 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:Logiciel pour rapport de patrouille"
         "ARPURLINFOABOUT" = "8:https://github.com/Fontom71"
-        "ARPPRODUCTICON" = "8:_A34539CBE87F4683AE556A724E1922BB"
+        "ARPPRODUCTICON" = "8:"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -350,7 +350,7 @@
             "Target" = "8:_03EBC8F7999B4133B5118AA0A4F3381C"
             "Folder" = "8:_B012BF5788954E8C8E89E145BEE9E140"
             "WorkingFolder" = "8:_27F0A1550C1D4F3992541CC9ABE6939E"
-            "Icon" = "8:_A34539CBE87F4683AE556A724E1922BB"
+            "Icon" = "8:"
             "Feature" = "8:"
             }
         }
@@ -754,7 +754,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_03EBC8F7999B4133B5118AA0A4F3381C"
             {
-            "SourcePath" = "8:..\\PoliceReport\\obj\\Release\\net8.0-windows\\apphost.exe"
+            "SourcePath" = "8:..\\PoliceReport\\obj\\Debug\\net8.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_27F0A1550C1D4F3992541CC9ABE6939E"

@@ -37,10 +37,10 @@ jobs:
 
     - name: Generate the setup.exe
       run: |
-        "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss  # Exécute le script de configuration
+        cmd.exe /c "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
 
     - name: Upload the setup artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: setup-exe
         path: ./output/setup.exe  # Télécharge le fichier setup.exe généré comme artefact

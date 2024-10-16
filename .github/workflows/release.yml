@@ -1,0 +1,59 @@
+name: Versioning des releases
+
+on:
+  push:
+    branches:
+      - main  # Exécuter sur les pushes dans la branche principale
+
+jobs:
+  release:
+    if: startsWith(github.event.head_commit.message, 'Release')  # Condition: si le message commence par "Release"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Extraire le code
+        uses: actions/checkout@v3
+
+      - name: Installer .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.x'  # Mettez ici la version de .NET que vous utilisez
+
+      - name: Obtenir la version à partir du message de commit
+        id: get-version
+        run: |
+          echo "commit_msg=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+          echo "version=$(echo $commit_msg | sed 's/Release //')" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Afficher la version
+        run: |
+          echo "Version: ${{ env.version }}"
+
+      - name: Mettre à jour la version dans le fichier .csproj
+        run: |
+          csproj_file=$(find . -name "*.csproj")
+          sed -i 's#<Version>.*</Version>#<Version>${{ env.version }}</Version>#' $csproj_file
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git commit -am "Mise à jour de la version vers ${{ env.version }}"
+          git push
+
+      - name: Créer une release GitHub
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ env.version }}
+          tag_name: ${{ env.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Compiler et publier
+        run: |
+          dotnet build --configuration Release
+          dotnet publish -c Release -o output
+
+      - name: Charger les artefacts de la compilation
+        uses: actions/upload-artifact@v3
+        with:
+          name: PoliceReport-${{ env.version }}
+          path: ./output
