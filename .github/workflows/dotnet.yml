@@ -26,3 +26,11 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Publish build artifacts
+      run: dotnet publish --configuration Release --no-restore --output ./output 
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: published-app
+        path: ./output
