@@ -1,0 +1,46 @@
+name: .NET Build and Create Setup
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest  # Nécessaire car Inno Setup fonctionne sur Windows
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2  # Récupère le code source
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.x'  # Utilisez la version .NET de votre projet
+
+    - name: Restore dependencies
+      run: dotnet restore  # Restaure les dépendances du projet
+
+    - name: Build the project
+      run: dotnet build --configuration Release --no-restore  # Compile en mode Release
+
+    - name: Publish the executable
+      run: dotnet publish --configuration Release --runtime win-x64 --self-contained --output ./output  # Publie un fichier .exe pour Windows
+
+    - name: Download Inno Setup
+      run: |
+        curl -Lo innosetup.exe https://jrsoftware.org/download.php/is.exe
+        start /wait innosetup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+
+    - name: Generate the setup.exe
+      run: |
+        "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss  # Exécute le script de configuration
+
+    - name: Upload the setup artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: setup-exe
+        path: ./output/setup.exe  # Télécharge le fichier setup.exe généré comme artefact
