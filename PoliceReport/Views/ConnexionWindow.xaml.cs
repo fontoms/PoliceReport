@@ -1,6 +1,7 @@
 ﻿using LogicLayer.Outils;
 using LogicLayer.Outils.Cryptage;
 using LogicLayer.Utilisateur;
+using StorageLayer.Dao;
 using System.Windows;
 
 namespace PoliceReport.Views
@@ -25,7 +26,7 @@ namespace PoliceReport.Views
 #if DEBUG
             Utilisateur user = Constants.Users.FirstOrDefault(u => u.Username == userBox.Text && u.Password == HashHelper.CalculateSHA256(passBox.Password));
 #else
-            Utilisateur userDb = UtilisateursDao.Instance.GetUser(userBox.Text, HashHelper.CalculateSHA256(passBox.Password));
+            Utilisateur user = UtilisateursDao.Instance.GetUser(userBox.Text, HashHelper.CalculateSHA256(passBox.Password));
 #endif
             if (user != null)
             {
