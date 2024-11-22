@@ -1,7 +1,8 @@
-﻿using LogicLayer.Role;
-using LogicLayer.Utilisateur;
+﻿using Microsoft.Extensions.DependencyInjection;
+using PoliceReport.Core.Role;
+using PoliceReport.Core.Utilisateur;
+using PoliceReport.Database;
 using PoliceReport.Views;
-using StorageLayer;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,7 +13,7 @@ namespace PoliceReport
 {
     public partial class AdministrationWindow : Window
     {
-        private readonly BaseDao Database;
+        private readonly IDatabaseConnection _database;
         private Utilisateur _user;
         public Utilisateur User
         {
@@ -27,10 +28,10 @@ namespace PoliceReport
             }
         }
 
-        public AdministrationWindow()
+        public AdministrationWindow(IServiceProvider serviceProvider)
         {
             InitializeComponent();
-            Database = new BaseDao();
+            _database = serviceProvider.GetRequiredService<IDatabaseConnection>();
             LoadTables();
             LoadSettings();
         }
@@ -65,7 +66,7 @@ namespace PoliceReport
         private void LoadTables()
         {
             // Charger les tables de la base de données
-            List<string> tables = Database.GetTables();
+            List<string> tables = _database.GetTables();
             foreach (string table in tables)
             {
                 ComboBoxItem item = new ComboBoxItem();
@@ -91,8 +92,8 @@ namespace PoliceReport
             // Nom de la classe DAO est formé en concaténant le nom de la table avec "Dao" à la fin
             string daoClassName = tableName + "Dao";
 
-            // Assurez-vous que la classe DAO existe dans le namespace approprié (ici, j'utilise StorageLayer.Dao)
-            Type daoType = Type.GetType("StorageLayer.Dao." + daoClassName + ", StorageLayer");
+            // Assurez-vous que la classe DAO existe dans le namespace approprié (ici, j'utilise PoliceReport.Database.Dao)
+            Type daoType = Type.GetType("PoliceReport.Database.Dao." + daoClassName + ", PoliceReport.Database");
 
             if (daoType != null)
             {
@@ -108,7 +109,7 @@ namespace PoliceReport
                     dynamic rows = getAllRowsMethod.Invoke(daoInstance, null);
 
                     // Récupérer les colonnes de la table
-                    List<(string Name, Type Type)> columns = Database.GetColumnsOfTable(tableName);
+                    List<(string Name, Type Type)> columns = _database.GetColumnsOfTable(tableName);
 
                     if (columns.Count > 0)
                     {
@@ -212,10 +213,10 @@ namespace PoliceReport
                     selectedTable = selectedTable.Remove(selectedTable.Length - 1);
                 }
 
-                string logicLayerNamespace = "LogicLayer." + selectedTable + "." + selectedTable;
-                Type logicLayerType = Type.GetType(logicLayerNamespace + ", LogicLayer");
+                string CoreNamespace = "PoliceReport.Core." + selectedTable + "." + selectedTable;
+                Type CoreType = Type.GetType(CoreNamespace + ", PoliceReport.Core");
 
-                if (logicLayerType != null)
+                if (CoreType != null)
                 {
                     if (!estAjout && dataGridItems.SelectedItem == null)
                     {
@@ -265,7 +266,7 @@ namespace PoliceReport
                                 args = properties.Select(prop => prop.GetValue(selectedItem)).ToArray();
                             }
 
-                            dynamic classe = Activator.CreateInstance(logicLayerType, args);
+                            dynamic classe = Activator.CreateInstance(CoreType, args);
                             PropertyInfo selectedProperty = classe.GetType().GetProperty(column.Header.ToString());
                             object value = selectedProperty.GetValue(classe);
 
@@ -352,14 +353,14 @@ namespace PoliceReport
 
                         if (allFieldsFilled)
                         {
-                            dynamic newItem = Activator.CreateInstance(logicLayerType);
+                            dynamic newItem = Activator.CreateInstance(CoreType);
 
                             foreach (var child in stackPanel.Children)
                             {
                                 if (child is TextBox textBox)
                                 {
                                     string propertyName = textBox.Name.Replace("TextBox_", "");
-                                    PropertyInfo property = logicLayerType.GetProperty(propertyName);
+                                    PropertyInfo property = CoreType.GetProperty(propertyName);
                                     if (property != null)
                                     {
                                         property.SetValue(newItem, Convert.ChangeType(textBox.Text, property.PropertyType));
@@ -368,7 +369,7 @@ namespace PoliceReport
                                 else if (child is ComboBox comboBox)
                                 {
                                     string propertyName = comboBox.Name.Replace("ComboBox_", "");
-                                    PropertyInfo property = logicLayerType.GetProperty(propertyName);
+                                    PropertyInfo property = CoreType.GetProperty(propertyName);
                                     if (property != null)
                                     {
                                         dynamic classe = comboBox.SelectedItem;
@@ -382,7 +383,7 @@ namespace PoliceReport
                             }
 
                             string daoClassName = tableName + "Dao";
-                            Type daoType = Type.GetType("StorageLayer.Dao." + daoClassName + ", StorageLayer");
+                            Type daoType = Type.GetType("PoliceReport.Database.Dao." + daoClassName + ", PoliceReport.Database");
 
                             if (daoType != null)
                             {
@@ -419,7 +420,7 @@ namespace PoliceReport
         private string CheckIfForeignKey(string columnName)
         {
             string searchString = columnName + "s";
-            List<string> tables = Database.GetTables();
+            List<string> tables = _database.GetTables();
             foreach (string table in tables)
             {
                 if (searchString.Contains(table, StringComparison.Ordinal))
@@ -433,7 +434,7 @@ namespace PoliceReport
         // Méthode pour vérifier si une colonne possède une énumération
         private List<dynamic> CheckIfEnum(string columnName)
         {
-            Type enumType = Type.GetType("LogicLayer." + columnName + "." + columnName + ", LogicLayer");
+            Type enumType = Type.GetType("PoliceReport.Core." + columnName + "." + columnName + ", PoliceReport.Core");
             if (enumType != null && enumType.IsEnum)
             {
                 string[] names = Enum.GetNames(enumType);
@@ -460,7 +461,7 @@ namespace PoliceReport
         {
             string daoClassName = tableName + "Dao";
 
-            Type daoType = Type.GetType("StorageLayer.Dao." + daoClassName + ", StorageLayer");
+            Type daoType = Type.GetType("PoliceReport.Database.Dao." + daoClassName + ", PoliceReport.Database");
 
             if (daoType != null)
             {
@@ -529,9 +530,9 @@ namespace PoliceReport
                 {
                     string selectedTable = ((ComboBoxItem)tableSelector.SelectedItem).Content.ToString();
 
-                    // Construire le chemin complet de la classe dans StorageLayer
-                    string daoClassName = "StorageLayer.Dao." + selectedTable + "Dao";
-                    Type daoType = Type.GetType(daoClassName + ", StorageLayer");
+                    // Construire le chemin complet de la classe dans PoliceReport.Database
+                    string daoClassName = "PoliceReport.Database.Dao." + selectedTable + "Dao";
+                    Type daoType = Type.GetType(daoClassName + ", PoliceReport.Database");
 
                     if (daoType != null)
                     {

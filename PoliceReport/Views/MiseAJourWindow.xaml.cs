@@ -1,4 +1,4 @@
-﻿using LogicLayer.Outils;
+﻿using PoliceReport.Core.Outils;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -38,7 +38,7 @@ namespace PoliceReport.Views
             try
             {
                 Version latestVersion, currentVersion;
-                updateAvailable = CheckUpdateAvailable(out latestVersion, out currentVersion);
+                updateAvailable = Updater.CheckUpdateAvailable(out latestVersion, out currentVersion);
 
                 if (updateAvailable)
                 {
@@ -69,7 +69,7 @@ namespace PoliceReport.Views
             MessageBoxResult result = MessageBox.Show($"Erreur lors de la vérification des mises à jour :\n{ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             if (result == MessageBoxResult.OK)
             {
-                MainWindow mainWindow = new MainWindow();
+                MainWindow mainWindow = new MainWindow(Startup.ConfigureServices());
                 mainWindow.Show();
                 Close();
             }
@@ -77,17 +77,6 @@ namespace PoliceReport.Views
             {
                 Close();
             }
-        }
-
-        private bool CheckUpdateAvailable(out Version latestVersion, out Version currentVersion)
-        {
-            WebClient client = new WebClient();
-            client.Headers.Add("User-Agent", "request");
-            string releaseInfoJson = client.DownloadString(Constants.ApiRepoUrl);
-            string latestVersionStr = releaseInfoJson.Split(new string[] { "\"tag_name\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "");
-            latestVersion = new Version(latestVersionStr);
-            currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            return latestVersion > currentVersion;
         }
 
         private async void btnMiseAJour_Click(object sender, RoutedEventArgs e)
@@ -98,7 +87,7 @@ namespace PoliceReport.Views
             }
             else
             {
-                MainWindow mainWindow = new MainWindow();
+                MainWindow mainWindow = new MainWindow(Startup.ConfigureServices());
                 mainWindow.Show();
                 Close();
             }

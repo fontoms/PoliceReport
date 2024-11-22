@@ -1,7 +1,6 @@
-﻿using LogicLayer.Outils;
-using LogicLayer.Outils.Cryptage;
-using LogicLayer.Utilisateur;
-using StorageLayer.Dao;
+﻿using PoliceReport.Core.Outils;
+using PoliceReport.Core.Outils.Cryptage;
+using PoliceReport.Core.Utilisateur;
 using System.Windows;
 
 namespace PoliceReport.Views

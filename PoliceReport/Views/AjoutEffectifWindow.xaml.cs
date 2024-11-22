@@ -1,7 +1,7 @@
-﻿using LogicLayer.Effectif;
-using LogicLayer.Grade;
-using LogicLayer.PositionVeh;
-using StorageLayer.Dao;
+﻿using Microsoft.Extensions.DependencyInjection;
+using PoliceReport.Core.Effectif;
+using PoliceReport.Core.Grade;
+using PoliceReport.Core.PositionVeh;
 using System.Windows;
 
 namespace PoliceReport.Views
@@ -10,10 +10,17 @@ namespace PoliceReport.Views
     {
         private Effectif _selectedItem;
 
-        public AjoutEffectifWindow(Effectif selectedItem)
+        private readonly IGradeDao _gradeDao;
+        private readonly IEffectifDao _effectifDao;
+
+        public AjoutEffectifWindow(Effectif selectedItem, IServiceProvider serviceProvider)
         {
             InitializeComponent();
             _selectedItem = selectedItem;
+
+            // Récupérer les DAO à partir du conteneur DI
+            _effectifDao = serviceProvider.GetRequiredService<IEffectifDao>();
+            _gradeDao = serviceProvider.GetRequiredService<IGradeDao>();
 
             LoadEffectifs();
             LoadGrades();
@@ -75,8 +82,8 @@ namespace PoliceReport.Views
 
         private void LoadEffectifs()
         {
-            List<Effectif> effectifs = EffectifsDao.Instance.GetAllEffectifs();
-            List<Grade> grades = GradesDao.Instance.GetAll();
+            List<Effectif> effectifs = _effectifDao.GetAllEffectifs();
+            List<Grade> grades = _gradeDao.GetAll();
             foreach (Effectif effectif in effectifs)
             {
                 effectif.Grade = grades.Find(g => g.Id == effectif.EffGrade);
@@ -96,7 +103,7 @@ namespace PoliceReport.Views
         private void LoadGrades()
         {
             gradeComboBox.Items.Clear();
-            gradeComboBox.ItemsSource = GradesDao.Instance.GetAll();
+            gradeComboBox.ItemsSource = _gradeDao.GetAll();
 
             if (gradeComboBox.Items.Count > 0)
             {
