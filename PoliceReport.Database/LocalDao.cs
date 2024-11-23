@@ -107,7 +107,7 @@ namespace PoliceReport.Database
         public List<string> GetTables()
         {
             List<string> tables = new List<string>();
-            string req = "SELECT name FROM sqlite_master WHERE type='table'";
+            string req = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name";
             SQLiteDataReader reader = ExecuteReader(req);
             while (reader.Read())
             {

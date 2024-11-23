@@ -2,6 +2,7 @@
 using PoliceReport.Core.Role;
 using PoliceReport.Core.Utilisateur;
 using PoliceReport.Database;
+using PoliceReport.Manager;
 using PoliceReport.Views;
 using System.Reflection;
 using System.Windows;
@@ -13,8 +14,11 @@ namespace PoliceReport
 {
     public partial class AdministrationWindow : Window
     {
+        private readonly ITableManager _tableManager;
         private readonly IDatabaseConnection _database;
         private Utilisateur _user;
+        private readonly IServiceProvider _serviceProvider;
+
         public Utilisateur User
         {
             get => _user;
@@ -31,8 +35,10 @@ namespace PoliceReport
         public AdministrationWindow(IServiceProvider serviceProvider)
         {
             InitializeComponent();
+            _serviceProvider = serviceProvider;
             _database = serviceProvider.GetRequiredService<IDatabaseConnection>();
-            LoadTables();
+            _tableManager = serviceProvider.GetRequiredService<ITableManager>();
+            _tableManager.LoadTables(tableSelector);
             LoadSettings();
         }
 
@@ -63,112 +69,12 @@ namespace PoliceReport
             chkIsDisplayList.IsChecked = Settings.Default.VehDisplayList;
         }
 
-        private void LoadTables()
-        {
-            // Charger les tables de la base de données
-            List<string> tables = _database.GetTables();
-            foreach (string table in tables)
-            {
-                ComboBoxItem item = new ComboBoxItem();
-                item.Content = table;
-                tableSelector.Items.Add(item);
-            }
-        }
-
         private void TableSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (tableSelector.SelectedItem != null)
             {
                 string selectedTable = ((ComboBoxItem)tableSelector.SelectedItem).Content.ToString();
-                AfficherTable(selectedTable);
-            }
-        }
-
-        private void AfficherTable(string tableName)
-        {
-            // Supprimer les colonnes existantes
-            dataGridItems.Columns.Clear();
-
-            // Nom de la classe DAO est formé en concaténant le nom de la table avec "Dao" à la fin
-            string daoClassName = tableName + "Dao";
-
-            // Assurez-vous que la classe DAO existe dans le namespace approprié (ici, j'utilise PoliceReport.Database.Dao)
-            Type daoType = Type.GetType("PoliceReport.Database.Dao." + daoClassName + ", PoliceReport.Database");
-
-            if (daoType != null)
-            {
-                // Récupère l'instance de la classe DAO
-                dynamic daoInstance = daoType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null);
-
-                // Vérifie si la classe DAO a une méthode GetAll()
-                MethodInfo getAllRowsMethod = daoType.GetMethod("GetAll");
-
-                if (getAllRowsMethod != null)
-                {
-                    // Appel de la méthode GetAll() pour récupérer les données de la table
-                    dynamic rows = getAllRowsMethod.Invoke(daoInstance, null);
-
-                    // Récupérer les colonnes de la table
-                    List<(string Name, Type Type)> columns = _database.GetColumnsOfTable(tableName);
-
-                    if (columns.Count > 0)
-                    {
-                        // Créer des colonnes pour le DataGrid
-                        foreach (var column in columns)
-                        {
-                            DataGridTextColumn textColumn = new DataGridTextColumn();
-                            textColumn.Header = column.Name;
-                            textColumn.Binding = new Binding(column.Name);
-
-                            // Appliquer le style pour le retour à la ligne
-                            textColumn.ElementStyle = Resources["WrapCellStyle"] as Style;
-
-                            if (column.Type == typeof(int))
-                            {
-                                textColumn.Width = new DataGridLength(1, DataGridLengthUnitType.Auto); // Ajuster la largeur des colonnes int automatiquement
-                            }
-                            else
-                            {
-                                textColumn.Width = new DataGridLength(1, DataGridLengthUnitType.Star); // Ajuster la largeur des autres colonnes
-                            }
-
-                            dataGridItems.Columns.Add(textColumn);
-                        }
-                    }
-
-                    // Affichage des données où vous le souhaitez
-                    // Par exemple, supposons que vous ayez une DataGrid nommée "dataGridItems" dans votre interface
-                    dataGridItems.ItemsSource = rows;
-
-                    // Bloque la première ligne des utilisateurs (considérer comme le propriétaire)
-                    if (tableName.Equals("Utilisateurs", StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (dataGridItems.Items.Count > 0)
-                        {
-                            dataGridItems.UpdateLayout();
-                            var firstRow = dataGridItems.ItemContainerGenerator.ContainerFromIndex(0) as DataGridRow;
-                            if (firstRow != null)
-                            {
-                                firstRow.IsEnabled = false;
-                            }
-                        }
-                    }
-
-                    // Mettre à jour le label d'information
-                    UpdateInfoLabel();
-                }
-                else
-                {
-                    // Si la classe DAO correspondante n'a pas de méthode GetAll()
-                    // Affichez un message d'erreur
-                    MessageBox.Show("Erreur : Impossible de récupérer les données de la table.", daoClassName, MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else
-            {
-                // Si la classe DAO correspondante n'est pas trouvée ou n'a pas de méthode GetAll()
-                // Affichez un message d'erreur
-                MessageBox.Show("Erreur : Impossible de récupérer les données de la table.", tableName, MessageBoxButton.OK, MessageBoxImage.Error);
+                _tableManager.DisplayTable(selectedTable, dataGridItems, _serviceProvider);
             }
         }
 
@@ -376,7 +282,6 @@ namespace PoliceReport
                                         PropertyInfo selectedProperty = classe.GetType().GetProperty("Id");
                                         object value = selectedProperty.GetValue(classe);
 
-
                                         property.SetValue(newItem, Convert.ChangeType(value, property.PropertyType));
                                     }
                                 }
@@ -387,13 +292,14 @@ namespace PoliceReport
 
                             if (daoType != null)
                             {
-                                dynamic daoInstance = daoType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null);
-                                MethodInfo actionMethod = estAjout ? daoType.GetMethod("Add") : daoType.GetMethod("Update", [newItem.GetType()]);
+                                // Utilisation du service provider pour obtenir l'instance du DAO
+                                dynamic daoInstance = _serviceProvider.GetService(daoType);
+                                MethodInfo actionMethod = estAjout ? daoType.GetMethod("Add") : daoType.GetMethod("Update", (Type[])(new[] { newItem.GetType() }));
 
                                 if (actionMethod != null)
                                 {
                                     actionMethod.Invoke(daoInstance, new object[] { newItem });
-                                    AfficherTable(tableName);
+                                    _tableManager.DisplayTable(tableName, dataGridItems, _serviceProvider);
                                 }
                             }
 
@@ -465,7 +371,8 @@ namespace PoliceReport
 
             if (daoType != null)
             {
-                dynamic daoInstance = daoType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null);
+                // Utilisation du service provider pour obtenir l'instance du DAO
+                dynamic daoInstance = _serviceProvider.GetService(daoType);
 
                 // Vérifie si la classe DAO a une méthode GetAll()
                 MethodInfo getAllRowsMethod = daoType.GetMethod("GetAll");
@@ -482,7 +389,6 @@ namespace PoliceReport
             }
             return null;
         }
-
 
         // Méthode pour trouver le prochain Id disponible
         private object TrouverProchainIdDisponible()
@@ -529,15 +435,13 @@ namespace PoliceReport
                 if (tableSelector.SelectedItem != null)
                 {
                     string selectedTable = ((ComboBoxItem)tableSelector.SelectedItem).Content.ToString();
-
-                    // Construire le chemin complet de la classe dans PoliceReport.Database
                     string daoClassName = "PoliceReport.Database.Dao." + selectedTable + "Dao";
                     Type daoType = Type.GetType(daoClassName + ", PoliceReport.Database");
 
                     if (daoType != null)
                     {
-                        dynamic daoInstance = daoType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null);
-
+                        // Utilisation du service provider pour obtenir l'instance du DAO
+                        dynamic daoInstance = _serviceProvider.GetService(daoType);
                         List<dynamic> selectedItemsCopy = new List<dynamic>(dataGridItems.SelectedItems.Cast<dynamic>());
 
                         foreach (dynamic selectedItem in selectedItemsCopy)
@@ -549,19 +453,16 @@ namespace PoliceReport
                             }
                         }
 
-                        // Rafraîchir l'affichage une fois la suppression terminée
-                        AfficherTable(selectedTable);
+                        _tableManager.DisplayTable(selectedTable, dataGridItems, _serviceProvider);
                     }
                 }
                 else
                 {
-                    // Si aucune table n'est sélectionnée
                     MessageBox.Show("Veuillez sélectionner une table.", Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }
             }
             else
             {
-                // Si aucun élément n'est sélectionné
                 MessageBox.Show("Veuillez sélectionner un ou plusieurs éléments à supprimer.", Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
         }

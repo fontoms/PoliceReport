@@ -9,6 +9,7 @@ using PoliceReport.Core.Utilisateur;
 using PoliceReport.Core.Vehicule;
 using PoliceReport.Database;
 using PoliceReport.Database.Dao;
+using PoliceReport.Manager;
 
 namespace PoliceReport
 {
@@ -30,6 +31,9 @@ namespace PoliceReport
             services.AddTransient<IUniteDao, UnitesDao>();
             services.AddTransient<IUtilisateurDao, UtilisateursDao>();
             services.AddTransient<IVehiculeDao, VehiculesDao>();
+
+            // Enregistrer les managers
+            services.AddSingleton<ITableManager, TableManager>();
 
             return services.BuildServiceProvider();
         }
