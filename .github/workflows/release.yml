@@ -3,11 +3,12 @@ name: Versioning des releases
 on:
   push:
     branches:
-      - main  # Exécuter sur les pushes dans la branche principale
+      - main # Exécuter sur les pushes dans la branche principale
+      - dev # Exécuter sur les pushes dans la branche de développement
 
 jobs:
   release:
-    if: startsWith(github.event.head_commit.message, 'Release')  # Condition: si le message commence par "Release"
+    if: startsWith(github.event.head_commit.message, 'Release') # Condition: si le message commence par "Release"
     runs-on: ubuntu-latest
 
     steps:
@@ -17,7 +18,7 @@ jobs:
       - name: Installer .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '7.x'  # Mettez ici la version de .NET que vous utilisez
+          dotnet-version: "7.x" # Mettez ici la version de .NET que vous utilisez
 
       - name: Obtenir la version à partir du message de commit
         id: get-version
@@ -32,8 +33,14 @@ jobs:
 
       - name: Mettre à jour la version dans le fichier .csproj
         run: |
-          csproj_file=$(find . -name "*.csproj")
-          sed -i 's#<Version>.*</Version>#<Version>${{ env.version }}</Version>#' $csproj_file
+          if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+          version="${{ env.version }}-beta"
+          else
+          version="${{ env.version }}"
+          fi
+          sed -i 's#<Version>.*</Version>#<Version>'"$version"'</Version>#' $csproj_file
+          sed -i 's#<AssemblyVersion>.*</AssemblyVersion>#<AssemblyVersion>'"$version"'</AssemblyVersion>#' $csproj_file
+          sed -i 's#<FileVersion>.*</FileVersion>#<FileVersion>'"$version"'</FileVersion>#' $csproj_file
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           git commit -am "Mise à jour de la version vers ${{ env.version }}"
@@ -46,7 +53,7 @@ jobs:
           tag_name: ${{ env.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Compiler et publier
         run: |
           dotnet build --configuration Release
