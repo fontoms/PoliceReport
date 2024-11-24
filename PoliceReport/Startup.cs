@@ -23,14 +23,14 @@ namespace PoliceReport
             services.AddSingleton<IDatabaseConnection, LocalDao>(provider => LocalDao.Instance);
 
             // Enregistrer les DAO
-            services.AddTransient<IActionDao, ActionsDao>();
-            services.AddTransient<IEffectifDao, EffectifsDao>();
-            services.AddTransient<IGradeDao, GradesDao>();
-            services.AddTransient<IInfractionDao, InfractionsDao>();
-            services.AddTransient<ISpecialisationDao, SpecialisationsDao>();
-            services.AddTransient<IUniteDao, UnitesDao>();
-            services.AddTransient<IUtilisateurDao, UtilisateursDao>();
-            services.AddTransient<IVehiculeDao, VehiculesDao>();
+            services.AddTransient<IActionDao, ActionDao>();
+            services.AddTransient<IEffectifDao, EffectifDao>();
+            services.AddTransient<IGradeDao, GradeDao>();
+            services.AddTransient<IInfractionDao, InfractionDao>();
+            services.AddTransient<ISpecialisationDao, SpecialisationDao>();
+            services.AddTransient<IUniteDao, UniteDao>();
+            services.AddTransient<IUtilisateurDao, UtilisateurDao>();
+            services.AddTransient<IVehiculeDao, VehiculeDao>();
 
             // Enregistrer les managers
             services.AddSingleton<ITableManager, TableManager>();

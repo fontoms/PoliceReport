@@ -3,30 +3,30 @@ using System.Data.SQLite;
 
 namespace PoliceReport.Database.Dao
 {
-    public class GradesDao : IGradeDao
+    public class GradeDao : IGradeDao
     {
         private readonly IDatabaseConnection _connection;
 
-        public GradesDao(IDatabaseConnection connection)
+        public GradeDao(IDatabaseConnection connection)
         {
             _connection = connection;
         }
 
         public void Add(Grade grade)
         {
-            string req = "INSERT INTO Grades (Nom) VALUES ('" + grade.Nom + "')";
+            string req = "INSERT INTO Grade (Nom) VALUES ('" + grade.Nom + "')";
             _connection.ExecuteNonQuery(req);
         }
 
         public void Remove(Grade grade)
         {
-            string req = "DELETE FROM Grades WHERE Id = " + grade.Id;
+            string req = "DELETE FROM Grade WHERE Id = " + grade.Id;
             _connection.ExecuteNonQuery(req);
         }
 
         public List<Grade> GetAll()
         {
-            string req = "SELECT * FROM Grades";
+            string req = "SELECT * FROM Grade";
             SQLiteDataReader reader = _connection.ExecuteReader(req);
             List<Grade> grades = [];
             while (reader.Read())
@@ -40,7 +40,7 @@ namespace PoliceReport.Database.Dao
 
         public void Update(Grade grade)
         {
-            string req = "UPDATE Grades SET Nom = '" + grade.Nom + "' WHERE Id = " + grade.Id;
+            string req = "UPDATE Grade SET Nom = '" + grade.Nom + "' WHERE Id = " + grade.Id;
             _connection.ExecuteNonQuery(req);
         }
     }

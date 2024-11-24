@@ -73,7 +73,17 @@ namespace PoliceReport.Database
             SQLiteDataReader reader = ExecuteReader(req);
             while (reader.Read())
             {
-                columns.Add((reader.GetString(1), Type.GetType(reader.GetString(2))));
+                string columnName = reader.GetString(1);
+                string dataType = reader.GetString(2).ToLower();
+                Type columnType = dataType switch
+                {
+                    "integer" => typeof(int),
+                    "real" => typeof(double),
+                    "text" => typeof(string),
+                    "blob" => typeof(byte[]),
+                    _ => typeof(object)
+                };
+                columns.Add((columnName, columnType));
             }
             reader.Close();
             CloseConnection();

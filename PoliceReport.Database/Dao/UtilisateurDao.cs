@@ -3,24 +3,24 @@ using System.Data.SQLite;
 
 namespace PoliceReport.Database.Dao
 {
-    public class UtilisateursDao : IUtilisateurDao
+    public class UtilisateurDao : IUtilisateurDao
     {
         private readonly IDatabaseConnection _connection;
 
-        public UtilisateursDao(IDatabaseConnection connection)
+        public UtilisateurDao(IDatabaseConnection connection)
         {
             _connection = connection;
         }
 
         public void Add(Utilisateur user)
         {
-            string req = "INSERT INTO Utilisateurs (Username, Password, Role) VALUES ('" + user.Username + "', '" + user.Password + "', '" + user.Role + "')";
+            string req = "INSERT INTO Utilisateur (Username, Password, Role) VALUES ('" + user.Username + "', '" + user.Password + "', '" + user.Role + "')";
             _connection.ExecuteNonQuery(req);
         }
 
         public List<Utilisateur> GetAll()
         {
-            string req = "SELECT * FROM Utilisateurs";
+            string req = "SELECT * FROM Utilisateur";
             SQLiteDataReader reader = _connection.ExecuteReader(req);
             List<Utilisateur> users = new List<Utilisateur>();
             while (reader.Read())
@@ -34,7 +34,7 @@ namespace PoliceReport.Database.Dao
 
         public Utilisateur GetUser(string username, string password)
         {
-            string req = "SELECT * FROM Utilisateurs WHERE Username = '" + username + "' AND Password = '" + password + "'";
+            string req = "SELECT * FROM Utilisateur WHERE Username = '" + username + "' AND Password = '" + password + "'";
             SQLiteDataReader reader = _connection.ExecuteReader(req);
             if (reader.Read())
             {
@@ -53,13 +53,13 @@ namespace PoliceReport.Database.Dao
 
         public void Remove(Utilisateur user)
         {
-            string req = "DELETE FROM Utilisateurs WHERE Id = " + user.Id;
+            string req = "DELETE FROM Utilisateur WHERE Id = " + user.Id;
             _connection.ExecuteNonQuery(req);
         }
 
         public void Update(Utilisateur user)
         {
-            string req = "UPDATE Utilisateurs SET Username = '" + user.Username + "', Password = '" + user.Password + "', Role = '" + user.Role + "' WHERE Id = " + user.Id;
+            string req = "UPDATE Utilisateur SET Username = '" + user.Username + "', Password = '" + user.Password + "', Role = '" + user.Role + "' WHERE Id = " + user.Id;
             _connection.ExecuteNonQuery(req);
         }
     }

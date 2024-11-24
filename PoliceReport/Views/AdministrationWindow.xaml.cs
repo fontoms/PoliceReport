@@ -114,15 +114,10 @@ namespace PoliceReport
                 string selectedTable = ((ComboBoxItem)tableSelector.SelectedItem).Content.ToString();
                 string tableName = selectedTable;
 
-                if (selectedTable.EndsWith("s"))
-                {
-                    selectedTable = selectedTable.Remove(selectedTable.Length - 1);
-                }
+                string coreNamespace = "PoliceReport.Core." + selectedTable + "." + selectedTable;
+                Type coreType = Type.GetType(coreNamespace + ", PoliceReport.Core");
 
-                string CoreNamespace = "PoliceReport.Core." + selectedTable + "." + selectedTable;
-                Type CoreType = Type.GetType(CoreNamespace + ", PoliceReport.Core");
-
-                if (CoreType != null)
+                if (coreType != null)
                 {
                     if (!estAjout && dataGridItems.SelectedItem == null)
                     {
@@ -172,7 +167,7 @@ namespace PoliceReport
                                 args = properties.Select(prop => prop.GetValue(selectedItem)).ToArray();
                             }
 
-                            dynamic classe = Activator.CreateInstance(CoreType, args);
+                            dynamic classe = Activator.CreateInstance(coreType, args);
                             PropertyInfo selectedProperty = classe.GetType().GetProperty(column.Header.ToString());
                             object value = selectedProperty.GetValue(classe);
 
@@ -259,14 +254,14 @@ namespace PoliceReport
 
                         if (allFieldsFilled)
                         {
-                            dynamic newItem = Activator.CreateInstance(CoreType);
+                            dynamic newItem = Activator.CreateInstance(coreType);
 
                             foreach (var child in stackPanel.Children)
                             {
                                 if (child is TextBox textBox)
                                 {
                                     string propertyName = textBox.Name.Replace("TextBox_", "");
-                                    PropertyInfo property = CoreType.GetProperty(propertyName);
+                                    PropertyInfo property = coreType.GetProperty(propertyName);
                                     if (property != null)
                                     {
                                         property.SetValue(newItem, Convert.ChangeType(textBox.Text, property.PropertyType));
@@ -275,7 +270,7 @@ namespace PoliceReport
                                 else if (child is ComboBox comboBox)
                                 {
                                     string propertyName = comboBox.Name.Replace("ComboBox_", "");
-                                    PropertyInfo property = CoreType.GetProperty(propertyName);
+                                    PropertyInfo property = coreType.GetProperty(propertyName);
                                     if (property != null)
                                     {
                                         dynamic classe = comboBox.SelectedItem;
@@ -287,14 +282,14 @@ namespace PoliceReport
                                 }
                             }
 
-                            string daoClassName = tableName + "Dao";
-                            Type daoType = Type.GetType("PoliceReport.Database.Dao." + daoClassName + ", PoliceReport.Database");
+                            string daoInterfaceName = $"I{tableName}Dao";
+                            Type daoType = Type.GetType($"PoliceReport.Core.{tableName}.{daoInterfaceName}, PoliceReport.Core");
 
                             if (daoType != null)
                             {
                                 // Utilisation du service provider pour obtenir l'instance du DAO
                                 dynamic daoInstance = _serviceProvider.GetService(daoType);
-                                MethodInfo actionMethod = estAjout ? daoType.GetMethod("Add") : daoType.GetMethod("Update", (Type[])(new[] { newItem.GetType() }));
+                                MethodInfo actionMethod = estAjout ? daoType.GetMethod("Add") : daoType.GetMethod("Update", [newItem.GetType()]);
 
                                 if (actionMethod != null)
                                 {

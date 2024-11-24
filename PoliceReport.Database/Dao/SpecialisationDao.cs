@@ -3,30 +3,30 @@ using System.Data.SQLite;
 
 namespace PoliceReport.Database.Dao
 {
-    public class SpecialisationsDao : ISpecialisationDao
+    public class SpecialisationDao : ISpecialisationDao
     {
         private readonly IDatabaseConnection _connection;
 
-        public SpecialisationsDao(IDatabaseConnection connection)
+        public SpecialisationDao(IDatabaseConnection connection)
         {
             _connection = connection;
         }
 
         public void Add(Specialisation specialisation)
         {
-            string req = "INSERT INTO Specialisations (Nom) VALUES ('" + specialisation.Nom + "')";
+            string req = "INSERT INTO Specialisation (Nom) VALUES ('" + specialisation.Nom + "')";
             _connection.ExecuteNonQuery(req);
         }
 
         public void Remove(Specialisation specialisation)
         {
-            string req = "DELETE FROM Specialisations WHERE Id = " + specialisation.Id;
+            string req = "DELETE FROM Specialisation WHERE Id = " + specialisation.Id;
             _connection.ExecuteNonQuery(req);
         }
 
         public List<Specialisation> GetAll()
         {
-            string req = "SELECT * FROM Specialisations";
+            string req = "SELECT * FROM Specialisation";
             SQLiteDataReader reader = _connection.ExecuteReader(req);
             List<Specialisation> specialisations = [];
             while (reader.Read())
@@ -40,7 +40,7 @@ namespace PoliceReport.Database.Dao
 
         public void Update(Specialisation specialisation)
         {
-            string req = "UPDATE Specialisations SET Nom = '" + specialisation.Nom + "' WHERE Id = " + specialisation.Id;
+            string req = "UPDATE Specialisation SET Nom = '" + specialisation.Nom + "' WHERE Id = " + specialisation.Id;
             _connection.ExecuteNonQuery(req);
         }
     }
