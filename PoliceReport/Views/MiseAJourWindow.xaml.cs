@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Windows;
 
@@ -64,7 +65,7 @@ namespace PoliceReport.Views
             }
         }
 
-        private async void DisplayMessageBoxError(Exception ex)
+        private void DisplayMessageBoxError(Exception ex)
         {
             MessageBoxResult result = MessageBox.Show($"Erreur lors de la vérification des mises à jour :\n{ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             if (result == MessageBoxResult.OK)
@@ -101,21 +102,50 @@ namespace PoliceReport.Views
                 btnMiseAJour.IsEnabled = false;
                 progressBar.Visibility = Visibility.Visible;
 
-                WebClient client = new WebClient();
-                client.Headers.Add("User-Agent", "request");
-                string releaseInfoJson = await client.DownloadStringTaskAsync(Constants.ApiRepoUrl);
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Add("User-Agent", "request");
+                string releaseInfoJson = await client.GetStringAsync(Constants.ApiRepoUrl);
                 string latestSetupUrl = releaseInfoJson.Split(new string[] { "\"browser_download_url\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "").TrimEnd('}');
                 string setupFileName = Path.Combine(Path.GetTempPath(), "PoliceReportSetup.exe");
                 Uri uri = new Uri(latestSetupUrl);
 
                 // Téléchargement de la mise à jour
-                WebClient downloadClient = new WebClient();
-                downloadClient.DownloadProgressChanged += (s, args) =>
+                using (var downloadClient = new HttpClient())
                 {
-                    Dispatcher.Invoke(() => progressBar.Value = args.ProgressPercentage);
-                };
+                    var response = await downloadClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
+                    response.EnsureSuccessStatusCode();
 
-                await downloadClient.DownloadFileTaskAsync(uri, setupFileName);
+                    var totalBytes = response.Content.Headers.ContentLength.HasValue ? response.Content.Headers.ContentLength.Value : -1L;
+                    var canReportProgress = totalBytes != -1;
+
+                    using (var contentStream = await response.Content.ReadAsStreamAsync())
+                    using (var fileStream = new FileStream(setupFileName, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
+                    {
+                        var totalRead = 0L;
+                        var buffer = new byte[8192];
+                        var isMoreToRead = true;
+
+                        do
+                        {
+                            var read = await contentStream.ReadAsync(buffer, 0, buffer.Length);
+                            if (read == 0)
+                            {
+                                isMoreToRead = false;
+                                progressBar.Value = 100;
+                                continue;
+                            }
+
+                            await fileStream.WriteAsync(buffer, 0, read);
+
+                            totalRead += read;
+                            if (canReportProgress)
+                            {
+                                progressBar.Value = (totalRead * 100) / totalBytes;
+                            }
+                        }
+                        while (isMoreToRead);
+                    }
+                }
 
                 progressBar.Visibility = Visibility.Hidden;
 

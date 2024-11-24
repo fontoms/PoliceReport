@@ -17,27 +17,30 @@ namespace PoliceReport.Core.Outils
 
         public static bool CheckUpdateAvailable(out Version latestVersion, out Version currentVersion)
         {
-            WebClient client = new WebClient();
-            client.Headers.Add("User-Agent", "request");
-            string releaseInfoJson = client.DownloadString(Constants.ApiRepoUrl);
-            string latestVersionStr = releaseInfoJson.Split(new string[] { "\"tag_name\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "");
-            latestVersion = new Version(latestVersionStr);
-            currentVersion = Assembly.GetEntryAssembly().GetName().Version;
-            return latestVersion > currentVersion;
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("User-Agent", "request");
+                string releaseInfoJson = client.GetStringAsync(Constants.ApiRepoUrl).Result;
+                string latestVersionStr = releaseInfoJson.Split(new string[] { "\"tag_name\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "");
+                latestVersion = new Version(latestVersionStr);
+                currentVersion = Assembly.GetEntryAssembly().GetName().Version;
+                return latestVersion > currentVersion;
+            }
         }
 
-        #region Mise à jour
         public async Task<bool> CheckIfUpdated()
         {
             try
             {
                 // Récupère la version du fichier local et ses dates
-                (string version, DateTime localCreateDate, DateTime localModifiedDate) localFile = GetLocalDatabaseVersion();
+                var localFile = GetLocalDatabaseVersion();
+                string version = localFile.version;
+                DateTime localCreateDate = localFile.localCreateDate;
+                DateTime localModifiedDate = localFile.localModifiedDate;
 
-                WebClient client = new WebClient();
-                client.Headers.Add("User-Agent", "request");
-                client.DownloadProgressChanged += (sender, e) => OnProgressChanged(e.ProgressPercentage);
-                string githubContentsJson = await client.DownloadStringTaskAsync(githubContentsUrl);
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Add("User-Agent", "request");
+                string githubContentsJson = await client.GetStringAsync(githubContentsUrl);
                 JArray githubContentsArray = JArray.Parse(githubContentsJson);
 
                 foreach (JObject content in githubContentsArray)
@@ -55,7 +58,7 @@ namespace PoliceReport.Core.Outils
                             Version remoteVersion = new Version(remoteVersionStr);
 
                             // Convertit la version locale en objet Version pour la comparaison
-                            Version localVersion = new Version(localFile.version);
+                            Version localVersion = new Version(version);
 
                             OnProgressChanged(githubContentsArray.IndexOf(content) * 100 / githubContentsArray.Count);
 
@@ -63,7 +66,6 @@ namespace PoliceReport.Core.Outils
                             if (remoteVersion > localVersion)
                             {
                                 ConfigurationManager.AppSettings["LatestUpdate"] = DateTime.Now.ToString(); // Met à jour la date de dernière mise à jour
-                                //Settings.Default.Save();
                                 return true; // La base de données est mise à jour, donc retourne true
                             }
                         }
@@ -71,11 +73,10 @@ namespace PoliceReport.Core.Outils
                 }
 
                 // Compare la date de dernière mise à jour avec la date de modification locale du fichier de BDD
-                DateTime localDate = localFile.localModifiedDate.AddMinutes(-1); // Ajoute 5 minutes pour compenser le décalage horaire
+                DateTime localDate = localModifiedDate.AddMinutes(-1); // Ajoute 5 minutes pour compenser le décalage horaire
                 if (localDate > DateTime.Parse(ConfigurationManager.AppSettings["LatestUpdate"]))
                 {
                     ConfigurationManager.AppSettings["LatestUpdate"] = DateTime.Now.ToString(); // Met à jour la date de dernière mise à jour
-                    //Settings.Default.Save();
                     return true; // La base de données est mise à jour, donc retourne true
                 }
 
@@ -97,10 +98,9 @@ namespace PoliceReport.Core.Outils
                 if (updateAvailable)
                 {
                     // Récupère la liste des fichiers dans le dossier GitHub
-                    WebClient client = new WebClient();
-                    client.Headers.Add("User-Agent", "request");
-                    client.DownloadProgressChanged += (sender, e) => OnProgressChanged(e.ProgressPercentage);
-                    string githubFilesJson = await client.DownloadStringTaskAsync(githubContentsUrl);
+                    HttpClient client = new HttpClient();
+                    client.DefaultRequestHeaders.Add("User-Agent", "request");
+                    string githubFilesJson = await client.GetStringAsync(githubContentsUrl);
                     JArray githubFilesArray = JArray.Parse(githubFilesJson);
 
                     foreach (JObject file in githubFilesArray)
@@ -130,8 +130,41 @@ namespace PoliceReport.Core.Outils
 
                             // Télécharge le fichier depuis GitHub
                             string fileUrl = file["download_url"].ToString();
-                            client.DownloadProgressChanged += (sender, e) => OnProgressChanged(e.ProgressPercentage);
-                            await client.DownloadFileTaskAsync(fileUrl, Environment.CurrentDirectory + "\\" + fileNameWithExtension);
+                            using (var response = await client.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead))
+                            {
+                                response.EnsureSuccessStatusCode();
+                                var totalBytes = response.Content.Headers.ContentLength;
+
+                                using (var contentStream = await response.Content.ReadAsStreamAsync())
+                                using (var fileStream = new FileStream(Path.Combine(Environment.CurrentDirectory, fileNameWithExtension), FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
+                                {
+                                    var totalRead = 0L;
+                                    var buffer = new byte[8192];
+                                    var isMoreToRead = true;
+
+                                    do
+                                    {
+                                        var read = await contentStream.ReadAsync(buffer, 0, buffer.Length);
+                                        if (read == 0)
+                                        {
+                                            isMoreToRead = false;
+                                            OnProgressChanged(100);
+                                            continue;
+                                        }
+
+                                        await fileStream.WriteAsync(buffer, 0, read);
+
+                                        totalRead += read;
+
+                                        if (totalBytes.HasValue)
+                                        {
+                                            var progress = (totalRead * 1d) / (totalBytes.Value * 1d) * 100;
+                                            OnProgressChanged(progress);
+                                        }
+                                    }
+                                    while (isMoreToRead);
+                                }
+                            }
 
                             // Retourne la version mise à jour
                             return fileVersion.ToString();
@@ -175,6 +208,5 @@ namespace PoliceReport.Core.Outils
 
             return ("0.0.0", DateTime.MinValue, DateTime.MinValue);
         }
-        #endregion
     }
 }
