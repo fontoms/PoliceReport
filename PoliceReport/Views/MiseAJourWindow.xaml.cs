@@ -1,7 +1,6 @@
 ﻿using PoliceReport.Core.Outils;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Windows;

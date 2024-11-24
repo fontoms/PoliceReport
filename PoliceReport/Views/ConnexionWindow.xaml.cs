@@ -1,4 +1,5 @@
-﻿using PoliceReport.Core.Outils;
+﻿using Microsoft.Extensions.DependencyInjection;
+using PoliceReport.Core.Outils;
 using PoliceReport.Core.Outils.Cryptage;
 using PoliceReport.Core.Utilisateur;
 using System.Windows;
@@ -13,9 +14,12 @@ namespace PoliceReport.Views
         public bool MotDePasseCorrect { get; private set; }
         public Utilisateur User { get; private set; }
 
-        public ConnexionWindow()
+        private readonly IUtilisateurDao _utilisateurDao;
+
+        public ConnexionWindow(IServiceProvider serviceProvider)
         {
             InitializeComponent();
+            _utilisateurDao = serviceProvider.GetRequiredService<IUtilisateurDao>();
             MotDePasseCorrect = false;
             userBox.Focus();
         }
@@ -25,7 +29,7 @@ namespace PoliceReport.Views
 #if DEBUG
             Utilisateur user = Constants.Users.FirstOrDefault(u => u.Username == userBox.Text && u.Password == HashHelper.CalculateSHA256(passBox.Password));
 #else
-            Utilisateur user = UtilisateursDao.Instance.GetUser(userBox.Text, HashHelper.CalculateSHA256(passBox.Password));
+            Utilisateur user = _utilisateurDao.GetUser(userBox.Text, HashHelper.CalculateSHA256(passBox.Password));
 #endif
             if (user != null)
             {

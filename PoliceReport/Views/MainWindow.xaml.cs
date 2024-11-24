@@ -331,7 +331,7 @@ namespace PoliceReport.Views
 
         private void TitleLabel_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            ConnexionWindow connexionWindow = new ConnexionWindow();
+            ConnexionWindow connexionWindow = new ConnexionWindow(Startup.ConfigureServices());
             connexionWindow.Owner = this;
             connexionWindow.ShowDialog();
 

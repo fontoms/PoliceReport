@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Configuration;
-using System.Net;
 using System.Reflection;
 
 namespace PoliceReport.Core.Outils
@@ -21,7 +20,7 @@ namespace PoliceReport.Core.Outils
             {
                 client.DefaultRequestHeaders.Add("User-Agent", "request");
                 string releaseInfoJson = client.GetStringAsync(Constants.ApiRepoUrl).Result;
-                string latestVersionStr = releaseInfoJson.Split(new string[] { "\"tag_name\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "");
+                string latestVersionStr = releaseInfoJson.Split(["\"tag_name\":"], StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "");
                 latestVersion = new Version(latestVersionStr);
                 currentVersion = Assembly.GetEntryAssembly().GetName().Version;
                 return latestVersion > currentVersion;
