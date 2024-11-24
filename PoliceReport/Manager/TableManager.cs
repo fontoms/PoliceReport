@@ -1,15 +1,8 @@
 ﻿using PoliceReport.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows;
-using PoliceReport.Database.Dao;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace PoliceReport.Manager
 {
@@ -38,7 +31,7 @@ namespace PoliceReport.Manager
         public void DisplayTable(string tableName, DataGrid dataGridItems, IServiceProvider serviceProvider)
         {
             dataGridItems.Columns.Clear();
-            string daoInterfaceName = "I" + tableName + "Dao";
+            string daoInterfaceName = $"I{tableName}Dao";
             Type daoType = Type.GetType($"PoliceReport.Core.{tableName}.{daoInterfaceName}, PoliceReport.Core");
 
             if (daoType != null)

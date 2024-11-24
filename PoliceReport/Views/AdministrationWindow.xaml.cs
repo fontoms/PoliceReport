@@ -7,7 +7,6 @@ using PoliceReport.Views;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
 
 namespace PoliceReport
@@ -335,7 +334,7 @@ namespace PoliceReport
         // Méthode pour vérifier si une colonne possède une énumération
         private List<dynamic> CheckIfEnum(string columnName)
         {
-            Type enumType = Type.GetType("PoliceReport.Core." + columnName + "." + columnName + ", PoliceReport.Core");
+            Type enumType = Type.GetType($"PoliceReport.Core.{columnName}.{columnName}, PoliceReport.Core");
             if (enumType != null && enumType.IsEnum)
             {
                 string[] names = Enum.GetNames(enumType);
@@ -360,9 +359,8 @@ namespace PoliceReport
         // Méthode pour récupérer les données de la table correspondante
         private dynamic GetForeignKeyData(string tableName)
         {
-            string daoClassName = tableName + "Dao";
-
-            Type daoType = Type.GetType("PoliceReport.Database.Dao." + daoClassName + ", PoliceReport.Database");
+            string daoInterfaceName = $"I{tableName}Dao";
+            Type daoType = Type.GetType($"PoliceReport.Core.{tableName}.{daoInterfaceName}, PoliceReport.Core");
 
             if (daoType != null)
             {
@@ -379,7 +377,7 @@ namespace PoliceReport
                 }
                 else
                 {
-                    MessageBox.Show("Erreur : Impossible de récupérer les données de la table.", daoClassName, MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Erreur : Impossible de récupérer les données de la table.", daoInterfaceName, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             return null;
@@ -430,8 +428,8 @@ namespace PoliceReport
                 if (tableSelector.SelectedItem != null)
                 {
                     string selectedTable = ((ComboBoxItem)tableSelector.SelectedItem).Content.ToString();
-                    string daoClassName = "PoliceReport.Database.Dao." + selectedTable + "Dao";
-                    Type daoType = Type.GetType(daoClassName + ", PoliceReport.Database");
+                    string daoInterfaceName = $"I{selectedTable}Dao";
+                    Type daoType = Type.GetType($"PoliceReport.Core.{selectedTable}.{daoInterfaceName}, PoliceReport.Core");
 
                     if (daoType != null)
                     {
@@ -442,10 +440,7 @@ namespace PoliceReport
                         foreach (dynamic selectedItem in selectedItemsCopy)
                         {
                             MethodInfo deleteMethod = daoType.GetMethod("Remove");
-                            if (deleteMethod != null)
-                            {
-                                deleteMethod.Invoke(daoInstance, new object[] { selectedItem });
-                            }
+                            deleteMethod?.Invoke(daoInstance, new object[] { selectedItem });
                         }
 
                         _tableManager.DisplayTable(selectedTable, dataGridItems, _serviceProvider);
