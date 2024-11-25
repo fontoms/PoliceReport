@@ -1,4 +1,4 @@
-﻿namespace PoliceReport.Core.Outils
+﻿namespace PoliceReport.Core.Tools
 {
     public static class Constants
     {

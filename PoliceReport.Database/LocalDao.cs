@@ -1,4 +1,5 @@
 ﻿using System.Data.SQLite;
+using System.Reflection;
 
 namespace PoliceReport.Database
 {
@@ -16,57 +17,47 @@ namespace PoliceReport.Database
             {
                 lock (_lock)
                 {
-                    if (_instance == null)
-                    {
-                        _instance = new LocalDao();
-                        _instance.Connect();
-                    }
+                    _instance ??= new LocalDao();
+                    _instance.Connect();
                     return _instance;
                 }
             }
         }
 
-        public void CloseConnection()
-        {
-            _connection?.Close();
-        }
+        public void CloseConnection() => _connection?.Close();
 
         public void Connect()
         {
-            if (_connection == null)
+            if (_connection != null) return;
+
+            string tempDbPath = Path.Combine(Environment.CurrentDirectory, "database.db");
+            if (!File.Exists(tempDbPath))
             {
-                string localDbFolderPath = Directory.GetCurrentDirectory();
-                string[] localDbFiles = Directory.GetFiles(localDbFolderPath, "PR_BDD_*.db");
-                string path = localDbFiles.OrderByDescending(f => f).FirstOrDefault();
-                if (path != null)
-                {
-                    var connectionString = $"Data Source={path};Version=3;";
-                    _connection = new SQLiteConnection(connectionString);
-                }
-                else
-                {
-                    _connection = new SQLiteConnection("Data Source=:memory:;Version=3;");
-                }
+                using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{Assembly.GetExecutingAssembly().GetName().Name}.database.db");
+                if (stream == null) throw new Exception("Le fichier de base de données n'a pas été trouvé dans les ressources.");
+                using FileStream fileStream = new FileStream(tempDbPath, FileMode.Create, FileAccess.Write);
+                stream.CopyTo(fileStream);
             }
+
+            _connection = new SQLiteConnection($"Data Source={tempDbPath};Version=3;");
         }
 
         public void ExecuteNonQuery(string query)
         {
             try
             {
-                if (_connection == null)
-                {
-                    Connect();
-                }
+                Connect();
                 _connection.Open();
-                var command = _connection.CreateCommand();
-                command.CommandText = query;
+                using var command = new SQLiteCommand(query, _connection);
                 command.ExecuteNonQuery();
-                _connection.Close();
             }
             catch (Exception)
             {
-                throw new Exception("Erreur avec la base de données :\n" + query);
+                throw new Exception($"Erreur avec la base de données :\n{query}");
+            }
+            finally
+            {
+                _connection.Close();
             }
         }
 
@@ -74,27 +65,21 @@ namespace PoliceReport.Database
         {
             try
             {
-                if (_connection == null)
-                {
-                    Connect();
-                }
+                Connect();
                 _connection.Open();
-                var command = _connection.CreateCommand();
-                command.CommandText = query;
-                var reader = command.ExecuteReader();
-                return reader;
+                using var command = new SQLiteCommand(query, _connection);
+                return command.ExecuteReader();
             }
             catch (Exception)
             {
-                throw new Exception("Erreur avec la base de données :\n" + query);
+                throw new Exception($"Erreur avec la base de données :\n{query}");
             }
         }
 
         public List<(string Name, Type Type)> GetColumnsOfTable(string tableName)
         {
-            List<(string Name, Type Type)> columns = new List<(string Name, Type Type)>();
-            string req = "PRAGMA table_info(" + tableName + ")";
-            SQLiteDataReader reader = ExecuteReader(req);
+            var columns = new List<(string Name, Type Type)>();
+            using var reader = ExecuteReader($"PRAGMA table_info({tableName})");
             while (reader.Read())
             {
                 string columnName = reader.GetString(1);
@@ -109,21 +94,18 @@ namespace PoliceReport.Database
                 };
                 columns.Add((columnName, columnType));
             }
-            reader.Close();
             CloseConnection();
             return columns;
         }
 
         public List<string> GetTables()
         {
-            List<string> tables = new List<string>();
-            string req = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name";
-            SQLiteDataReader reader = ExecuteReader(req);
+            var tables = new List<string>();
+            using var reader = ExecuteReader("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name");
             while (reader.Read())
             {
                 tables.Add(reader.GetString(0));
             }
-            reader.Close();
             CloseConnection();
             return tables;
         }

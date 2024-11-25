@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using PoliceReport.Core.Outils.Cryptage;
+using PoliceReport.Core.Tools;
+using PoliceReport.Core.Tools.Encryption;
 using PoliceReport.Core.Utilisateur;
 using System.Windows;
 

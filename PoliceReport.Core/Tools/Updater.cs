@@ -3,7 +3,7 @@ using System.Configuration;
 using System.Net;
 using System.Reflection;
 
-namespace PoliceReport.Core.Outils
+namespace PoliceReport.Core.Tools
 {
     public class Updater
     {
@@ -26,14 +26,14 @@ namespace PoliceReport.Core.Outils
                     return new VersionInfo
                     {
                         LatestVersion = null,
-                        CurrentVersion = Assembly.GetEntryAssembly().GetName().Version
+                        CurrentVersion = Assembly.GetEntryAssembly()?.GetName()?.Version ?? new Version("0.0.0.0")
                     };
                 }
                 response.EnsureSuccessStatusCode();
                 string releaseInfoJson = await response.Content.ReadAsStringAsync();
                 string latestVersionStr = releaseInfoJson.Split(new[] { "\"tag_name\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "");
                 Version latestVersion = new Version(latestVersionStr);
-                Version currentVersion = Assembly.GetEntryAssembly().GetName().Version;
+                Version currentVersion = Assembly.GetEntryAssembly()?.GetName()?.Version ?? new Version("0.0.0.0");
                 return new VersionInfo
                 {
                     LatestVersion = latestVersion,

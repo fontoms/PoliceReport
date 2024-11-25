@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace PoliceReport.Core.Outils.Cryptage
+namespace PoliceReport.Core.Tools.Encryption
 {
     public static class HashHelper
     {

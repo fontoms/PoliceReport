@@ -19,6 +19,7 @@
     <DebugSymbols>false</DebugSymbols>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +27,7 @@
     <None Remove="Images\Background.png" />
     <None Remove="Images\DeleteIcon.png" />
     <None Remove="Images\EditIcon.png" />
+    <None Remove="Images\Logo.png" />
     <None Remove="Images\SwitchIcon.png" />
     <None Remove="Images\SyncIcon.png" />
   </ItemGroup>
@@ -34,27 +36,16 @@
     <Content Include="icon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Images\AddIcon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\Background.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\DeleteIcon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\EditIcon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\Logo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\SwitchIcon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\SyncIcon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\AddIcon.png" />
+    <Resource Include="Images\Background.png" />
+    <Resource Include="Images\DeleteIcon.png" />
+    <Resource Include="Images\EditIcon.png" />
+    <Resource Include="Images\Logo.png" />
+    <Resource Include="Images\SwitchIcon.png" />
+    <Resource Include="Images\SyncIcon.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,16 +55,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PoliceReport.Core\PoliceReport.Core.csproj" />
-    <ProjectReference Include="..\PoliceReport.Core\PoliceReport.Core.csproj" />
-    <ProjectReference Include="..\PoliceReport.Database\PoliceReport.Database.csproj" />
     <ProjectReference Include="..\PoliceReport.Database\PoliceReport.Database.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Images\Logo.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
     <None Update="Views\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
