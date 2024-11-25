@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PoliceReport.Core.Role;
+using PoliceReport.Core.Tools.Encryption;
 using PoliceReport.Core.Utilisateur;
 using PoliceReport.Database;
 using PoliceReport.Manager;
 using PoliceReport.Views;
+using System.Data;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -74,6 +76,33 @@ namespace PoliceReport
             {
                 string selectedTable = ((ComboBoxItem)tableSelector.SelectedItem).Content.ToString();
                 _tableManager.DisplayTable(selectedTable, dataGridItems, _serviceProvider);
+
+                if (selectedTable.Equals("Utilisateur", StringComparison.OrdinalIgnoreCase) && dataGridItems.Items.Count > 0)
+                {
+                    dataGridItems.UpdateLayout();
+
+                    DataGridRow firstRow = dataGridItems.ItemContainerGenerator.ContainerFromIndex(0) as DataGridRow;
+                    if (firstRow != null)
+                    {
+                        firstRow.IsEnabled = false;
+                    }
+
+                    Utilisateur ownerUser = dataGridItems.Items[0] as Utilisateur;
+                    bool isOwner = User.Id == ownerUser.Id;
+
+                    foreach (var item in dataGridItems.Items)
+                    {
+                        Utilisateur utilisateur = (Utilisateur)item;
+                        if (!isOwner && utilisateur.Role <= User.Role)
+                        {
+                            DataGridRow row = (DataGridRow)dataGridItems.ItemContainerGenerator.ContainerFromItem(item);
+                            if (row != null)
+                            {
+                                row.IsEnabled = false;
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -194,39 +223,57 @@ namespace PoliceReport
                         }
                         else
                         {
-                            TextBox textBox = new TextBox();
-                            textBox.Name = "TextBox_" + column.Header.ToString();
-                            textBox.Margin = new Thickness(0, 0, 0, 10);
-
-                            if (estAjout && column.Header.ToString() == "Id")
+                            if (column.Header.ToString() == "Password")
                             {
-                                int? nextId = TrouverProchainIdDisponible() as int?;
-                                if (nextId.HasValue)
+                                PasswordBox passwordBox = new PasswordBox();
+                                passwordBox.Name = "PasswordBox_" + column.Header.ToString();
+                                passwordBox.Margin = new Thickness(0, 0, 0, 10);
+
+                                if (!estAjout)
                                 {
-                                    textBox.Text = nextId.Value.ToString();
+                                    dynamic selectedItem = dataGridItems.SelectedItem;
+                                    passwordBox.Password = selectedItem.Password;
+                                }
+
+                                stackPanel.Children.Add(label);
+                                stackPanel.Children.Add(passwordBox);
+                            }
+                            else
+                            {
+                                TextBox textBox = new TextBox();
+                                textBox.Name = "TextBox_" + column.Header.ToString();
+                                textBox.Margin = new Thickness(0, 0, 0, 10);
+
+                                if (estAjout && column.Header.ToString() == "Id")
+                                {
+                                    int? nextId = FindNextIdAvailable() as int?;
+                                    if (nextId.HasValue)
+                                    {
+                                        textBox.Text = nextId.Value.ToString();
+                                        textBox.IsEnabled = false;
+                                    }
+                                    else
+                                    {
+                                        textBox.Text = "";
+                                        textBox.IsEnabled = true;
+                                    }
+                                }
+                                else if (!estAjout && column.Header.ToString() == "Id")
+                                {
+                                    dynamic selectedItem = dataGridItems.SelectedItem;
+                                    textBox.Text = selectedItem.Id.ToString();
                                     textBox.IsEnabled = false;
                                 }
-                                else
+                                else if (!estAjout)
                                 {
-                                    textBox.Text = "";
-                                    textBox.IsEnabled = true;
+                                    dynamic selectedItem = dataGridItems.SelectedItem;
+                                    object propertyValue = selectedItem.GetType().GetProperty(column.Header.ToString()).GetValue(selectedItem).ToString();
+                                    textBox.Text = propertyValue.ToString();
                                 }
-                            }
-                            else if (!estAjout && column.Header.ToString() == "Id")
-                            {
-                                dynamic selectedItem = dataGridItems.SelectedItem;
-                                textBox.Text = selectedItem.Id.ToString();
-                                textBox.IsEnabled = false;
-                            }
-                            else if (!estAjout)
-                            {
-                                dynamic selectedItem = dataGridItems.SelectedItem;
-                                object propertyValue = selectedItem.GetType().GetProperty(column.Header.ToString()).GetValue(selectedItem).ToString();
-                                textBox.Text = propertyValue.ToString();
-                            }
 
-                            stackPanel.Children.Add(label);
-                            stackPanel.Children.Add(textBox);
+                                stackPanel.Children.Add(label);
+                                stackPanel.Children.Add(textBox);
+                            }
                         }
                     }
 
@@ -264,6 +311,16 @@ namespace PoliceReport
                                     if (property != null)
                                     {
                                         property.SetValue(newItem, Convert.ChangeType(textBox.Text, property.PropertyType));
+                                    }
+                                }
+                                else if (child is PasswordBox passwordBox)
+                                {
+                                    string propertyName = passwordBox.Name.Replace("PasswordBox_", "");
+                                    PropertyInfo property = coreType.GetProperty(propertyName);
+                                    if (property != null)
+                                    {
+                                        passwordBox.Password = HashHelper.CalculateSHA256(passwordBox.Password);
+                                        property.SetValue(newItem, Convert.ChangeType(passwordBox.Password, property.PropertyType));
                                     }
                                 }
                                 else if (child is ComboBox comboBox)
@@ -384,7 +441,7 @@ namespace PoliceReport
         }
 
         // Méthode pour trouver le prochain Id disponible
-        private object TrouverProchainIdDisponible()
+        private object FindNextIdAvailable()
         {
             // Vérifier le type de l'ID
             if (dataGridItems.Items.Count > 0)

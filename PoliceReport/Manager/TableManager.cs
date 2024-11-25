@@ -60,16 +60,6 @@ namespace PoliceReport.Manager
                     }
 
                     dataGridItems.ItemsSource = rows;
-
-                    if (tableName.Equals("Utilisateur", StringComparison.OrdinalIgnoreCase) && dataGridItems.Items.Count > 0)
-                    {
-                        dataGridItems.UpdateLayout();
-                        var firstRow = dataGridItems.ItemContainerGenerator.ContainerFromIndex(0) as DataGridRow;
-                        if (firstRow != null)
-                        {
-                            firstRow.IsEnabled = false;
-                        }
-                    }
                 }
                 else
                 {

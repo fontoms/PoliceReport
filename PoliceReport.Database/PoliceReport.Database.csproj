@@ -23,7 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="database.db" />
+    <Content Include="database.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
