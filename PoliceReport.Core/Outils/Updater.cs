@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Configuration;
+using System.Net;
 using System.Reflection;
 
 namespace PoliceReport.Core.Outils
@@ -14,16 +15,36 @@ namespace PoliceReport.Core.Outils
             ProgressChanged?.Invoke(this, progress);
         }
 
-        public static bool CheckUpdateAvailable(out Version latestVersion, out Version currentVersion)
+        public class VersionInfo
+        {
+            public Version LatestVersion { get; set; }
+            public Version CurrentVersion { get; set; }
+        }
+
+        public static async Task<VersionInfo> CheckUpdateAvailableAsync()
         {
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("User-Agent", "request");
-                string releaseInfoJson = client.GetStringAsync(Constants.ApiRepoUrl).Result;
-                string latestVersionStr = releaseInfoJson.Split(["\"tag_name\":"], StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "");
-                latestVersion = new Version(latestVersionStr);
-                currentVersion = Assembly.GetEntryAssembly().GetName().Version;
-                return latestVersion > currentVersion;
+                HttpResponseMessage response = await client.GetAsync(Constants.ApiRepoUrl);
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    return new VersionInfo
+                    {
+                        LatestVersion = null,
+                        CurrentVersion = Assembly.GetEntryAssembly().GetName().Version
+                    };
+                }
+                response.EnsureSuccessStatusCode();
+                string releaseInfoJson = await response.Content.ReadAsStringAsync();
+                string latestVersionStr = releaseInfoJson.Split(new[] { "\"tag_name\":" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Replace("\"", "");
+                Version latestVersion = new Version(latestVersionStr);
+                Version currentVersion = Assembly.GetEntryAssembly().GetName().Version;
+                return new VersionInfo
+                {
+                    LatestVersion = latestVersion,
+                    CurrentVersion = currentVersion
+                };
             }
         }
 

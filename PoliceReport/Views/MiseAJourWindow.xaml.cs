@@ -12,7 +12,7 @@ namespace PoliceReport.Views
     /// </summary>
     public partial class MiseAJourWindow : Window
     {
-        private bool updateAvailable = false;
+        private Updater.VersionInfo updateAvailable = null;
 
         public MiseAJourWindow()
         {
@@ -33,21 +33,25 @@ namespace PoliceReport.Views
             }
         }
 
-        private void CheckForUpdates()
+        private async void CheckForUpdates()
         {
             try
             {
-                Version latestVersion, currentVersion;
-                updateAvailable = Updater.CheckUpdateAvailable(out latestVersion, out currentVersion);
+                updateAvailable = await Updater.CheckUpdateAvailableAsync();
 
-                if (updateAvailable)
+                if (updateAvailable.LatestVersion == null)
+                {
+                    // Afficher un avertissement si la vérification des mises à jour a échoué
+                    Task.Run(() => MessageBox.Show("La vérification des mises à jour a échoué. Veuillez réessayer plus tard.", "Avertissement", MessageBoxButton.OK, MessageBoxImage.Warning));
+                }
+
+                if (updateAvailable.LatestVersion > updateAvailable.CurrentVersion)
                 {
                     // Si une mise à jour est disponible, afficher le bouton de mise à jour
                     btnMiseAJour.Content = "Mettre à jour";
                     nouvelleMajLbl.Content = "Une nouvelle mise à jour est disponible !";
                     progressBar.Visibility = Visibility.Hidden;
-                    versionLbl.Content = $"Version actuelle : {currentVersion} - Dernière version : {latestVersion}";
-                    updateAvailable = true;
+                    versionLbl.Content = $"Version actuelle : {updateAvailable.CurrentVersion} - Dernière version : {updateAvailable.LatestVersion}";
                 }
                 else
                 {
@@ -55,7 +59,7 @@ namespace PoliceReport.Views
                     btnMiseAJour.Content = "Lancer";
                     nouvelleMajLbl.Content = $"Profitez bien de {Assembly.GetExecutingAssembly().GetName().Name} !";
                     progressBar.Visibility = Visibility.Hidden;
-                    versionLbl.Content = $"Version actuelle : {currentVersion}";
+                    versionLbl.Content = $"Version actuelle : {updateAvailable.CurrentVersion}";
                 }
             }
             catch (Exception ex)
@@ -81,7 +85,7 @@ namespace PoliceReport.Views
 
         private async void btnMiseAJour_Click(object sender, RoutedEventArgs e)
         {
-            if (updateAvailable)
+            if (updateAvailable != null && updateAvailable.LatestVersion > updateAvailable.CurrentVersion)
             {
                 await UpdateApplication();
             }
