@@ -35,12 +35,12 @@ namespace PoliceReport.Database
         {
             if (_connection == null)
             {
-                string localDbFolderPath = Environment.CurrentDirectory;
+                string localDbFolderPath = Directory.GetCurrentDirectory();
                 string[] localDbFiles = Directory.GetFiles(localDbFolderPath, "PR_BDD_*.db");
-                var path = localDbFiles.OrderByDescending(f => f).FirstOrDefault();
+                string path = localDbFiles.OrderByDescending(f => f).FirstOrDefault();
                 if (path != null)
                 {
-                    var connectionString = "Data Source=" + path + ";Version=3;";
+                    var connectionString = $"Data Source={path};Version=3;";
                     _connection = new SQLiteConnection(connectionString);
                 }
                 else
