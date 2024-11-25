@@ -15,12 +15,6 @@ namespace PoliceReport.Core.Outils
             ProgressChanged?.Invoke(this, progress);
         }
 
-        public class VersionInfo
-        {
-            public Version LatestVersion { get; set; }
-            public Version CurrentVersion { get; set; }
-        }
-
         public static async Task<VersionInfo> CheckUpdateAvailableAsync()
         {
             using (HttpClient client = new HttpClient())

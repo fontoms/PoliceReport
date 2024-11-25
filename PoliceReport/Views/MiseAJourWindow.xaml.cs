@@ -12,7 +12,7 @@ namespace PoliceReport.Views
     /// </summary>
     public partial class MiseAJourWindow : Window
     {
-        private Updater.VersionInfo updateAvailable = null;
+        private VersionInfo updateAvailable = null;
 
         public MiseAJourWindow()
         {
