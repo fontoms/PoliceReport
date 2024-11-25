@@ -5,7 +5,7 @@
         //=== PoliceReport ===\\
         // Main
         public const string Author = "Fontom's (677154388065910822)";
-        public const string RepoUrl = $"https://github.com/Fontom71/{RepoName}";
+        public const string RepoUrl = $"https://github.com/{RepoOwner}/{RepoName}";
 
         // MiseAJour
         public const string RepoOwner = "fontoms";
