@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest  # Nécessaire car Inno Setup fonctionne sur Windows
+    runs-on: windows-latest # Nécessaire pour Inno Setup
 
     steps:
       - name: Checkout repository
@@ -22,21 +22,14 @@ jobs:
           dotnet-version: "7.x"
 
       - name: Restore dependencies
-      run: dotnet restore
+        run: dotnet restore
 
       - name: Build the project
-      run: dotnet build --configuration Release --no-restore
+        run: dotnet build --configuration Release --no-restore
 
       - name: Publish the executable
         run: |
-          dotnet publish -c Release \
-            --runtime win-x64 \
-            -p:PublishReadyToRun=true \
-            -p:EnableCompressionInSingleFile=true \
-            -p:IncludeNativeLibrariesForSelfExtract=true \
-            -p:DebugType=None \
-            -p:DebugSymbols=false \
-            -o ./output-x64
+          dotnet publish --configuration Release --runtime win-x64 -p:PublishReadyToRun=true -p:EnableCompressionInSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -p:DebugSymbols=false --output ./output-x64
 
       - name: Get version from .csproj
         id: get-version
@@ -67,6 +60,10 @@ jobs:
           WizardSmallImageFile=icon.bmp
           AppPublisher=Fontom's
           UninstallDisplayIcon={app}\icon.ico
+
+          [CustomMessages]
+          CreateDesktopIcon=Créer une icône sur le bureau
+          CreateStartMenuIcon=Créer une icône dans le menu Démarrer
 
           [Tasks]
           Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "Création des raccourcis"; Flags: unchecked
