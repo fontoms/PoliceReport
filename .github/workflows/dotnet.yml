@@ -5,32 +5,39 @@ name: .NET
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-    - name: Publish the executable
-      run: dotnet publish --configuration Release --runtime win-x64 --self-contained --output ./output
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+      - name: Publish the executable
+        run: |
+          dotnet publish -c Release \
+            --runtime win-x64 \
+            -p:PublishReadyToRun=true \
+            -p:EnableCompressionInSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            -p:DebugType=None \
+            -p:DebugSymbols=false \
+            -o ./output-x64
 
-    - name: Upload the executable artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: published-exe
-        path: ./output
+      - name: Upload the executable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-exe
+          path: ./output

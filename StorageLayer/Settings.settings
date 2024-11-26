@@ -1,9 +1,0 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="StorageLayer" GeneratedClassName="Settings">
-  <Profiles />
-  <Settings>
-    <Setting Name="LatestUpdate" Type="System.DateTime" Scope="User">
-      <Value Profile="(Default)">2024-02-26</Value>
-    </Setting>
-  </Settings>
-</SettingsFile>

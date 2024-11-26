@@ -10,37 +10,79 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest  # Nécessaire car Inno Setup fonctionne sur Windows
+    runs-on: windows-latest # Nécessaire pour Inno Setup
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2  # Récupère le code source
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '7.x'  # Utilisez la version .NET de votre projet
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "7.x"
 
-    - name: Restore dependencies
-      run: dotnet restore  # Restaure les dépendances du projet
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: Build the project
-      run: dotnet build --configuration Release --no-restore  # Compile en mode Release
+      - name: Build the project
+        run: dotnet build --configuration Release --no-restore
 
-    - name: Publish the executable
-      run: dotnet publish --configuration Release --runtime win-x64 --self-contained --output ./output  # Publie un fichier .exe pour Windows
+      - name: Publish the executable
+        run: |
+          dotnet publish --configuration Release --runtime win-x64 -p:PublishReadyToRun=true -p:EnableCompressionInSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -p:DebugSymbols=false --output ./output-x64
 
-    - name: Download and Install Inno Setup
-      run: |
-        curl -Lo innosetup.exe https://jrsoftware.org/download.php/is.exe
-        cmd.exe /c innosetup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+      - name: Get version from .csproj
+        id: get-version
+        run: |
+          $Version = Select-String -Path "*.csproj" -Pattern "<AssemblyVersion>(.*?)</AssemblyVersion>" | ForEach-Object { $_.Matches.Groups[1].Value }
+          echo "VERSION=$Version" >> $env:GITHUB_ENV
 
-    - name: Generate the setup.exe
-      run: |
-        cmd.exe /c "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
+      - name: Download and Install Inno Setup
+        run: |
+          curl -Lo innosetup.exe https://jrsoftware.org/download.php/is.exe
+          cmd.exe /c innosetup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
 
-    - name: Upload the setup artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: setup-exe
-        path: ./output/setup.exe  # Télécharge le fichier setup.exe généré comme artefact
+      - name: Generate the setup.exe
+        run: |
+          Set-Content -Path setup-x64.iss -Value @"
+          [Setup]
+          AppName=PoliceReport
+          AppVersion=${{ env.VERSION }}
+          AppVerName=PoliceReport ${{ env.VERSION }}
+          DefaultDirName={pf}\PoliceReport
+          DefaultGroupName=PoliceReport
+          OutputDir=.
+          OutputBaseFilename=PoliceReportSetup-x64-${{ env.VERSION }}
+          Compression=lzma2
+          SolidCompression=yes
+          ArchitecturesInstallIn64BitMode=x64
+          SetupIconFile=icon.ico
+          WizardSmallImageFile=icon.bmp
+          AppPublisher=Fontom's
+          UninstallDisplayIcon={app}\icon.ico
+
+          [CustomMessages]
+          CreateDesktopIcon=Créer une icône sur le bureau
+          CreateStartMenuIcon=Créer une icône dans le menu Démarrer
+
+          [Tasks]
+          Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "Création des raccourcis"; Flags: unchecked
+          Name: "startmenuicon"; Description: "{cm:CreateStartMenuIcon}"; GroupDescription: "Création des raccourcis"; Flags: unchecked
+
+          [Files]
+          Source: "output-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+          [Icons]
+          Name: "{group}\PoliceReport"; Filename: "{app}\PoliceReport.exe"; IconFilename: "{app}\icon.ico"; Tasks: startmenuicon
+          Name: "{commondesktop}\PoliceReport"; Filename: "{app}\PoliceReport.exe"; IconFilename: "{app}\icon.ico"; Tasks: desktopicon
+
+          [Run]
+          Filename: "{app}\PoliceReport.exe"; Description: "Lancer PoliceReport"; Flags: nowait postinstall skipifsilent
+          "@
+          &"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup-x64.iss
+
+      - name: Upload the setup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: setup-exe
+          path: ./PoliceReportSetup-x64-${{ env.VERSION }}.exe
